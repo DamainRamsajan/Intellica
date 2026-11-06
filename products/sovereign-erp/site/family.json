@@ -1,0 +1,101 @@
+{
+  "version": 1,
+  "home": "https://meeting-mind.com/",
+  "contact": "dpramsajan@meeting-mind.com",
+  "products": [
+    {
+      "id": "verichain",
+      "name": "VeriChain",
+      "url": "https://verichain.meeting-mind.com/",
+      "accent": "#35D47A",
+      "tagline": "A platform where autonomous AI agents run, act and transact, with every consequential action recorded in a log anyone can verify.",
+      "status": ""
+    },
+    {
+      "id": "vericrypt",
+      "name": "VeriCrypt",
+      "url": "https://vericrypt.meeting-mind.com/",
+      "accent": "#8B3A44",
+      "tagline": "An air-gapped compliance engine that finds the cryptography in an estate, scores its quantum exposure, and produces reports a regulator can verify offline.",
+      "status": ""
+    },
+    {
+      "id": "sovereign-erp",
+      "name": "Sovereign ERP",
+      "url": "https://erp.meeting-mind.com/",
+      "accent": "#E8A617",
+      "tagline": "A ledger and period-close kernel whose rules are checked by model checking and formal specifications.",
+      "status": ""
+    },
+    {
+      "id": "omc",
+      "name": "OMC",
+      "url": "https://omc.meeting-mind.com/",
+      "accent": "#7C6CF0",
+      "tagline": "A closed-loop system that measures and proves the financial value of work shared by people, AI models and agents.",
+      "status": ""
+    }
+  ],
+  "roles": [
+    {
+      "id": "security",
+      "title": "CISO or compliance lead",
+      "blurb": "Find the cryptography in your estate, see its quantum exposure, and hand regulators reports they can verify.",
+      "links": [
+        { "product": "vericrypt", "tab": "overview", "label": "VeriCrypt overview" },
+        { "product": "vericrypt", "tab": "demo", "label": "VeriCrypt demo" }
+      ]
+    },
+    {
+      "id": "finance",
+      "title": "CFO or finance controller",
+      "blurb": "Prove what AI and automation are worth, and keep the ledger’s rules checked.",
+      "links": [
+        { "product": "omc", "tab": "overview", "label": "OMC overview" },
+        { "product": "sovereign-erp", "tab": "overview", "label": "Sovereign ERP overview" }
+      ]
+    },
+    {
+      "id": "audit",
+      "title": "Auditor or regulator",
+      "blurb": "Check the evidence yourself, offline, without trusting the vendor.",
+      "links": [
+        { "product": "verichain", "tab": "verify", "label": "VeriChain: verify" },
+        { "product": "vericrypt", "tab": "verify", "label": "VeriCrypt: verify" },
+        { "product": "omc", "tab": "verify", "label": "OMC: verify" }
+      ]
+    },
+    {
+      "id": "agents",
+      "title": "Building or running AI agents",
+      "blurb": "Run agents whose every consequential action is recorded in a log anyone can verify.",
+      "links": [
+        { "product": "verichain", "tab": "overview", "label": "VeriChain overview" },
+        { "product": "verichain", "tab": "docs", "label": "VeriChain docs" }
+      ]
+    },
+    {
+      "id": "partner",
+      "title": "Partner or investor",
+      "blurb": "Start a conversation about a pilot, an integration or a partnership.",
+      "links": [
+        { "href": "mailto:dpramsajan@meeting-mind.com", "label": "Email Intellica" }
+      ]
+    }
+  ],
+  "standards": [
+    "SCITT",
+    "COSE",
+    "RFC 6962 transparency logs",
+    "CycloneDX CBOM",
+    "EU AI Act Articles 12, 14, 26 and 50",
+    "DORA"
+  ],
+  "sectors": [
+    { "title": "Enterprise", "path": "/legacy/enterprise.html" },
+    { "title": "Finance", "path": "/legacy/finance.html" },
+    { "title": "Government", "path": "/legacy/government.html" },
+    { "title": "Energy", "path": "/legacy/energy.html" },
+    { "title": "Small business", "path": "/legacy/smb.html" }
+  ]
+}

@@ -1,0 +1,51 @@
+{
+  "name": "VeriChain",
+  "accent": "#35D47A",
+  "repo": "https://github.com/intellica-ai-llc/verichain",
+  "tagline": "A platform where autonomous AI agents run, act and transact, with every consequential action recorded in a log anyone can verify.",
+  "audience": [
+    {
+      "role": "Agent developers",
+      "concern": "Connect an agent through SDKs for Rust, Python and TypeScript and get accountability without building it yourself."
+    },
+    {
+      "role": "Operators and enterprises",
+      "concern": "See and control a fleet of agents: approvals, a kill switch and evidence search."
+    },
+    {
+      "role": "Auditors, insurers and regulators",
+      "concern": "Verify what an agent did from an evidence pack, offline, against the minimum assurance you set."
+    },
+    {
+      "role": "Counterparties",
+      "concern": "Check an agent\u2019s claims and receipts without having to trust its operator."
+    }
+  ],
+  "highlights": [
+    {
+      "title": "Evidence you can check offline",
+      "text": "Actions are written to a witnessed, append-only log. Inclusion and consistency can be verified without contacting the operator."
+    },
+    {
+      "title": "Intent is recorded before effect",
+      "text": "A hosted agent\u2019s intent is written down before any action takes place, so a missing record is itself visible."
+    },
+    {
+      "title": "Honest assurance levels",
+      "text": "Every record states its assurance (A0 to A3) and completeness (C0 to C3), and the verifier enforces the minimum you require."
+    },
+    {
+      "title": "Runs small, scales out",
+      "text": "Deployment topologies run from a single machine for development (T0) to federated operation (T3)."
+    }
+  ],
+  "verifyIt": "Take an evidence pack and verify it with the minimum completeness, assurance and witness count you require. Then change one byte and verify again.",
+  "demo": {
+    "title": "Audit an evidence pack",
+    "summary": "Verify an evidence pack, then tamper with it and see exactly how verification fails.",
+    "engine": "placeholder",
+    "sample": "a small evidence pack",
+    "command": "vcv verify --min-completeness C2 --min-assurance A1 --witnesses 2 <pack>",
+    "expected": ""
+  }
+}

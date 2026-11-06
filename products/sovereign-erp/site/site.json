@@ -1,0 +1,42 @@
+{
+  "id": "sovereign-erp",
+  "name": "Sovereign ERP",
+  "tagline": "A ledger and period-close kernel whose rules are checked by model checking and formal specifications.",
+  "accent": "#E8A617",
+  "status": "",
+  "version": "",
+  "repo": "https://github.com/intellica-ai-llc/Sovereign-ERP",
+  "contact": "dpramsajan@meeting-mind.com",
+  "tabs": [
+    "overview",
+    "demo",
+    "download",
+    "docs",
+    "verify",
+    "support"
+  ],
+  "demo": {
+    "title": "Close a period",
+    "summary": "Drive the Period Controller and watch the invariants refuse illegal moves.",
+    "engine": "placeholder",
+    "sample": "a small ledger and period calendar",
+    "command": "",
+    "expected": ""
+  },
+  "audience": [],
+  "highlights": [
+    {
+      "title": "Period close as a checked state machine",
+      "text": "The Period Controller decides close, reopen and adjustment moves, and its invariants are checked against a TLA+ specification in lockstep."
+    },
+    {
+      "title": "An engine-neutral ledger",
+      "text": "A Ledger Port interface with a conformance suite that any ledger engine adapter has to pass."
+    },
+    {
+      "title": "Seeded defects are caught",
+      "text": "Deliberately broken variants are run against the checks, and each one is caught with its shortest counterexample."
+    }
+  ],
+  "verifyIt": "Try to close, reopen and adjust an accounting period, then switch on a seeded defect and read the shortest counterexample the checker finds."
+}

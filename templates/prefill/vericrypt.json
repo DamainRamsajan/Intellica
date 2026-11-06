@@ -1,0 +1,47 @@
+{
+  "name": "VeriCrypt",
+  "accent": "#8B3A44",
+  "repo": "https://github.com/DamainRamsajan/vericrypt",
+  "tagline": "An air-gapped compliance engine that finds the cryptography in an estate, scores its quantum exposure, and produces reports a regulator can verify offline.",
+  "audience": [
+    {
+      "role": "Compliance leads and CISOs",
+      "concern": "Know which cryptography is exposed to quantum attack, what to fix first, and how to show regulators."
+    },
+    {
+      "role": "Regulators and auditors",
+      "concern": "Verify a compliance report offline, without trusting the vendor or the institution."
+    },
+    {
+      "role": "Security engineers",
+      "concern": "Run the engine inside an air-gapped environment from a single binary."
+    }
+  ],
+  "highlights": [
+    {
+      "title": "Air-gapped by design",
+      "text": "A single static binary does the work inside your environment, with no network access needed during a scan."
+    },
+    {
+      "title": "Reports you can verify offline",
+      "text": "Each .pqc report is tamper-evident and carries post-quantum signatures. The offline verifier checks it on any machine."
+    },
+    {
+      "title": "Regulatory logic that replays",
+      "text": "Regulatory axioms run on a deterministic virtual machine, and a report embeds the execution trace so a verifier can replay it."
+    },
+    {
+      "title": "Optional services stay optional",
+      "text": "Anything that leaves the air-gapped core is a separate, one-way, user-initiated step."
+    }
+  ],
+  "verifyIt": "Open a .pqc report in the verifier, check its signature and Merkle proof, then change one byte and watch verification fail.",
+  "demo": {
+    "title": "Verify a compliance report",
+    "summary": "Open a sample report, check it, then tamper with it and see verification fail.",
+    "engine": "placeholder",
+    "sample": "a sample .pqc report",
+    "command": "vericrypt-verify <report.pqc>",
+    "expected": ""
+  }
+}

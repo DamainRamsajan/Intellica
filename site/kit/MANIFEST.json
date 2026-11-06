@@ -1,0 +1,13 @@
+{
+  "version": "0.1.0",
+  "files": {
+    "VERSION": "e9dd8507f4bf0c6f42458e41aea833ad0bd3f6127272335eee9bf4d58541ed67",
+    "dom.js": "8838b21a934b34e633b3aac5d6f4f414b50dabedb365b1e173f1070fcc78335f",
+    "markdown.js": "5ce0e48e7c90b7a71207ff6b8e844cc2f530a5af55ed969b2f0a1e4793bb26b9",
+    "placeholder-demo.js": "dd8916945752f84b81696a60c0b9571f9a07b2e036cb32bdbde93d9ef2cb0876",
+    "shell.css": "5e638fa7d5d1fd5e8d051cd383397f0ece54c0c656841aeb94a6dce3630ce063",
+    "shell.js": "6f422b20368f092d5f01d7af54a56ba831c32344461747ea75471f62d39f932b",
+    "theme-init.js": "43879408d3455bee34c871eee86b734171df14ace5f35bcfe5578c710e79b049",
+    "tokens.css": "f1238eeb15aed46459e4443158d35de3029736c2269c8793e20da56a48e87f0d"
+  }
+}
