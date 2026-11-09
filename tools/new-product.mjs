@@ -28,5 +28,9 @@ fs.writeFileSync(path.join(out, 'site.json'), JSON.stringify(merged, null, 2) + 
 const headers = fs.readFileSync(path.join(out, '_headers'), 'utf8').split('\n\n').filter((b) => !b.trim().startsWith('/legacy/*')).join('\n\n');
 fs.writeFileSync(path.join(out, '_headers'), headers.endsWith('\n') ? headers : headers + '\n');
 
+const docsOverride = path.join('templates', 'prefill-docs', id);
+if (fs.existsSync(docsOverride)) fs.cpSync(docsOverride, out, { recursive: true });
+
 execFileSync('node', ['tools/sync-kit.mjs', out], { stdio: 'inherit' });
+execFileSync('node', ['tools/prerender.mjs', out], { stdio: 'inherit' });
 console.log(`Scaffolded ${merged.name} -> ${path.relative(process.cwd(), out)}`);

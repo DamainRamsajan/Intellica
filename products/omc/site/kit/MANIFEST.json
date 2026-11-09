@@ -1,12 +1,12 @@
 {
-  "version": "0.1.0",
+  "version": "0.2.0",
   "files": {
-    "VERSION": "e9dd8507f4bf0c6f42458e41aea833ad0bd3f6127272335eee9bf4d58541ed67",
+    "VERSION": "1f930dd1f133c1f97a94fe3acb8db34372cf4c01ffdb2b3ff4ca72f9494121e9",
     "dom.js": "8838b21a934b34e633b3aac5d6f4f414b50dabedb365b1e173f1070fcc78335f",
-    "markdown.js": "5ce0e48e7c90b7a71207ff6b8e844cc2f530a5af55ed969b2f0a1e4793bb26b9",
+    "markdown.js": "33718b2a4721fd9490607a42fb7760ae0766d880e353e264c67deda06e868f8e",
     "placeholder-demo.js": "dd8916945752f84b81696a60c0b9571f9a07b2e036cb32bdbde93d9ef2cb0876",
-    "shell.css": "5e638fa7d5d1fd5e8d051cd383397f0ece54c0c656841aeb94a6dce3630ce063",
-    "shell.js": "6f422b20368f092d5f01d7af54a56ba831c32344461747ea75471f62d39f932b",
+    "shell.css": "0cd5b3faeb5ba6a1d31b22a120cd2f46f1dd9c45e9a3141c55db1f5fa8e6e47e",
+    "shell.js": "f814df3059ada4bd227f0a246cf23321c161e900f057d1b4e484a40966fffce2",
     "theme-init.js": "43879408d3455bee34c871eee86b734171df14ace5f35bcfe5578c710e79b049",
     "tokens.css": "f1238eeb15aed46459e4443158d35de3029736c2269c8793e20da56a48e87f0d"
   }

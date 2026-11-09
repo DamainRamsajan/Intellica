@@ -53,3 +53,7 @@ t('blockquote and hr', () => {
   const html = renderMarkdown('> quoted\n\n---\n\nafter');
   assert.match(html, /<blockquote><p>quoted<\/p>\n<\/blockquote>|<blockquote>/); assert.match(html, /<hr>/);
 });
+t('demote shifts heading levels', () => {
+  assert.match(renderMarkdown('# A\n\n## B', { demote: 1 }), /<h2 id="a">A<\/h2>[\s\S]*<h3 id="b">B<\/h3>/);
+  assert.match(renderMarkdown('###### Z', { demote: 1 }), /<h6/);
+});

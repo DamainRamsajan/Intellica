@@ -9,15 +9,15 @@
       "url": "https://verichain.meeting-mind.com/",
       "accent": "#35D47A",
       "tagline": "A platform where autonomous AI agents run, act and transact, with every consequential action recorded in a log anyone can verify.",
-      "status": ""
+      "status": "Pre-release: specification frozen, core log and verifier built"
     },
     {
       "id": "vericrypt",
       "name": "VeriCrypt",
       "url": "https://vericrypt.meeting-mind.com/",
       "accent": "#8B3A44",
-      "tagline": "An air-gapped compliance engine that finds the cryptography in an estate, scores its quantum exposure, and produces reports a regulator can verify offline.",
-      "status": ""
+      "tagline": "An engine that inventories the cryptography in an estate, flags quantum-vulnerable assets, and produces signed reports anyone can verify offline.",
+      "status": "v2 evidence engine built and tested; later versions in design"
     },
     {
       "id": "sovereign-erp",
@@ -25,7 +25,7 @@
       "url": "https://erp.meeting-mind.com/",
       "accent": "#E8A617",
       "tagline": "A ledger and period-close kernel whose rules are checked by model checking and formal specifications.",
-      "status": ""
+      "status": "Walking skeleton: period controller and ledger port, model-checked"
     },
     {
       "id": "omc",
@@ -33,7 +33,15 @@
       "url": "https://omc.meeting-mind.com/",
       "accent": "#7C6CF0",
       "tagline": "A closed-loop system that measures and proves the financial value of work shared by people, AI models and agents.",
-      "status": ""
+      "status": "Design phase: walking skeleton on synthetic data"
+    },
+    {
+      "id": "agentseed",
+      "name": "AgentSeed",
+      "url": "https://agentseed.meeting-mind.com/",
+      "accent": "#FF7A59",
+      "tagline": "A programming language for autonomous agents, where safety rules are checked at compile time.",
+      "status": "v0.1.0"
     }
   ],
   "roles": [
@@ -42,8 +50,16 @@
       "title": "CISO or compliance lead",
       "blurb": "Find the cryptography in your estate, see its quantum exposure, and hand regulators reports they can verify.",
       "links": [
-        { "product": "vericrypt", "tab": "overview", "label": "VeriCrypt overview" },
-        { "product": "vericrypt", "tab": "demo", "label": "VeriCrypt demo" }
+        {
+          "product": "vericrypt",
+          "tab": "overview",
+          "label": "VeriCrypt overview"
+        },
+        {
+          "product": "vericrypt",
+          "tab": "demo",
+          "label": "VeriCrypt demo"
+        }
       ]
     },
     {
@@ -51,8 +67,16 @@
       "title": "CFO or finance controller",
       "blurb": "Prove what AI and automation are worth, and keep the ledger’s rules checked.",
       "links": [
-        { "product": "omc", "tab": "overview", "label": "OMC overview" },
-        { "product": "sovereign-erp", "tab": "overview", "label": "Sovereign ERP overview" }
+        {
+          "product": "omc",
+          "tab": "overview",
+          "label": "OMC overview"
+        },
+        {
+          "product": "sovereign-erp",
+          "tab": "overview",
+          "label": "Sovereign ERP overview"
+        }
       ]
     },
     {
@@ -60,18 +84,60 @@
       "title": "Auditor or regulator",
       "blurb": "Check the evidence yourself, offline, without trusting the vendor.",
       "links": [
-        { "product": "verichain", "tab": "verify", "label": "VeriChain: verify" },
-        { "product": "vericrypt", "tab": "verify", "label": "VeriCrypt: verify" },
-        { "product": "omc", "tab": "verify", "label": "OMC: verify" }
+        {
+          "product": "verichain",
+          "tab": "verify",
+          "label": "VeriChain: verify"
+        },
+        {
+          "product": "vericrypt",
+          "tab": "verify",
+          "label": "VeriCrypt: verify"
+        },
+        {
+          "product": "omc",
+          "tab": "verify",
+          "label": "OMC: verify"
+        }
       ]
     },
     {
       "id": "agents",
       "title": "Building or running AI agents",
-      "blurb": "Run agents whose every consequential action is recorded in a log anyone can verify.",
+      "blurb": "Run agents whose every consequential action is recorded in a log anyone can verify, and write them in a language whose safety rules the compiler checks.",
       "links": [
-        { "product": "verichain", "tab": "overview", "label": "VeriChain overview" },
-        { "product": "verichain", "tab": "docs", "label": "VeriChain docs" }
+        {
+          "product": "verichain",
+          "tab": "overview",
+          "label": "VeriChain overview"
+        },
+        {
+          "product": "verichain",
+          "tab": "docs",
+          "label": "VeriChain docs"
+        },
+        {
+          "product": "agentseed",
+          "tab": "overview",
+          "label": "AgentSeed overview"
+        }
+      ]
+    },
+    {
+      "id": "research",
+      "title": "Language or safety researcher",
+      "blurb": "Read the specification, run the compiler and check the claims yourself.",
+      "links": [
+        {
+          "product": "agentseed",
+          "tab": "docs",
+          "label": "AgentSeed docs"
+        },
+        {
+          "product": "agentseed",
+          "tab": "verify",
+          "label": "AgentSeed: verify"
+        }
       ]
     },
     {
@@ -79,7 +145,10 @@
       "title": "Partner or investor",
       "blurb": "Start a conversation about a pilot, an integration or a partnership.",
       "links": [
-        { "href": "mailto:dpramsajan@meeting-mind.com", "label": "Email Intellica" }
+        {
+          "href": "mailto:dpramsajan@meeting-mind.com",
+          "label": "Email Intellica"
+        }
       ]
     }
   ],
@@ -92,10 +161,25 @@
     "DORA"
   ],
   "sectors": [
-    { "title": "Enterprise", "path": "/legacy/enterprise.html" },
-    { "title": "Finance", "path": "/legacy/finance.html" },
-    { "title": "Government", "path": "/legacy/government.html" },
-    { "title": "Energy", "path": "/legacy/energy.html" },
-    { "title": "Small business", "path": "/legacy/smb.html" }
+    {
+      "title": "Enterprise",
+      "path": "/legacy/enterprise.html"
+    },
+    {
+      "title": "Finance",
+      "path": "/legacy/finance.html"
+    },
+    {
+      "title": "Government",
+      "path": "/legacy/government.html"
+    },
+    {
+      "title": "Energy",
+      "path": "/legacy/energy.html"
+    },
+    {
+      "title": "Small business",
+      "path": "/legacy/smb.html"
+    }
   ]
 }

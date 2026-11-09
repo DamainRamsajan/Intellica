@@ -5,7 +5,7 @@
 import { $, el, loadJSON, loadText, copyText, safeHref, storage } from './dom.js';
 import { renderMarkdown } from './markdown.js';
 
-export const KIT_VERSION = '0.1.0';
+export const KIT_VERSION = '0.2.0';
 
 const TABS = {
   overview: { label: 'Overview', path: '/' },
@@ -265,7 +265,7 @@ function formatBytes(n) {
   return `${n.toFixed(i ? 1 : 0)} ${units[i]}`;
 }
 
-async function hydrateDownload() {
+async function hydrateDownload(site) {
   const root = $('#downloads-root');
   if (!root) return;
   let data;
@@ -276,7 +276,18 @@ async function hydrateDownload() {
   if (data && data.licence) parts.push(el('p', { class: 'callout' }, data.licence));
 
   if (!items.length) {
-    parts.push(el('p', { class: 'muted' }, 'Nothing is published here yet.'));
+    parts.push(el('p', { class: 'muted' }, 'There are no packaged downloads yet.'));
+    const b = site && site.buildFromSource;
+    if (b) {
+      const copy = el('button', { type: 'button', class: 'btn btn-ghost btn-small' }, 'Copy commands');
+      copy.addEventListener('click', async () => { copy.textContent = (await copyText(b.steps)) ? 'Copied' : 'Failed'; });
+      parts.push(section(b.title || 'Build from source',
+        b.intro ? el('p', {}, b.intro) : null,
+        el('pre', {}, el('code', {}, b.steps)),
+        copy,
+        b.note ? el('p', { class: 'muted' }, b.note) : null,
+        site.repo ? el('p', {}, el('a', { href: safeHref(site.repo) }, 'Source repository')) : null));
+    }
   } else {
     const rows = items.map((it) => {
       const copy = el('button', { type: 'button', class: 'btn btn-ghost btn-small' }, 'Copy');
@@ -295,9 +306,11 @@ async function hydrateDownload() {
       el('tbody', {}, rows))));
   }
 
-  parts.push(section('Check what you downloaded',
-    el('p', {}, 'Compare the SHA-256 of the file you received with the value in the table.'),
-    el('pre', {}, el('code', {}, 'macOS:    shasum -a 256 <file>\nLinux:    sha256sum <file>\nWindows:  Get-FileHash <file> -Algorithm SHA256'))));
+  if (items.length) {
+    parts.push(section('Check what you downloaded',
+      el('p', {}, 'Compare the SHA-256 of the file you received with the value in the table.'),
+      el('pre', {}, el('code', {}, 'macOS:    shasum -a 256 <file>\nLinux:    sha256sum <file>\nWindows:  Get-FileHash <file> -Algorithm SHA256'))));
+  }
   root.replaceChildren(...parts);
 }
 
@@ -329,7 +342,7 @@ async function hydrateDocs(site) {
   document.title = `${entry.title} · ${site.name} docs`;
 
   try {
-    article.innerHTML = renderMarkdown(await loadText(`./${entry.md}`));
+    article.innerHTML = renderMarkdown(await loadText(`./${entry.md}`), { demote: 1 });
   } catch (err) {
     article.replaceChildren(el('p', { class: 'callout bad' }, `This page could not be loaded: ${err.message}`));
     return;
@@ -358,7 +371,7 @@ async function hydrateMarkdownPage() {
   const root = $('#md-root');
   if (!root) return;
   try {
-    root.innerHTML = renderMarkdown(await loadText(root.getAttribute('data-src') || './page.md'));
+    root.innerHTML = renderMarkdown(await loadText(root.getAttribute('data-src') || './page.md'), { demote: 1 });
   } catch (err) {
     root.replaceChildren(el('p', { class: 'muted' }, 'Nothing is published here yet.'));
   }
@@ -370,6 +383,12 @@ function hydrateSupport(site, family) {
   const contact = site.contact || (family && family.contact);
   const mail = $('#support-contact');
   if (mail && contact) { mail.setAttribute('href', `mailto:${contact}`); mail.textContent = contact; }
+  const faq = $('#support-faq');
+  if (faq) {
+    const items = site.faq || [];
+    if (!items.length) faq.closest('section')?.setAttribute('hidden', '');
+    else faq.replaceChildren(...items.map((it) => el('details', { class: 'faq-item' }, el('summary', {}, it.q), el('p', {}, it.a))));
+  }
   const issues = $('#support-issues');
   if (issues && site.repo) { issues.setAttribute('href', safeHref(`${site.repo.replace(/\/$/, '')}/issues`)); }
   else if (issues) { issues.closest('li')?.setAttribute('hidden', ''); }

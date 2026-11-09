@@ -162,3 +162,16 @@ pre { margin: var(--s4) 0; padding: var(--s4); overflow-x: auto; border-radius: 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
 }
+
+/* FAQ */
+.faq-item { border: 1px solid var(--line); border-radius: var(--r); padding: 0 var(--s4); margin-block: var(--s2); background: var(--card); }
+.faq-item summary { cursor: pointer; padding-block: var(--s3); min-height: 44px; font-weight: 600; }
+.faq-item p { margin-top: 0; }
+
+/* Print: plain pages, no chrome, links shown */
+@media print {
+  .skip-link, #shell-header, .theme-btn, .tabs, .status-strip, .btn, .shell-footer nav { display: none !important; }
+  body { background: #fff; color: #000; }
+  a[href^="http"]::after { content: " (" attr(href) ")"; font-size: 0.85em; }
+  pre, .card, table { break-inside: avoid; }
+}

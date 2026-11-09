@@ -11,3 +11,5 @@
 | R7 | Binary hosting undecided | Download tab links to wherever files live; checksums required |
 | R8 | Products' verify commands not confirmed | Marked in `CONTENT-TODO.md` |
 | R9 | Hand-written Markdown renderer | Tested; escapes first; keep scope small |
+| R10 | A product's marketing text runs ahead of its claims registry (VeriCrypt) | Site follows `CLAIMS.md`; revisit when the registry changes |
+| R11 | Product statuses go stale | Status is one field per product in `family.json` and `site.json`; update at each checkpoint |

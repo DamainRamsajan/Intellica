@@ -36,16 +36,37 @@
     },
     {
       "title": "Your data stays in your tenant",
-      "text": "The measurement runs in the customer\u2019s tenant; a hosted control plane coordinates it."
+      "text": "The measurement runs in the customer’s tenant; a hosted control plane coordinates it."
     }
   ],
-  "verifyIt": "Select a published statement, recompute it from its signed inputs, and compare the result with the published figure.",
+  "verifyIt": "Run the demo, then verify its signed statements and hash chain with the standalone verifier and the public test vectors.",
   "demo": {
     "title": "Qualify a model migration",
-    "summary": "Watch a confidence bound tighten as paired cases arrive, and end with a signed evidence statement.",
+    "summary": "Watch a confidence bound tighten as paired cases arrive, and end with a signed verdict. The in-browser demo is planned; this page shows a labeled placeholder until it ships.",
     "engine": "placeholder",
     "sample": "synthetic paired cases",
-    "command": "",
+    "command": "python scripts/demo.py",
     "expected": ""
-  }
+  },
+  "status": "Design phase: walking skeleton on synthetic data",
+  "buildFromSource": {
+    "title": "Run from source",
+    "intro": "OMC is in its design phase and has no packaged release. Run the walking-skeleton demo.",
+    "steps": "git clone https://github.com/DamainRamsajan/Operating-Margin-Controller-\ncd Operating-Margin-Controller-\npip install -e \".[dev,spike]\"\npython scripts/demo.py",
+    "note": "Needs Python 3. Results come from synthetic data only."
+  },
+  "faq": [
+    {
+      "q": "Has OMC been validated on real data?",
+      "a": "Not yet. Every result so far comes from synthetic worlds with planted ground truth. The repository's limitations page lists what to read before relying on any result."
+    },
+    {
+      "q": "Why was my case held instead of promoted or rejected?",
+      "a": "The bounds are valid but conservative, so close calls stay on hold until there is more evidence. The 'unclear' scenario in the demo shows this."
+    },
+    {
+      "q": "Which signatures are used?",
+      "a": "Ed25519 only today. Post-quantum signing and transparency-service registration are on the backlog."
+    }
+  ]
 }

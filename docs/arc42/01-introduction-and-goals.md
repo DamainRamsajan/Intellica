@@ -2,7 +2,7 @@
 
 ## 1.1 Requirements overview
 
-The Intellica web system is the public face of four products: **VeriChain**, **VeriCrypt**, **Sovereign ERP** and **OMC**. It is one company home plus one site per product, all served under a single domain, `meeting-mind.com`.
+The Intellica web system is the public face of five products: **VeriChain**, **VeriCrypt**, **Sovereign ERP**, **OMC** and **AgentSeed**. It is one company home plus one site per product, all served under a single domain, `meeting-mind.com`.
 
 Each product site works like a small company page. It has six tabs:
 
@@ -15,7 +15,7 @@ Each product site works like a small company page. It has six tabs:
 | Verify | How to reproduce a result without trusting Intellica |
 | Support | Contact and support entry point |
 
-The company home at the apex routes visitors by role and lists the four products.
+The company home at the apex routes visitors by role and lists the five products.
 
 ## 1.2 Quality goals
 

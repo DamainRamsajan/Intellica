@@ -49,6 +49,7 @@ function checkHtml(siteDir, file) {
   if (/<[a-z][^>]*\sstyle\s*=/i.test(src)) fail(siteDir, `${rel}: inline style="" attribute is not allowed (CSP). Use a class.`);
 
   for (const m of src.matchAll(/<(script|link|img|source|iframe|video|audio)\b([^>]*)>/gi)) {
+    if (m[1].toLowerCase() === 'link' && /\brel\s*=\s*"(canonical|alternate)"/i.test(m[2])) continue; // a pointer, not a load
     for (const a of m[2].matchAll(/\b(src|href)\s*=\s*"([^"]*)"/gi)) {
       const ref = a[2];
       if (EXTERNAL.test(ref)) { fail(siteDir, `${rel}: <${m[1]}> loads a third-party resource: ${ref}`); continue; }

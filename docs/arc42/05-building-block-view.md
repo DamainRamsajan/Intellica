@@ -5,7 +5,7 @@
 | Repo | Owns |
 | --- | --- |
 | `IntellicaWeb` (this system) | Kit, home, template, tools, arc42, legacy pages |
-| `verichain`, `vericrypt`, `Sovereign-ERP`, `Operating-Margin-Controller-` | Product site content, demo engine, binaries, docs |
+| `verichain`, `vericrypt`, `Sovereign-ERP`, `Operating-Margin-Controller-`, `agentseed` | Product site content, demo engine, binaries, docs |
 
 ## 5.2 Level 2: inside a site
 

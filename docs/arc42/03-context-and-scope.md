@@ -7,7 +7,8 @@ Visitor ──> intellica home (meeting-mind.com)
               ├─> verichain.meeting-mind.com
               ├─> vericrypt.meeting-mind.com
               ├─> erp.meeting-mind.com
-              └─> omc.meeting-mind.com
+              ├─> omc.meeting-mind.com
+              └─> agentseed.meeting-mind.com
 ```
 
 | Partner | Receives / provides |

@@ -5,11 +5,11 @@
 2. Open it: Code > Codespaces > Create codespace on main.
 
 ## 2. Upload and unpack
-Drag `IntellicaWeb.zip` into the Explorer panel, then in the terminal:
+Drag `IntellicaWeb-cp4.zip` into the Explorer panel, then in the terminal:
 
 ```
-unzip -o IntellicaWeb.zip
-rm IntellicaWeb.zip
+unzip -o IntellicaWeb-cp4.zip
+rm IntellicaWeb-cp4.zip
 npm run setup
 npm run verify
 ```
@@ -29,7 +29,7 @@ Open the forwarded port 8080 (Ports tab). Product previews: `npm run dev:vericry
 ## 4. Commit
 ```
 git add -A
-git commit -m "IntellicaWeb checkpoint 2"
+git commit -m "IntellicaWeb checkpoint 4"
 git push
 ```
 
@@ -51,4 +51,5 @@ They then live at `/legacy/...`.
 6. Product subdomains later: each product repo gets its own Pages project with output `site`, then add `verichain.meeting-mind.com` and so on in that project's Custom domains.
 
 ## 7. Product repos
+All five products have real docs now. Products: verichain, vericrypt, sovereign-erp, omc, agentseed.
 `products/<name>/site/` is the starting point. In each product repo, copy its contents into a `site/` folder (kit included), then do step 6 for that repo.

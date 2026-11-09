@@ -76,7 +76,9 @@ function renderList(items) {
   return html;
 }
 
-export function renderMarkdown(source) {
+// opts.demote: shift heading levels down (the page already has its own <h1>).
+export function renderMarkdown(source, opts = {}) {
+  const demote = opts.demote || 0;
   const lines = String(source).replace(/\r\n?/g, '\n').split('\n');
   const out = [];
   const seen = new Map();
@@ -105,7 +107,7 @@ export function renderMarkdown(source) {
 
     const h = line.match(/^(#{1,6})\s+(.*?)\s*#*\s*$/);
     if (h) {
-      const level = h[1].length;
+      const level = Math.min(6, h[1].length + demote);
       out.push(`<h${level} id="${headingId(h[2])}">${inline(h[2])}</h${level}>`);
       i++;
       continue;
@@ -116,7 +118,7 @@ export function renderMarkdown(source) {
     if (/^\s*>/.test(line)) {
       const buf = [];
       while (i < lines.length && /^\s*>/.test(lines[i])) buf.push(lines[i++].replace(/^\s*>\s?/, ''));
-      out.push(`<blockquote>${renderMarkdown(buf.join('\n'))}</blockquote>`);
+      out.push(`<blockquote>${renderMarkdown(buf.join('\n'), opts)}</blockquote>`);
       continue;
     }
 

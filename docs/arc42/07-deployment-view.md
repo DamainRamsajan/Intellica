@@ -9,6 +9,7 @@
 | vericrypt | vericrypt | (repo root) | `site` | `vericrypt.meeting-mind.com` |
 | sovereign-erp | Sovereign-ERP | (repo root) | `site` | `erp.meeting-mind.com` |
 | omc | Operating-Margin-Controller- | (repo root) | `site` | `omc.meeting-mind.com` |
+| agentseed | agentseed (agentseedlanguage-cpu) | (repo root) | `site` | `agentseed.meeting-mind.com` |
 
 Build command: none. Framework preset: none.
 

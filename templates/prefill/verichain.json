@@ -6,11 +6,11 @@
   "audience": [
     {
       "role": "Agent developers",
-      "concern": "Connect an agent through SDKs for Rust, Python and TypeScript and get accountability without building it yourself."
+      "concern": "Record what an agent is authorized to do and does, without building the accountability layer yourself."
     },
     {
       "role": "Operators and enterprises",
-      "concern": "See and control a fleet of agents: approvals, a kill switch and evidence search."
+      "concern": "Run agents under policy, with audit-ready evidence, approvals and a kill switch."
     },
     {
       "role": "Auditors, insurers and regulators",
@@ -18,7 +18,7 @@
     },
     {
       "role": "Counterparties",
-      "concern": "Check an agent\u2019s claims and receipts without having to trust its operator."
+      "concern": "Check an agent's authority and history without having to trust its operator."
     }
   ],
   "highlights": [
@@ -28,7 +28,7 @@
     },
     {
       "title": "Intent is recorded before effect",
-      "text": "A hosted agent\u2019s intent is written down before any action takes place, so a missing record is itself visible."
+      "text": "A hosted agent’s intent is written down before any action takes place, so a missing record is itself visible."
     },
     {
       "title": "Honest assurance levels",
@@ -39,13 +39,38 @@
       "text": "Deployment topologies run from a single machine for development (T0) to federated operation (T3)."
     }
   ],
-  "verifyIt": "Take an evidence pack and verify it with the minimum completeness, assurance and witness count you require. Then change one byte and verify again.",
+  "verifyIt": "Build a demo evidence pack, verify it with vcv, then use the tamper buttons in the dashboard or edit one byte and verify again: the checks turn red.",
   "demo": {
-    "title": "Audit an evidence pack",
-    "summary": "Verify an evidence pack, then tamper with it and see exactly how verification fails.",
+    "title": "Verify an evidence pack",
+    "summary": "Check a signed evidence pack, then tamper with it and watch the checks fail. The in-browser verifier is planned; this page shows a labeled placeholder until it ships.",
     "engine": "placeholder",
-    "sample": "a small evidence pack",
-    "command": "vcv verify --min-completeness C2 --min-assurance A1 --witnesses 2 <pack>",
+    "sample": "a demo evidence pack",
+    "command": "vcv verify pack.json --trust trust.json --policy policy.json --require-seals",
     "expected": ""
-  }
+  },
+  "status": "Pre-release: specification frozen, core log and verifier built",
+  "buildFromSource": {
+    "title": "Build from source",
+    "intro": "VeriChain is pre-release and has no packaged binaries. Build the log daemon and the verifier from source.",
+    "steps": "git clone https://github.com/intellica-ai-llc/verichain\ncd verichain\ncargo build --release -p vcd -p vc-verify\n./target/release/vcv version",
+    "note": "Needs Rust (current stable)."
+  },
+  "faq": [
+    {
+      "q": "Is VeriChain available to use today?",
+      "a": "It is pre-release. The specification is frozen and the core log and verifier crates are built and tested. You can build it and run the local demo; there is no hosted service or packaged download yet."
+    },
+    {
+      "q": "What does a failed check mean?",
+      "a": "The verifier reports which check failed (for example the signature, an inclusion proof or the witness quorum). Exit code 1 means a check failed; the JSON report names it."
+    },
+    {
+      "q": "Why does the verifier need my own trust file?",
+      "a": "A pack carries its own trust anchors, which say nothing about who you trust. Without your trust and policy files the report only shows the pack is consistent with itself."
+    },
+    {
+      "q": "Can I run a pilot server on free hosting?",
+      "a": "The repository has a pilot runbook for Oracle Cloud Always Free with HTTPS, backups and monitoring. It is for testing only, with no SLA."
+    }
+  ]
 }

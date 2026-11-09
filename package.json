@@ -11,13 +11,14 @@
     "dev:omc": "node tools/serve.mjs products/omc/site 8084",
     "check": "node tools/check.mjs --all",
     "test": "node tools/test-markdown.mjs",
-    "sync": "node tools/sync-kit.mjs",
+    "sync": "node tools/sync-kit.mjs && node tools/prerender.mjs",
     "scaffold": "node tools/new-product.mjs",
     "legacy": "node tools/import-legacy.mjs",
     "gate": "npm run test && npm run sync && npm run check",
     "setup": "node tools/doctor.mjs && npm install && npx playwright install --with-deps chromium",
     "test:browser": "node tools/browser-test.mjs",
-    "verify": "npm run gate && npm run test:browser"
+    "verify": "npm run gate && npm run test:browser",
+    "dev:agentseed": "node tools/serve.mjs products/agentseed/site 8085"
   },
   "engines": {
     "node": ">=20"
@@ -25,5 +26,5 @@
   "devDependencies": {
     "playwright": "^1.49.0"
   },
-  "version": "0.3.0"
+  "version": "0.5.0"
 }
