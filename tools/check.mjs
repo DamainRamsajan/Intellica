@@ -43,7 +43,7 @@ function checkHtml(siteDir, file) {
   const src = fs.readFileSync(file, 'utf8');
   if (/<style[\s>]/i.test(src)) fail(siteDir, `${rel}: inline <style> is not allowed (CSP). Move it to a .css file.`);
   for (const m of src.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script>/gi)) {
-    if (!/\bsrc\s*=/.test(m[1]) && m[2].trim()) fail(siteDir, `${rel}: inline <script> is not allowed (CSP). Move it to a .js file.`);
+    if (!/\bsrc\s*=/.test(m[1]) && m[2].trim() && !/type\s*=\s*"application\/ld\+json"/i.test(m[1])) fail(siteDir, `${rel}: inline <script> is not allowed (CSP). Move it to a .js file.`);
   }
   if (/\son[a-z]+\s*=/i.test(src.replace(/<script[\s\S]*?<\/script>/gi, ''))) fail(siteDir, `${rel}: inline event handler attribute (onclick= etc.) is not allowed.`);
   if (/<[a-z][^>]*\sstyle\s*=/i.test(src)) fail(siteDir, `${rel}: inline style="" attribute is not allowed (CSP). Use a class.`);
@@ -112,6 +112,21 @@ function checkSiteJson(siteDir) {
     if (!fs.existsSync(path.join(siteDir, page))) fail(siteDir, `site.json lists tab "${t}" but ${page} does not exist.`);
   }
   for (const k of ['repo', 'contact']) if (!s[k]) warn(siteDir, `site.json: "${k}" is empty.`);
+
+  // Honesty guards for product sites.
+  if (s.id !== 'intellica') {
+    if (!s.status) warn(siteDir, 'site.json: "status" is empty; say where the product stands.');
+    if (!Array.isArray(s.limits) || !s.limits.length) warn(siteDir, 'site.json: "limits" is empty; list what the product does not do yet.');
+    else if (s.limits.some((x) => typeof x !== 'string' || !x.trim())) fail(siteDir, 'site.json: every "limits" entry must be a non-empty string.');
+    const demoFile = path.join(siteDir, 'demo', 'demo.js');
+    const engine = s.demo && s.demo.engine;
+    if (engine && !['wasm', 'trace', 'placeholder'].includes(engine)) fail(siteDir, `site.json: demo.engine must be wasm, trace or placeholder (got "${engine}").`);
+    if (fs.existsSync(demoFile)) {
+      const usesPlaceholder = /placeholder-demo/.test(fs.readFileSync(demoFile, 'utf8'));
+      if (usesPlaceholder && engine && engine !== 'placeholder') fail(siteDir, `demo/demo.js is still the placeholder but site.json says demo.engine is "${engine}". The page would misdescribe the demo.`);
+      if (!usesPlaceholder && engine === 'placeholder') warn(siteDir, 'demo/demo.js is no longer the placeholder: set demo.engine to "wasm" or "trace" in site.json so the label is honest.');
+    }
+  }
 }
 
 function checkDownloads(siteDir) {

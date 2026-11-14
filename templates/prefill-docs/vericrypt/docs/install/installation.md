@@ -7,7 +7,7 @@ Three steps: get the tools, build, try it. About 15 minutes the first time, most
 | You need | Ubuntu, Debian or WSL2 | macOS |
 | --- | --- | --- |
 | Compiler and libraries | `sudo apt update && sudo apt install -y build-essential pkg-config libssl-dev clang git curl unzip` | `xcode-select --install` then `brew install openssl pkg-config` |
-| Rust (current stable) | `curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh` | same |
+| Rust (current stable) | `curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs \| sh` | same |
 
 On Windows use WSL2 with Ubuntu. Native Windows, macOS and ARM are untested.
 

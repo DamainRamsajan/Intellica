@@ -28,3 +28,10 @@
 ## 6.5 Release of a kit change
 
 Edit `site/kit/` here, run `npm run gate`, commit, then copy to product repos (via `npm run sync` or the product repo's copy of the kit) and commit there.
+
+## 6.6 Verify this site
+
+1. The page loads `/site-manifest.json` (written at sync time by `tools/manifest.mjs`).
+2. The browser fetches every listed file with caching off and hashes it with Web Crypto.
+3. It recomputes the root hash from the listed paths and hashes, compares each file, and reports matches or lists the files that differ.
+4. What it proves: the files the visitor received are the files in the manifest (catches corruption, partial updates, stale cache, an edge that rewrites pages). What it does not prove: the manifest is served by the same origin, so a server that changes both is not exposed; the visitor compares the root hash with the one in the public repository.

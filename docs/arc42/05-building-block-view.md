@@ -46,10 +46,26 @@ site/
 | `new-product.mjs` | Scaffolds a product site from the template and a prefill |
 | `import-legacy.mjs` | Copies old pages into `site/legacy/` |
 | `test-markdown.mjs` | Tests for the renderer |
+| `prerender.mjs` | Bakes title, description, canonical and link-preview tags and a no-JavaScript summary into every page; writes sitemap, robots and security.txt |
+| `manifest.mjs` | Writes `site-manifest.json`: SHA-256 of every served file plus a root hash |
+| `browser-test.mjs` | Real-browser audit (Playwright): tabs, demo, docs, accessibility, metadata, verify-this-site |
 
 ## 5.5 Content schemas
+
+Full field list: `docs/CONTENT-SCHEMAS.md`. Per-product hand-back instructions: `docs/briefs/`.
+
 
 - **site.json:** `id`, `name`, `accent`, `tagline`, `tabs`, `status`, `audience[]`, `highlights[]`, `verifyIt`, `demo{title,intro,sampleInput,command}`.
 - **downloads.json:** items with `name`, `platform`, `version`, `url`, `sha256`, `size`.
 - **docs.json:** `groups[]` of `{title, items[{title, md}]}`.
 - **family.json:** home URL, contact, `products[]`, `roles[]`, `standards[]`, `sectors[]`.
+
+## 5.x Training and the online course
+| Block | Responsibility | Where |
+| --- | --- | --- |
+| Training generator | Pages for the index, workshop, guide, register and worked example from `training.json` | `tools/build-training.mjs` |
+| Course builder | Reads the slide deck, makes one lesson per Part, writes the course pages, the scoped slide CSS and the plain or encrypted lesson files | `tools/build-course.mjs`, `site/training/course-layout.css` |
+| Course player | Loads a lesson, decrypts it with the buyer's code, runs the slides, transcript, read-aloud, recall cards and review; stores progress in the browser | `site/training/arc42/course/course.js` |
+| Access-code tool | Makes a code for a buyer from the course key | `tools/course-code.mjs` |
+| Video exporter | Renders a lesson to MP4 with ffmpeg and Chromium | `tools/export-lesson-video.mjs` |
+| Worked example | Doubles-to-Go arc42, app and tests; packed as a download | `training-material/doubles-to-go/`, `tools/pack-example.py` |

@@ -47,5 +47,10 @@
       "q": "cargo is not found in my Codespace.",
       "a": "Run Codespaces: Rebuild Container from the Command Palette."
     }
+  ],
+  "limits": [
+    "It is a walking skeleton: the Period Controller and the Ledger Port. There is no production code and no ERP to run yet.",
+    "The model checks are bounded and use small constants; multi-currency, consolidation, sub-ledger detail, time and concurrency are not modelled.",
+    "The TLA+ and Lean files have not been re-run outside the author's environment."
   ]
 }

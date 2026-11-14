@@ -87,5 +87,11 @@
       "q": "Is the report a compliance certification?",
       "a": "No. VeriCrypt produces an observation-based inventory and findings. It does not certify compliance."
     }
+  ],
+  "limits": [
+    "It produces an observation-based inventory and findings. It is not a compliance certification.",
+    "Not implemented yet: formal proofs, hardware attestation, revocation checking, certificate chain building, TLS version and cipher enumeration, SSH, code scanning, hybrid signatures and trusted timestamps.",
+    "Live TLS probing reads the leaf certificate only.",
+    "Only Ubuntu 24.04 and WSL2 have been tested; macOS, native Windows and ARM are untested."
   ]
 }

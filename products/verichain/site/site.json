@@ -83,5 +83,11 @@
       "q": "Can I run a pilot server on free hosting?",
       "a": "The repository has a pilot runbook for Oracle Cloud Always Free with HTTPS, backups and monitoring. It is for testing only, with no SLA."
     }
+  ],
+  "limits": [
+    "There is no packaged download, hosted service or in-browser verifier yet; you build from source.",
+    "Assurance level A3 (zero-knowledge proof) is research-gated and not available.",
+    "The verifier's WebAssembly build has not been verified, and an independent adversarial review is still pending.",
+    "Completeness depends on how an agent runs: the strongest guarantee (C3) applies to agents hosted on VeriChain; agents running beside it are observed, not guaranteed."
   ]
 }

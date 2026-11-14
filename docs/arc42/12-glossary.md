@@ -12,3 +12,8 @@
 | Diátaxis | Docs grouping: tutorials/how-to (Use), Install, Reference, Explanation (Architecture) |
 | CSP | Content-Security-Policy |
 | ADR | Architecture decision record |
+| Manifest | `site-manifest.json`: hash of every file a site serves, plus a root hash |
+| Root hash | SHA-256 over the sorted list of paths and file hashes |
+| Brief | Self-contained instructions for one product chat, in `docs/briefs/` |
+| Engine label | `wasm`, `trace` or `placeholder`: what the demo honestly is |
+| Trace | A recording of real engine output, replayed in the page |

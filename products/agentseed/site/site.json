@@ -79,5 +79,10 @@
       "q": "Is there an in-browser playground?",
       "a": "The project's own playground says in-browser compilation is coming soon. This site's Demo tab will use it when it exists."
     }
+  ],
+  "limits": [
+    "Its guarantees apply to programs written in ASL, not to existing Python or JavaScript code.",
+    "It is version 0.1.0, and the in-browser compiler is not built yet.",
+    "Packaged installs are still being confirmed; today you build from source."
   ]
 }

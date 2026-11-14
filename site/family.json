@@ -181,5 +181,12 @@
       "title": "Small business",
       "path": "/legacy/smb.html"
     }
+  ],
+  "links": [
+    {
+      "id": "training",
+      "name": "Training",
+      "url": "https://meeting-mind.com/training/"
+    }
   ]
 }

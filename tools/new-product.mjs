@@ -8,12 +8,16 @@ import path from 'node:path';
 import { execFileSync } from 'node:child_process';
 
 const id = process.argv[2];
-if (!id) { console.error('Usage: node tools/new-product.mjs <id> [--out=dir]'); process.exit(1); }
+if (!id) { console.error('Usage: node tools/new-product.mjs <id> [--out=dir] [--force]'); process.exit(1); }
 const outArg = process.argv.find((a) => a.startsWith('--out='));
 const out = path.resolve(outArg ? outArg.slice(6) : path.join('products', id, 'site'));
 const prefillFile = path.join('templates', 'prefill', `${id}.json`);
 if (!fs.existsSync(prefillFile)) { console.error(`No prefill file: ${prefillFile}`); process.exit(1); }
 
+if (fs.existsSync(path.join(out, 'site.json')) && !process.argv.includes('--force')) {
+  console.error(`${out} already has a site.json. Refusing to overwrite finished work. Re-run with --force to regenerate it.`);
+  process.exit(1);
+}
 fs.mkdirSync(out, { recursive: true });
 fs.cpSync(path.join('templates', 'product-site'), out, { recursive: true });
 fs.copyFileSync(path.join('site', 'assets', 'favicon.svg'), path.join(out, 'assets', 'favicon.svg'));
@@ -33,4 +37,5 @@ if (fs.existsSync(docsOverride)) fs.cpSync(docsOverride, out, { recursive: true 
 
 execFileSync('node', ['tools/sync-kit.mjs', out], { stdio: 'inherit' });
 execFileSync('node', ['tools/prerender.mjs', out], { stdio: 'inherit' });
+execFileSync('node', ['tools/manifest.mjs', out], { stdio: 'inherit' });
 console.log(`Scaffolded ${merged.name} -> ${path.relative(process.cwd(), out)}`);

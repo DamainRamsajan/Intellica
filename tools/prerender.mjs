@@ -16,8 +16,8 @@ if (!dirs.length) {
 
 const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 const family = JSON.parse(fs.readFileSync('site/family.json', 'utf8'));
-const TAB_LABEL = { overview: 'Overview', demo: 'Demo', download: 'Download', docs: 'Docs', verify: 'Verify', support: 'Support' };
-const TAB_PATH = { overview: '/', demo: '/demo/', download: '/download/', docs: '/docs/', verify: '/verify/', support: '/support/' };
+const TAB_LABEL = { verifysite: 'Verify this site', overview: 'Overview', demo: 'Demo', download: 'Download', docs: 'Docs', verify: 'Verify', support: 'Support' };
+const TAB_PATH = { verifysite: '/verify-site/', overview: '/', demo: '/demo/', download: '/download/', docs: '/docs/', verify: '/verify/', support: '/support/' };
 
 function siteUrl(site) {
   if (site.id === 'intellica') return family.home.replace(/\/$/, '');
@@ -34,6 +34,7 @@ function describe(site, tab) {
     case 'download': return `Download ${n}, or build it from source, and check the SHA-256 of what you get.`;
     case 'docs': return `${n} documentation: user manual, installation, reference and architecture.`;
     case 'verify': return `How to check ${n}'s results yourself, without trusting Intellica.`;
+    case 'verifysite': return `Check in your browser that every file ${n} served you matches the published manifest.`;
     case 'support': return `Get help with ${n}: contact, known problems and where to report issues.`;
     default: return site.tagline || n;
   }
@@ -63,8 +64,20 @@ function summaryHtml(site, tab, base) {
   return '';
 }
 
+// Structured data for search engines. Only states what the page itself says.
+function jsonLd(site, tab, base, url) {
+  if (tab === 'home') return { '@context': 'https://schema.org', '@type': 'Organization', name: 'Intellica', url: base + '/', description: site.description || site.tagline, email: site.contact || family.contact };
+  if (tab === 'overview') {
+    const d = { '@context': 'https://schema.org', '@type': 'SoftwareApplication', name: site.name, description: site.tagline, url, publisher: { '@type': 'Organization', name: 'Intellica', url: family.home } };
+    if (site.repo) d.codeRepository = site.repo;
+    return d;
+  }
+  return null;
+}
+
 function render(file, site, base) {
   let html = fs.readFileSync(file, 'utf8');
+  if (/data-generated="/.test(html)) return false; // /training/ pages carry their own metadata (tools/build-training.mjs)
   const m = html.match(/<body[^>]*data-tab="([a-z]+)"/);
   if (!m) return false;
   const tab = m[1];
@@ -92,6 +105,10 @@ function render(file, site, base) {
   html = html.replace(/<!-- meta:start -->[\s\S]*?<!-- meta:end -->/, '<meta name="description" content="">');
   html = html.replace(/<meta name="description"[^>]*>/, `<!-- meta:start -->\n  ${meta}\n  <!-- meta:end -->`);
 
+  html = html.replace(/\n?\s*<script type="application\/ld\+json">[\s\S]*?<\/script>/, '');
+  const ld = is404 ? null : jsonLd(site, tab, base, canonical);
+  if (ld) html = html.replace('<!-- meta:end -->', `<!-- meta:end -->\n  <script type="application/ld+json">${JSON.stringify(ld).replace(/</g, '\\u003c')}</script>`);
+
   const summary = summaryHtml(site, tab, base);
   if (summary) {
     html = html.replace(/<noscript[^>]*>[\s\S]*?<\/noscript>/, `<noscript>${summary}</noscript>`);
@@ -110,7 +127,7 @@ for (const dir of dirs) {
   const visit = (d) => {
     for (const e of fs.readdirSync(d, { withFileTypes: true })) {
       const p = path.join(d, e.name);
-      if (e.isDirectory()) { if (!['kit', 'legacy', 'assets', 'node_modules'].includes(e.name)) visit(p); }
+      if (e.isDirectory()) { if (!['kit', 'legacy', 'assets', 'node_modules'].includes(e.name) && !e.name.startsWith('deck-')) visit(p); }
       else if (e.name.endsWith('.html')) pages.push(p);
     }
   };
@@ -120,6 +137,12 @@ for (const dir of dirs) {
 
   const tabs = site.id === 'intellica' ? ['home'] : (site.tabs || Object.keys(TAB_PATH));
   const urls = tabs.map((t) => `${base}${t === 'home' ? '/' : TAB_PATH[t]}`);
+  // generated pages (the /training/ section) are listed too; unlisted folders (deck-*) never are
+  for (const f of pages) {
+    if (!/data-generated="/.test(fs.readFileSync(f, 'utf8'))) continue;
+    const rel = path.relative(root, path.dirname(f)).split(path.sep).join('/');
+    urls.push(`${base}/${rel}${rel ? '/' : ''}`);
+  }
   fs.writeFileSync(path.join(root, 'sitemap.xml'),
     `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.map((u) => `  <url><loc>${u}</loc></url>`).join('\n')}\n</urlset>\n`);
   fs.writeFileSync(path.join(root, 'robots.txt'), `User-agent: *\nAllow: /\n\nSitemap: ${base}/sitemap.xml\n`);

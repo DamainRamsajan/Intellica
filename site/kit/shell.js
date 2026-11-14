@@ -3,9 +3,9 @@
 // Loaded as <script type="module" src="/kit/shell.js"> on every page.
 
 import { $, el, loadJSON, loadText, copyText, safeHref, storage } from './dom.js';
-import { renderMarkdown } from './markdown.js';
+import { renderMarkdown, slugify } from './markdown.js';
 
-export const KIT_VERSION = '0.2.0';
+export const KIT_VERSION = '0.5.0';
 
 const TABS = {
   overview: { label: 'Overview', path: '/' },
@@ -63,11 +63,18 @@ function themeButton() {
 
 function familyMenu(site, family) {
   if (!family) return null;
-  const items = [{ id: 'intellica', name: 'Intellica home', url: family.home }, ...family.products];
+  const items = [{ id: 'intellica', name: 'Intellica home', url: family.home }, ...family.products, ...(family.links || [])];
   return el('details', { class: 'family' },
     el('summary', {}, 'Intellica family'),
     el('ul', {}, items.map((p) =>
       el('li', {}, el('a', { href: p.url, 'aria-current': p.id === site.id ? 'page' : null }, p.name)))));
+}
+
+function primaryNav(site) {
+  const links = site.nav || [];
+  if (!links.length) return null;
+  return el('nav', { class: 'bar-nav', 'aria-label': 'Primary' }, el('ul', {}, links.map((l) =>
+    el('li', {}, el('a', { href: l.href, 'aria-current': location.pathname.startsWith(l.href) ? 'page' : null }, l.label)))));
 }
 
 function renderHeader(site, family, page) {
@@ -77,7 +84,7 @@ function renderHeader(site, family, page) {
   parts.push(el('header', { class: 'shell-header' },
     el('div', { class: 'container bar' },
       el('a', { class: 'brand', href: '/' }, el('span', { class: 'brand-mark', 'aria-hidden': 'true' }), el('span', { class: 'brand-name' }, site.name)),
-      el('div', { class: 'bar-right' }, familyMenu(site, family), themeButton()))));
+      el('div', { class: 'bar-right' }, primaryNav(site), familyMenu(site, family), themeButton()))));
 
   const tabs = (site.tabs || []).filter((t) => TABS[t]);
   if (tabs.length) {
@@ -93,7 +100,7 @@ function renderHeader(site, family, page) {
         site.status ? el('span', { class: 'badge' }, site.status) : null,
         site.version ? el('span', { class: 'muted' }, `Version ${site.version}`) : null)));
   }
-  host.replaceChildren(...parts);
+  host.replaceChildren(...parts.filter(Boolean));
 }
 
 function renderFooter(site, family) {
@@ -103,7 +110,7 @@ function renderFooter(site, family) {
   host.replaceChildren(el('footer', { class: 'shell-footer' },
     el('div', { class: 'container foot' },
       el('p', {}, 'Part of the Intellica family.', contact ? [' ', el('a', { href: `mailto:${contact}` }, contact)] : null),
-      el('p', { class: 'muted' }, `Self-hosted: this site loads nothing from third parties. Kit ${KIT_VERSION}.`))));
+      el('p', { class: 'muted' }, `Self-hosted: this site loads nothing from third parties. Kit ${KIT_VERSION}. `, el('a', { href: '/verify-site/' }, 'Verify this site')))));
 }
 
 /* ---------- page: home (Intellica) ---------- */
@@ -187,13 +194,16 @@ function hydrateOverview(site) {
     parts.push(section('What it does', el('div', { class: 'grid grid-2' }, site.highlights.map((h) =>
       el('article', { class: 'card' }, el('h3', {}, h.title), el('p', { class: 'muted' }, h.text))))));
   }
+  if (site.limits && site.limits.length) {
+    parts.push(section('What it does not do yet', el('ul', { class: 'limits' }, site.limits.map((t) => el('li', {}, t)))));
+  }
   if (site.verifyIt) {
     const next = tabs.includes('demo') ? el('a', { class: 'btn btn-primary', href: '/demo/' }, 'Open the demo')
       : tabs.includes('verify') ? el('a', { class: 'btn btn-primary', href: '/verify/' }, 'Go to Verify') : null;
     parts.push(el('section', { class: 'callout verify' },
       el('h2', {}, 'Verify it yourself'), el('p', {}, site.verifyIt), next ? el('div', { class: 'actions' }, next) : null));
   }
-  root.replaceChildren(...parts);
+  root.replaceChildren(...parts.filter(Boolean));
 }
 
 /* ---------- page: demo ---------- */
@@ -251,7 +261,7 @@ async function hydrateDemo(site) {
       cfg.expected ? [el('p', {}, 'Expected result:'), el('pre', {}, el('code', {}, cfg.expected))] : null,
       el('div', { class: 'actions' }, copy)));
   }
-  root.replaceChildren(...parts);
+  root.replaceChildren(...parts.filter(Boolean));
   await start();
 }
 
@@ -311,7 +321,7 @@ async function hydrateDownload(site) {
       el('p', {}, 'Compare the SHA-256 of the file you received with the value in the table.'),
       el('pre', {}, el('code', {}, 'macOS:    shasum -a 256 <file>\nLinux:    sha256sum <file>\nWindows:  Get-FileHash <file> -Algorithm SHA256'))));
   }
-  root.replaceChildren(...parts);
+  root.replaceChildren(...parts.filter(Boolean));
 }
 
 /* ---------- page: docs ---------- */
@@ -338,6 +348,9 @@ async function hydrateDocs(site) {
       el('ul', {}, g.items.map((i) => el('li', {}, el('a', { href: `?d=${encodeURIComponent(i.md)}`, 'aria-current': i.md === entry.md ? 'page' : null }, i.title)))))));
 
   const article = el('article', { class: 'prose' });
+  const searchBox = el('div', { class: 'docs-searchbox' });
+  nav.prepend(searchBox);
+  buildSearch(flat, searchBox);
   root.replaceChildren(el('div', { class: 'docs-layout' }, nav, article));
   document.title = `${entry.title} · ${site.name} docs`;
 
@@ -358,11 +371,87 @@ async function hydrateDocs(site) {
     const { rel } = docsRelative(img.getAttribute('src'), docDir);
     img.setAttribute('src', `./${rel}`);
   });
+  addCopyButtons(article);
   const heads = [...article.querySelectorAll('h2, h3')];
   if (heads.length > 3) {
     article.prepend(el('details', { class: 'toc' }, el('summary', {}, 'On this page'),
       el('ul', {}, heads.map((h) => el('li', { class: h.tagName === 'H3' ? 'sub' : '' }, el('a', { href: `#${h.id}` }, h.textContent))))));
   }
+}
+
+/* docs: copy buttons on code blocks */
+function addCopyButtons(article) {
+  article.querySelectorAll('pre').forEach((pre) => {
+    const wrap = el('div', { class: 'code-block' });
+    pre.replaceWith(wrap);
+    const btn = el('button', { type: 'button', class: 'code-copy', 'aria-label': 'Copy code' }, 'Copy');
+    btn.addEventListener('click', async () => {
+      btn.textContent = (await copyText(pre.textContent)) ? 'Copied' : 'Failed';
+      setTimeout(() => { btn.textContent = 'Copy'; }, 1800);
+    });
+    wrap.append(pre, btn);
+  });
+}
+
+/* docs: search across every page of the manual (built in the browser, nothing is sent anywhere) */
+function sectionsOf(file, md) {
+  const out = [];
+  const seen = new Map();
+  let cur = { heading: '', id: '', text: [] };
+  let inFence = false;
+  const push = () => { if (cur.heading || cur.text.length) out.push({ file, heading: cur.heading, id: cur.id, text: cur.text.join(' ') }); };
+  for (const line of md.split('\n')) {
+    if (/^\s*```/.test(line)) { inFence = !inFence; cur.text.push(''); continue; }
+    const h = !inFence && line.match(/^(#{1,6})\s+(.*?)\s*#*\s*$/);
+    if (h) {
+      push();
+      const base = slugify(h[2]);
+      const n = seen.get(base) || 0; seen.set(base, n + 1);
+      cur = { heading: h[2], id: n ? `${base}-${n}` : base, text: [] };
+    } else cur.text.push(line.replace(/[`*_>#]/g, '').replace(/\|/g, ' ').replace(/\s+/g, ' ').trim());
+  }
+  push();
+  return out;
+}
+
+function buildSearch(flat, host) {
+  const input = el('input', { type: 'search', id: 'docs-search', class: 'docs-search', placeholder: 'Search the docs', autocomplete: 'off' });
+  const label = el('label', { for: 'docs-search', class: 'sr-only' }, 'Search the docs');
+  const out = el('div', { class: 'docs-results', role: 'region', 'aria-label': 'Search results', 'aria-live': 'polite' });
+  host.append(label, input, out);
+  let sections = null;
+  const load = async () => {
+    if (sections) return sections;
+    sections = [];
+    await Promise.all(flat.map(async (e) => {
+      try { sections.push(...sectionsOf(e.md, await loadText(`./${e.md}`)).map((s) => ({ ...s, title: e.title }))); } catch { /* skip */ }
+    }));
+    return sections;
+  };
+  const run = async () => {
+    const q = input.value.trim().toLowerCase();
+    if (q.length < 2) { out.replaceChildren(); return; }
+    const words = q.split(/\s+/);
+    const hits = (await load())
+      .map((s) => { const hay = `${s.heading} ${s.text}`.toLowerCase(); if (!words.every((w) => hay.includes(w))) return null; return { s, score: words.reduce((n, w) => n + (s.heading.toLowerCase().includes(w) ? 5 : 0) + (hay.split(w).length - 1), 0) }; })
+      .filter(Boolean).sort((a, b) => b.score - a.score).slice(0, 8);
+    if (!hits.length) { out.replaceChildren(el('p', { class: 'muted' }, 'No matches.')); return; }
+    out.replaceChildren(el('ul', {}, hits.map(({ s }) => {
+      const i = s.text.toLowerCase().indexOf(words[0]);
+      let snippet = '';
+      if (i >= 0) {
+        let a = Math.max(0, i - 40);
+        if (a > 0) { const sp = s.text.indexOf(' ', a); a = sp > -1 && sp < i ? sp + 1 : a; }
+        let b = Math.min(s.text.length, i + 100);
+        if (b < s.text.length) { const sp = s.text.lastIndexOf(' ', b); b = sp > i ? sp : b; }
+        snippet = (a > 0 ? '… ' : '') + s.text.slice(a, b).trim() + (b < s.text.length ? ' …' : '');
+      } else snippet = s.text.slice(0, 120).trim();
+      return el('li', {}, el('a', { href: `?d=${encodeURIComponent(s.file)}${s.id ? '#' + s.id : ''}` }, `${s.title}${s.heading ? ': ' + s.heading : ''}`), el('span', { class: 'muted' }, ` ${snippet}`));
+    })));
+  };
+  let timer;
+  input.addEventListener('input', () => { clearTimeout(timer); timer = setTimeout(run, 120); });
+  input.addEventListener('focus', load, { once: true });
 }
 
 /* ---------- page: verify (markdown) ---------- */
@@ -394,6 +483,56 @@ function hydrateSupport(site, family) {
   else if (issues) { issues.closest('li')?.setAttribute('hidden', ''); }
 }
 
+
+/* ---------- page: verify this site ---------- */
+
+async function sha256Hex(buf) {
+  return [...new Uint8Array(await crypto.subtle.digest('SHA-256', buf))].map((b) => b.toString(16).padStart(2, '0')).join('');
+}
+
+async function hydrateVerifySite() {
+  const root = $('#verify-site-root');
+  if (!root) return;
+  const status = el('p', { role: 'status', class: 'muted' }, 'Loading the manifest…');
+  const results = el('div', {});
+  root.replaceChildren(status, results);
+  let manifest;
+  try { manifest = await loadJSON('/site-manifest.json'); }
+  catch (err) { status.replaceWith(el('p', { class: 'callout bad' }, `The manifest could not be loaded: ${err.message}`)); return; }
+
+  const files = Object.entries(manifest.files);
+  const bad = [];
+  let done = 0;
+  const rootInput = files.map(([path, hash]) => `${path}\t${hash}\n`).join('');
+  const computedRoot = await sha256Hex(new TextEncoder().encode(rootInput));
+  const rootOk = computedRoot === manifest.root;
+
+  await Promise.all(files.map(async ([path, expected]) => {
+    try {
+      const res = await fetch(path, { cache: 'no-store' });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const actual = await sha256Hex(await res.arrayBuffer());
+      if (actual !== expected) bad.push({ path, expected, actual });
+    } catch (err) { bad.push({ path, expected, actual: `could not fetch (${err.message})` }); }
+    done++;
+    status.textContent = `Checked ${done} of ${files.length} files…`;
+  }));
+
+  const ok = !bad.length && rootOk;
+  status.replaceWith(el('p', { role: 'status', class: ok ? 'callout good' : 'callout bad' },
+    ok ? `All ${files.length} files match the manifest.` : `${bad.length} file(s) do not match the manifest${rootOk ? '' : ', and the manifest root does not match its own list'}.`));
+  const rows = bad.map((b) => el('tr', {}, el('td', {}, el('code', {}, b.path)), el('td', {}, el('code', {}, b.expected.slice(0, 16) + '…')), el('td', {}, el('code', {}, String(b.actual).slice(0, 40)))));
+  results.replaceChildren(...[
+    bad.length ? el('div', { class: 'table-wrap' }, el('table', {}, el('thead', {}, el('tr', {}, el('th', {}, 'File'), el('th', {}, 'Expected'), el('th', {}, 'Received'))), el('tbody', {}, rows))) : null,
+    section('Manifest root',
+      el('p', {}, 'One SHA-256 over every path and hash, in sorted order:'),
+      el('pre', {}, el('code', {}, manifest.root)),
+      el('p', { class: 'muted' }, `${files.length} files. Kit ${manifest.kit}.`)),
+    section('What this proves, and what it does not',
+      el('p', {}, 'Your browser fetched each file from this server and hashed it itself. A match means the files you received are the files the manifest lists, which catches corruption, partial updates and a stale cache.'),
+      el('p', {}, 'The manifest comes from the same server, so on its own it cannot expose a server that changes both. For that, compare the root above with the root in the public repository, in ', el('code', {}, 'site-manifest.json'), ' at the same commit.'))].filter(Boolean));
+}
+
 /* ---------- boot ---------- */
 
 const HYDRATE = {
@@ -404,6 +543,7 @@ const HYDRATE = {
   docs: hydrateDocs,
   verify: hydrateMarkdownPage,
   support: hydrateSupport,
+  verifysite: hydrateVerifySite,
 };
 
 async function main() {
@@ -413,9 +553,12 @@ async function main() {
     applyBrand(site);
     renderHeader(site, family, page);
     renderFooter(site, family);
+    document.documentElement.setAttribute('data-shell', 'true');
     if (HYDRATE[page]) await HYDRATE[page](site, family);
     document.documentElement.setAttribute('data-ready', 'true');
   } catch (err) {
+    document.documentElement.setAttribute('data-shell', 'true');
+    document.documentElement.setAttribute('data-ready', 'true');
     const main = $('#main');
     if (main) main.prepend(el('p', { class: 'callout bad' }, `This page could not finish loading: ${err.message}`));
   }

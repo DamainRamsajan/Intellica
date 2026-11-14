@@ -8,5 +8,11 @@
   "repo": "https://github.com/intellica-ai-llc/intellica",
   "tabs": [],
   "contact": "dpramsajan@meeting-mind.com",
-  "description": "Intellica builds systems whose results you can check yourself: VeriChain, VeriCrypt, Sovereign ERP, OMC and AgentSeed."
+  "description": "Intellica builds systems whose results you can check yourself: VeriChain, VeriCrypt, Sovereign ERP, OMC and AgentSeed.",
+  "nav": [
+    {
+      "label": "Training",
+      "href": "/training/"
+    }
+  ]
 }

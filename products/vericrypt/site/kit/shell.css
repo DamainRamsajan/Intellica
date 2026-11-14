@@ -33,7 +33,7 @@ code, pre { font-family: var(--font-mono); font-size: 0.9em; }
 #shell-header { min-height: 114px; }
 .shell-header { background: var(--surface); border-bottom: 1px solid var(--line); }
 .bar { display: flex; align-items: center; justify-content: space-between; gap: var(--s4); min-height: 64px; }
-.bar-right { display: flex; align-items: center; gap: var(--s3); }
+.bar-right { display: flex; align-items: center; flex-wrap: wrap; justify-content: flex-end; gap: var(--s2) var(--s3); min-width: 0; }
 .brand { display: inline-flex; align-items: center; gap: var(--s3); color: var(--text-hi); text-decoration: none; font-weight: 650; font-size: var(--text-lg); min-height: 44px; }
 .brand:hover { color: var(--text-hi); }
 .brand-mark { width: 14px; height: 14px; border-radius: 4px; background: var(--accent); box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 22%, transparent); }
@@ -93,6 +93,7 @@ code, pre { font-family: var(--font-mono); font-size: 0.9em; }
 .callout { padding: var(--s5); border: 1px solid var(--line-hi); border-left: 4px solid var(--accent); border-radius: var(--r); background: var(--card); }
 .callout.verify { margin-top: var(--s7); }
 .callout.bad { border-left-color: var(--bad); }
+.callout.good { border-left-color: var(--good); }
 .callout h2 { margin-bottom: var(--s2); }
 .callout p:last-of-type { margin-bottom: 0; }
 
@@ -175,3 +176,41 @@ pre { margin: var(--s4) 0; padding: var(--s4); overflow-x: auto; border-radius: 
   a[href^="http"]::after { content: " (" attr(href) ")"; font-size: 0.85em; }
   pre, .card, table { break-inside: avoid; }
 }
+
+.limits { padding-left: 1.2em; }
+.limits li { margin-block: var(--s2); color: var(--text); }
+
+/* docs search and code copy */
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.docs-search { width: 100%; min-height: 44px; padding: 0 var(--s3); border: 1px solid var(--line-hi); border-radius: var(--r); background: var(--card); color: var(--text); font: inherit; }
+.docs-results ul { list-style: none; padding: 0; margin: var(--s3) 0; font-size: 0.9rem; }
+.docs-results li { margin-block: var(--s2); }
+.docs-results a { display: block; font-weight: 600; }
+.docs-searchbox { margin-bottom: var(--s4); }
+.code-block { position: relative; }
+.code-copy { position: absolute; top: var(--s2); right: var(--s2); min-height: 32px; min-width: 56px; padding: 0 var(--s3); border: 1px solid var(--line-hi); border-radius: var(--r); background: var(--card); color: var(--text); font: inherit; font-size: 0.8rem; cursor: pointer; }
+@media print { .code-copy, .docs-searchbox { display: none !important; } }
+
+/* No layout shift while the shell builds the header: the page body is not painted until the header exists,
+   and the footer waits until the page is hydrated. Both have a time limit so a failure never leaves a blank page.
+   Without JavaScript this rule does not apply. */
+@media (scripting: enabled) {
+  html:not([data-shell]) main { visibility: hidden; animation: iw-reveal 0s 2.5s forwards; }
+  html:not([data-ready]) #shell-footer { visibility: hidden; animation: iw-reveal 0s 4s forwards; }
+}
+@keyframes iw-reveal { to { visibility: visible; } }
+
+/* primary links in the header (home only) */
+.bar-nav ul { display: flex; gap: var(--s1); margin: 0; padding: 0; list-style: none; }
+.bar-nav a { display: inline-flex; align-items: center; min-height: 44px; padding: 0 var(--s3); color: var(--text); text-decoration: none; border-bottom: 3px solid transparent; }
+.bar-nav a:hover { color: var(--text-hi); }
+.bar-nav a[aria-current="page"] { color: var(--text-hi); border-bottom-color: var(--accent); font-weight: 600; }
+
+/* fonts:start (written by tools/install-fonts.mjs) */
+@font-face { font-family: "IBM Plex Sans"; font-style: normal; font-weight: 400; font-display: swap; src: url("/assets/fonts/ibm-plex-sans-latin-400-normal.woff2") format("woff2"); }
+@font-face { font-family: "IBM Plex Sans"; font-style: normal; font-weight: 500; font-display: swap; src: url("/assets/fonts/ibm-plex-sans-latin-500-normal.woff2") format("woff2"); }
+@font-face { font-family: "IBM Plex Sans"; font-style: normal; font-weight: 600; font-display: swap; src: url("/assets/fonts/ibm-plex-sans-latin-600-normal.woff2") format("woff2"); }
+@font-face { font-family: "Bricolage Grotesque"; font-style: normal; font-weight: 600; font-display: swap; src: url("/assets/fonts/bricolage-grotesque-latin-600-normal.woff2") format("woff2"); }
+@font-face { font-family: "Bricolage Grotesque"; font-style: normal; font-weight: 800; font-display: swap; src: url("/assets/fonts/bricolage-grotesque-latin-800-normal.woff2") format("woff2"); }
+:root { --font-sans: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; }
+/* fonts:end */

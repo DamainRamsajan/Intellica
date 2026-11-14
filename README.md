@@ -24,4 +24,9 @@ The Intellica web system: company home, shared kit, product-site template, tools
 
 Every site (home and five products) looks and behaves the same: same header, tabs, footer, colors, theme button, docs viewer. That shared code is the kit: a handful of files in `site/kit/`. Because each product lives in its own repo and deploys on its own, each repo holds its own copy. `npm run sync` copies the master kit into the product folders here, and the checker warns if a copy was edited by hand.
 
+- `docs/briefs/` has one self-contained brief per product chat; `docs/CONTENT-SCHEMAS.md` has every field.
+
 See `INSTALL.md`, `CHECKPOINTS.md`, `CONTENT-TODO.md`.
+
+## Training
+`site/training/` holds the Training section (arc42 in a Day). Edit `site/training/training.json`, then `npm run sync`. The private slides live in the unlisted `deck-*` folder; see INSTALL.md.

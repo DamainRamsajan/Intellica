@@ -68,5 +68,11 @@
       "q": "Which signatures are used?",
       "a": "Ed25519 only today. Post-quantum signing and transparency-service registration are on the backlog."
     }
+  ],
+  "limits": [
+    "Every result so far comes from synthetic data; nothing has been validated on real tickets.",
+    "The statistical bounds assume cases come from a fixed distribution over the audit window; drift can invalidate a certificate.",
+    "The bounds are valid but conservative, so close calls are held rather than promoted.",
+    "The statistics are the author's own implementation and need independent statistical review."
   ]
 }
