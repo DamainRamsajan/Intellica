@@ -6,7 +6,7 @@
 - **Cloudflare Pages**, one project per repo. A custom domain can attach to only one Pages project at a time.
 - **Static output.** Plain HTML, CSS and ES modules. No framework, no build step for content. Output directory `site`.
 - **No third-party loads** on the new pages (strict CSP). Fonts are system fonts.
-- **Email DNS records** (MX, TXT) for `dpramsajan@meeting-mind.com` must be preserved.
+- **Email DNS records** (MX, TXT) for the company email address must be preserved.
 - **Zero-cost tooling.** Node 20+ for local tools only; Playwright is a dev dependency for the browser check; nothing is needed at deploy time.
 
 ## 2.2 Organisational

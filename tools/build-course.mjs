@@ -19,7 +19,8 @@ import vm from 'node:vm';
 import crypto from 'node:crypto';
 
 export const SITE = path.resolve('site');
-const KEYFILE = path.resolve('.course-key');
+// Always next to package.json, wherever the command is run from, so a key is never silently re-created elsewhere.
+const KEYFILE = path.resolve(path.dirname(new URL(import.meta.url).pathname), '..', '.course-key');
 
 const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 const b64u = (buf) => Buffer.from(buf).toString('base64url');

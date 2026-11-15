@@ -1,6 +1,16 @@
 # Checkpoints
 
-## Checkpoint 12 (current, not yet uploaded): fonts
+## Checkpoint 13 (current): professional identity
+Includes checkpoint 12. Kit 0.6.0.
+- No personal name or email address is displayed anywhere. Contact is a WhatsApp button labelled "Contact sales" (icon plus label; the number is only in the link). Facilitator is described by role.
+- "Intellica family" is now "Systems".
+- New I-beam logo mark and favicon; IBM Plex Sans and IBM Plex Mono (run `npm run fonts` again after unzipping).
+- Square-cornered engineering style, mono labels, drafting grid, new footer.
+- Home: animated system map of the five systems and a live panel in which the page re-hashes its own files against the public manifest.
+- Motion (scroll reveal, page transitions) only where the browser supports it and never when reduced motion is requested.
+- Remaining: security.txt and the booking mailto keep the company address in link targets (not displayed).
+
+## Checkpoint 12 (superseded by 13): fonts
 Includes checkpoint 11. Adds `npm run fonts`, which self-hosts IBM Plex Sans and Bricolage Grotesque (the typefaces of the original workshop page). Run it once in the Codespace; `node tools/install-fonts.mjs --remove` undoes it.
 
 ## Checkpoint 11 (superseded by 12): the online course, made visible and rebuilt

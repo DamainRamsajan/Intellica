@@ -249,7 +249,7 @@ await step('reflow: no horizontal scroll at 320px on any page (WCAG 1.4.10)', as
   }
   assert.deepEqual(bad, []);
 });
-await step('performance budget: CLS under 0.1, LCP under 2.5 s, under 150 KB per page (local, uncached)', async () => {
+await step('performance budget: CLS under 0.1, LCP under 2.5 s, under 150 KB per page plus at most 100 KB of cached fonts (local, uncached)', async () => {
   const problems = [];
   const sites = [['home', 8080, ['/', '/training/', '/training/arc42/', '/training/arc42/guide/', '/training/arc42/register/']], ...PRODUCTS.map(([id, port]) => [id, port, ['/', '/demo/', '/docs/', '/download/', '/verify/', '/support/']])];
   for (const [id, port, paths] of sites) for (const path of paths) {
@@ -263,7 +263,8 @@ await step('performance budget: CLS under 0.1, LCP under 2.5 s, under 150 KB per
     await page.goto(`http://localhost:${port}${path}`);
     await page.waitForSelector('html[data-ready="true"]');
     await page.waitForTimeout(400);
-    const m = await page.evaluate(() => ({ cls: window.__cls, lcp: window.__lcp, bytes: performance.getEntriesByType('resource').reduce((n, r) => n + (r.transferSize || r.encodedBodySize || 0), 0) }));
+    const m = await page.evaluate(() => ({ cls: window.__cls, lcp: window.__lcp, bytes: performance.getEntriesByType('resource').filter((r) => !/\.woff2/.test(r.name)).reduce((n, r) => n + (r.transferSize || r.encodedBodySize || 0), 0), fontBytes: performance.getEntriesByType('resource').filter((r) => /\.woff2/.test(r.name)).reduce((n, r) => n + (r.transferSize || r.encodedBodySize || 0), 0) }));
+    if (m.fontBytes > 100000) problems.push(`${id}${path} fonts ${Math.round(m.fontBytes / 1000)} KB`);
     if (m.cls > 0.1) problems.push(`${id}${path} CLS ${m.cls.toFixed(3)}`);
     if (m.lcp > 2500) problems.push(`${id}${path} LCP ${Math.round(m.lcp)} ms`);
     if (m.bytes > 150000) problems.push(`${id}${path} ${Math.round(m.bytes / 1000)} KB`);

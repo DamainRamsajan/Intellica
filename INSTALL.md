@@ -25,7 +25,7 @@ The site itself needs no dependencies; only the browser check does. `npm run gat
 npm run fonts
 npm run verify
 ```
-This downloads IBM Plex Sans and Bricolage Grotesque (both free, SIL Open Font License) from npm, copies them into `site/assets/fonts/` and switches the site to them. Nothing is loaded from a third party at run time. If `verify` fails on the page-weight check, tell me the line it prints. To undo: `node tools/install-fonts.mjs --remove` then `npm run sync`.
+This downloads IBM Plex Sans and IBM Plex Mono (both free, SIL Open Font License) from npm, copies them into `site/assets/fonts/` and switches the site to them. Nothing is loaded from a third party at run time. If `verify` fails on the page-weight check, tell me the line it prints. To undo: `node tools/install-fonts.mjs --remove` then `npm run sync`.
 
 ## 3. Look at it
 ```

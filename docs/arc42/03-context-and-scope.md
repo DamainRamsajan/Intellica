@@ -16,7 +16,7 @@ Visitor ──> intellica home (meeting-mind.com)
 | Visitor | Pages, demos, downloads, docs |
 | Product repo | Provides engine (WASM or trace), binaries, docs markdown, `site.json` |
 | Intellica repo | Provides kit, `family.json`, home page, legacy pages |
-| Email (`dpramsajan@meeting-mind.com`) | Contact channel (mailto links) |
+| Email (the company email address) | Contact channel (mailto links) |
 
 ## 3.2 Technical context
 

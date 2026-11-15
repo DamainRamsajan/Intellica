@@ -89,5 +89,6 @@
     "Assurance level A3 (zero-knowledge proof) is research-gated and not available.",
     "The verifier's WebAssembly build has not been verified, and an independent adversarial review is still pending.",
     "Completeness depends on how an agent runs: the strongest guarantee (C3) applies to agents hosted on VeriChain; agents running beside it are observed, not guaranteed."
-  ]
+  ],
+  "whatsapp": "18687195236"
 }

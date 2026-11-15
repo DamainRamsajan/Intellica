@@ -197,7 +197,7 @@ body[data-section] main.tr {
 }
 
 /* fonts:start (written by tools/install-fonts.mjs) */
-body[data-section] main.tr { --serif: "Bricolage Grotesque", "Iowan Old Style", Georgia, serif; }
-.tr h1, .tr h2 { font-weight: 800; letter-spacing: -0.02em; }
+body[data-section] main.tr { --serif: "IBM Plex Sans", system-ui, sans-serif; }
+.tr h1, .tr h2 { font-weight: 600; letter-spacing: -0.02em; }
 .twelve .num { font-style: normal; }
 /* fonts:end */

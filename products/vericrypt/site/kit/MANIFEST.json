@@ -1,13 +1,13 @@
 {
-  "version": "0.5.0",
+  "version": "0.6.0",
   "files": {
-    "VERSION": "a0ad50640139a524f86591157145bf1d4674ea9c065bfea21558f0f7b04430c8",
+    "VERSION": "97a5d6e540a6120d09c39ddb667e0e8e2bac7fcc2ffef813b82e08fd60365bce",
     "dom.js": "8838b21a934b34e633b3aac5d6f4f414b50dabedb365b1e173f1070fcc78335f",
     "markdown.js": "33718b2a4721fd9490607a42fb7760ae0766d880e353e264c67deda06e868f8e",
     "placeholder-demo.js": "dd8916945752f84b81696a60c0b9571f9a07b2e036cb32bdbde93d9ef2cb0876",
-    "shell.css": "e6010575305b865a1e70d5ef40c9f5d432ee3a6402baedd10c87540046e02812",
-    "shell.js": "f0d44451f8bfbaa4d074e6bdac06bdbe4e9ee703f6d905834d97f1a8abae23c9",
+    "shell.css": "99fd88ebe2cd081fb227b7d78cc0dbf6f38ea7a420f6952df21630081aa61dc0",
+    "shell.js": "6fc9ddd16feec7fd22bf3d134d0e4deb72098cb434844b26837dadcecba54f0c",
     "theme-init.js": "43879408d3455bee34c871eee86b734171df14ace5f35bcfe5578c710e79b049",
-    "tokens.css": "f1238eeb15aed46459e4443158d35de3029736c2269c8793e20da56a48e87f0d"
+    "tokens.css": "03cf5d51daf790e4c1e0879148148a24d191ff24471c42abacb5e91069fb676c"
   }
 }

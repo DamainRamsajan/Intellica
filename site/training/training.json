@@ -369,9 +369,9 @@
       ],
       "whoNote": "Already fluent in arc42? Expect a quick pass through the template, with the depth in contracts, quality scenarios, the AI lab and agent-readable documentation.",
       "facilitator": {
-        "name": "Damian Ramsajan",
-        "aka": "Also written Damain P. Ramsajan",
-        "role": "Solution architect and workshop facilitator, founder of Intellica AI",
+        "name": "A practising architect",
+        "aka": "",
+        "role": "Solution architect and workshop facilitator, Intellica",
         "facts": [
           "30+ years in ICT",
           "Workshop facilitator for decades",
@@ -380,13 +380,8 @@
           "MSc, Strategic Business IT (Portsmouth)",
           "PGDip, Software Engineering (Aston)"
         ],
-        "bio": "Damian has spent three decades turning complicated software and process ideas into things teams can actually use. As a solution architect he has worked across Oracle, IBM, Microsoft, EMC, HP, Cisco and NetApp platforms on major system implementations throughout the Caribbean, and he has been explaining difficult concepts in workshops for decades, including three years lecturing computer science in the mid-2000s. Today he runs Intellica AI, designing and operating production AI systems documented with arc42, C4 and architecture decision records, so that any team can pick up the build on day one.",
-        "links": [
-          [
-            "GitHub",
-            "https://github.com/DamainRamsajan"
-          ]
-        ]
+        "bio": "Your facilitator has spent three decades turning complicated software and process ideas into things teams can actually use. As a solution architect, they have worked across Oracle, IBM, Microsoft, EMC, HP, Cisco and NetApp platforms on major system implementations throughout the Caribbean, and have explained difficult concepts in workshops for decades, including three years lecturing computer science in the mid-2000s. Today they lead Intellica’s work designing and operating production AI systems documented with arc42, C4 and architecture decision records, so that any team can pick up the build on day one.",
+        "links": []
       },
       "faq": [
         {

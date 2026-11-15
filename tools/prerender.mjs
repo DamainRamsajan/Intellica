@@ -88,7 +88,14 @@ function render(file, site, base) {
   const pagePath = TAB_PATH[tab] || '/';
   const canonical = base && !is404 ? `${base}${tab === 'home' ? '/' : pagePath}` : '';
 
+  // Preload the two text weights when the fonts are installed, so the page paints once in its final font.
+  const siteRoot = path.resolve(dirs.find((d) => file.startsWith(path.resolve(d))) || '.');
+  const preload = ['ibm-plex-sans-latin-400-normal', 'ibm-plex-sans-latin-600-normal']
+    .filter((n) => fs.existsSync(path.join(siteRoot, 'assets', 'fonts', `${n}.woff2`)))
+    .map((n) => `<link rel="preload" href="/assets/fonts/${n}.woff2" as="font" type="font/woff2" crossorigin>`);
+
   const meta = [
+    ...preload,
     `<meta name="description" content="${esc(desc)}">`,
     is404 ? '<meta name="robots" content="noindex">' : null,
     `<meta name="theme-color" content="${esc(site.accent || '#00C8FF')}">`,

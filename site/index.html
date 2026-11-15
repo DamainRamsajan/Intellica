@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Intellica: systems you can verify without trusting us</title>
   <!-- meta:start -->
+  <link rel="preload" href="/assets/fonts/ibm-plex-sans-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="/assets/fonts/ibm-plex-sans-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin>
   <meta name="description" content="Intellica builds systems whose results you can check yourself: VeriChain, VeriCrypt, Sovereign ERP, OMC and AgentSeed.">
   <meta name="theme-color" content="#00C8FF">
   <link rel="canonical" href="https://meeting-mind.com/">
@@ -28,12 +30,22 @@
 
   <main id="main" class="container">
     <section class="hero">
-      <p class="eyebrow">Intellica</p>
-      <h1>Systems you can verify without trusting us.</h1>
-      <p class="lead">Intellica builds software for places where a claim is not enough: what autonomous agents did, whether an estate is ready for post-quantum cryptography, what AI work is worth, and whether the books follow their rules. Each product is built around evidence you can check yourself.</p>
-      <div class="actions">
-        <a class="btn btn-primary" href="#roles">Start from your role</a>
-        <a class="btn btn-ghost" href="#products">See the products</a>
+      <div class="hero-copy">
+        <p class="eyebrow">Intellica · AI engineering</p>
+        <h1>Systems you can verify without trusting us.</h1>
+        <p class="lead">Intellica builds software for places where a claim is not enough: what autonomous agents did, whether an estate is ready for post-quantum cryptography, what AI work is worth, and whether the books follow their rules. Every result comes with a way to check it yourself.</p>
+        <div class="actions">
+          <a class="btn btn-primary" href="#products">Explore the systems</a>
+          <a class="btn btn-ghost" href="#roles">Start from your role</a>
+        </div>
+      </div>
+      <div class="hero-visual">
+        <div class="sysmap" id="system-map"><noscript><p class="muted">The systems are listed below.</p></noscript></div>
+        <div class="proof" id="proof" data-state="running" aria-live="polite">
+          <h2 class="proof-h"><span class="proof-dot" aria-hidden="true"></span>This page is checking itself</h2>
+          <ul class="pr-list" id="proof-out"></ul>
+          <p id="proof-summary">Recomputing the site manifest in your browser…</p>
+        </div>
       </div>
     </section>
 
@@ -44,7 +56,7 @@
     </section>
 
     <section class="block" id="products" aria-labelledby="products-title">
-      <h2 id="products-title">The products</h2>
+      <h2 id="products-title">The systems</h2>
       <div id="family-cards" class="grid grid-2"></div>
     </section>
 
@@ -90,7 +102,8 @@
 
     <section class="block" id="contact" aria-labelledby="contact-title">
       <h2 id="contact-title">Talk to us</h2>
-      <p>Questions, a pilot, or a partnership: <a id="contact-link" href="mailto:dpramsajan@meeting-mind.com">dpramsajan@meeting-mind.com</a></p>
+      <p>Questions, a pilot, or a partnership? Our sales team replies on WhatsApp.</p>
+      <div class="actions"><a id="contact-link" class="btn btn-primary" href="https://wa.me/18687195236?text=Hello%2C%20I%27d%20like%20to%20speak%20to%20sales.">Contact sales</a></div>
     </section>
   </main>
 

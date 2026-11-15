@@ -125,7 +125,7 @@ function eventLd(w) {
     eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
     location: { '@type': 'Place', name: w.venue, address: { '@type': 'PostalAddress', addressLocality: w.region, addressCountry: w.country } },
     organizer: { '@type': 'Organization', name: 'Intellica', url: base + '/' },
-    performer: { '@type': 'Person', name: w.facilitator.name },
+    performer: { '@type': 'Organization', name: 'Intellica' },
     offers: { '@type': 'Offer', url: base + w.path + 'register/', price: String(w.price.amount), priceCurrency: w.price.currency, validThrough: w.price.earlyUntil, availability: 'https://schema.org/InStock' },
   };
 }
@@ -147,7 +147,7 @@ ${subnav(w, '')}
           <a class="btn btn-primary" href="${w.path}register/">Reserve a seat</a>
           <a class="btn btn-ghost" href="#day">See the day</a>
         </div>
-        <p class="fine">Led by ${esc(w.facilitator.name)}, ${esc(w.facilitator.role.charAt(0).toLowerCase() + w.facilitator.role.slice(1))}.</p>
+        <p class="fine">Led by a ${esc(w.facilitator.role.charAt(0).toLowerCase() + w.facilitator.role.slice(1))}.</p>
       </div>
       ${factsheet(w)}
     </section>
@@ -232,10 +232,8 @@ ${subnav(w, '')}
       ${kicker(++n, 'Your facilitator')}
       <h2 id="fac-t">${esc(w.facilitator.name)}</h2>
       <p class="role">${esc(w.facilitator.role)}</p>
-      <p class="muted aka">${esc(w.facilitator.aka)}</p>
       <ul class="facts">${w.facilitator.facts.map((f) => `<li>${esc(f)}</li>`).join('')}</ul>
       <p class="bio">${esc(w.facilitator.bio)}</p>
-      <p>${w.facilitator.links.map(([l, u]) => `<a href="${esc(u)}" rel="noopener">${esc(l)}</a>`).join(' \u00B7 ')}</p>
     </section>
 
     <section class="t-cta" aria-labelledby="cta-t">

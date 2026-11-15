@@ -5,7 +5,7 @@
 import { $, el, loadJSON, loadText, copyText, safeHref, storage } from './dom.js';
 import { renderMarkdown, slugify } from './markdown.js';
 
-export const KIT_VERSION = '0.5.0';
+export const KIT_VERSION = '0.6.0';
 
 const TABS = {
   overview: { label: 'Overview', path: '/' },
@@ -47,8 +47,8 @@ const THEMES = ['auto', 'light', 'dark'];
 function themeButton() {
   let mode = storage.get('iw-theme');
   mode = THEMES.includes(mode) ? mode : 'auto';
-  const btn = el('button', { type: 'button', class: 'btn btn-ghost theme-btn' });
-  const paint = () => { btn.textContent = `Theme: ${mode}`; btn.setAttribute('aria-label', `Colour theme: ${mode}. Activate to change.`); };
+  const btn = el('button', { type: 'button', class: 'btn btn-ghost theme-btn' }, svg('svg', { viewBox: '0 0 24 24', 'aria-hidden': 'true', focusable: 'false', class: 'theme-icon' }, svg('circle', { cx: 12, cy: 12, r: 8, fill: 'none', stroke: 'currentColor', 'stroke-width': 1.8 }), svg('path', { d: 'M12 4a8 8 0 0 1 0 16z', fill: 'currentColor' })));
+  const paint = () => { btn.setAttribute('data-mode', mode); btn.setAttribute('title', `Colour theme: ${mode}`); btn.setAttribute('aria-label', `Colour theme: ${mode}. Activate to change.`); };
   btn.addEventListener('click', () => {
     mode = THEMES[(THEMES.indexOf(mode) + 1) % THEMES.length];
     if (mode === 'auto') { document.documentElement.removeAttribute('data-theme'); storage.set('iw-theme', 'auto'); }
@@ -59,13 +59,52 @@ function themeButton() {
   return btn;
 }
 
+
+/* ---------- brand, icons, contact ---------- */
+
+const SVGNS = 'http://www.w3.org/2000/svg';
+function svg(tag, attrs = {}, ...kids) {
+  const n = document.createElementNS(SVGNS, tag);
+  for (const [k, v] of Object.entries(attrs)) if (v !== null && v !== undefined && v !== false) n.setAttribute(k, String(v));
+  for (const kid of kids.flat()) if (kid) n.append(kid instanceof Node ? kid : document.createTextNode(String(kid)));
+  return n;
+}
+
+// The mark is an I-beam: the letter I, and the member that carries load in structural engineering.
+// The small square is the one element you can check.
+function brandMark() {
+  return svg('svg', { viewBox: '0 0 24 24', class: 'brand-mark', 'aria-hidden': 'true', focusable: 'false' },
+    svg('rect', { x: 3, y: 3, width: 18, height: 4, class: 'bm-beam' }),
+    svg('rect', { x: 9.5, y: 7, width: 5, height: 10, class: 'bm-beam' }),
+    svg('rect', { x: 3, y: 17, width: 18, height: 4, class: 'bm-beam' }),
+    svg('rect', { x: 15.5, y: 9.5, width: 3, height: 3, class: 'bm-node' }));
+}
+
+function waIcon() {
+  return svg('svg', { viewBox: '0 0 24 24', class: 'wa-icon', 'aria-hidden': 'true', focusable: 'false' },
+    svg('path', { d: 'M12 2.5a9.5 9.5 0 0 0-8.2 14.3L2.5 21.5l4.8-1.2A9.5 9.5 0 1 0 12 2.5z', fill: 'none', stroke: 'currentColor', 'stroke-width': 1.8, 'stroke-linejoin': 'round' }),
+    svg('path', { d: 'M8.9 7.6c-.3 0-.7.2-.9.6-.3.7-.2 1.5.6 2.8 1 1.6 2.3 2.9 3.9 3.6 1 .4 1.7.5 2.3.1.4-.2.6-.6.6-1l-.1-.4-1.6-.8c-.3-.1-.5 0-.7.2l-.5.6c-.7-.2-1.5-.9-2.2-1.9l-.3-.5.5-.5c.2-.2.2-.4.1-.7L9.5 7.9c-.1-.2-.3-.3-.6-.3z', fill: 'currentColor' }));
+}
+
+function contactMessage(site) {
+  return `Hello, I’d like to speak to sales about ${site && site.id && site.id !== 'intellica' ? site.name : 'Intellica'}.`;
+}
+
+// Contact is WhatsApp only: an icon and "Contact sales". The number is in the link, not on the page.
+function contactButton(site, family, cls = 'btn btn-primary contact-btn') {
+  const num = (site && site.whatsapp) || (family && family.whatsapp);
+  if (!num) return null;
+  return el('a', { class: cls, href: `https://wa.me/${num}?text=${encodeURIComponent(contactMessage(site))}`, rel: 'noopener', 'aria-label': 'Contact sales on WhatsApp' },
+    waIcon(), el('span', { class: 'contact-label' }, 'Contact sales'));
+}
+
 /* ---------- chrome ---------- */
 
 function familyMenu(site, family) {
   if (!family) return null;
-  const items = [{ id: 'intellica', name: 'Intellica home', url: family.home }, ...family.products, ...(family.links || [])];
+  const items = [{ id: 'intellica', name: 'Intellica', url: family.home }, ...family.products, ...(family.links || [])];
   return el('details', { class: 'family' },
-    el('summary', {}, 'Intellica family'),
+    el('summary', {}, 'Systems'),
     el('ul', {}, items.map((p) =>
       el('li', {}, el('a', { href: p.url, 'aria-current': p.id === site.id ? 'page' : null }, p.name)))));
 }
@@ -83,8 +122,8 @@ function renderHeader(site, family, page) {
   const parts = [];
   parts.push(el('header', { class: 'shell-header' },
     el('div', { class: 'container bar' },
-      el('a', { class: 'brand', href: '/' }, el('span', { class: 'brand-mark', 'aria-hidden': 'true' }), el('span', { class: 'brand-name' }, site.name)),
-      el('div', { class: 'bar-right' }, primaryNav(site), familyMenu(site, family), themeButton()))));
+      el('a', { class: 'brand', href: '/', 'aria-label': `${site.name}, home` }, brandMark(), el('span', { class: 'brand-name' }, site.name)),
+      el('div', { class: 'bar-right' }, primaryNav(site), familyMenu(site, family), themeButton(), contactButton(site, family)))));
 
   const tabs = (site.tabs || []).filter((t) => TABS[t]);
   if (tabs.length) {
@@ -106,11 +145,23 @@ function renderHeader(site, family, page) {
 function renderFooter(site, family) {
   const host = $('#shell-footer');
   if (!host) return;
-  const contact = site.contact || (family && family.contact);
+  const systems = family ? family.products : [];
   host.replaceChildren(el('footer', { class: 'shell-footer' },
     el('div', { class: 'container foot' },
-      el('p', {}, 'Part of the Intellica family.', contact ? [' ', el('a', { href: `mailto:${contact}` }, contact)] : null),
-      el('p', { class: 'muted' }, `Self-hosted: this site loads nothing from third parties. Kit ${KIT_VERSION}. `, el('a', { href: '/verify-site/' }, 'Verify this site')))));
+      el('div', { class: 'foot-grid' },
+        el('div', { class: 'foot-brand' },
+          el('a', { class: 'brand', href: family ? family.home : '/' }, brandMark(), el('span', { class: 'brand-name' }, 'Intellica')),
+          el('p', { class: 'muted' }, 'Systems whose results you can check yourself.')),
+        systems.length ? el('nav', { 'aria-label': 'Systems' }, el('h2', { class: 'foot-h' }, 'Systems'),
+          el('ul', {}, systems.map((p) => el('li', {}, el('a', { href: p.url }, p.name))))) : null,
+        el('nav', { 'aria-label': 'Company' }, el('h2', { class: 'foot-h' }, 'Company'),
+          el('ul', {},
+            el('li', {}, el('a', { href: '/training/' }, 'Training')),
+            el('li', {}, el('a', { href: '/verify-site/' }, 'Verify this site')))),
+        el('div', {}, el('h2', { class: 'foot-h' }, 'Talk to us'),
+          el('p', { class: 'muted' }, 'Pilots, partnerships and questions.'),
+          contactButton(site, family))),
+      el('p', { class: 'muted foot-note' }, `Self-hosted: this site loads nothing from third parties. Kit ${KIT_VERSION}.`))));
 }
 
 /* ---------- page: home (Intellica) ---------- */
@@ -159,10 +210,92 @@ function hydrateHome(site, family) {
   }
 
   const contact = $('#contact-link');
-  if (contact && family.contact) {
-    contact.setAttribute('href', `mailto:${family.contact}`);
-    contact.textContent = family.contact;
+  if (contact) {
+    const btn = contactButton(site, family);
+    if (btn) contact.replaceWith(btn);
   }
+  drawSystemMap(family);
+  runProof();
+}
+
+/* The five systems around one idea: every result comes with a way to check it. Drawn from family.json. */
+function drawSystemMap(family) {
+  const host = $('#system-map');
+  if (!host) return;
+  const W = 560, H = 430;
+  const spine = { x: 130, y: 178, w: 300, h: 74 };
+  const place = [
+    { id: 'verichain', x: 0, y: 14 }, { id: 'agentseed', x: 200, y: 14 }, { id: 'vericrypt', x: 400, y: 14 },
+    { id: 'sovereign-erp', x: 50, y: 344 }, { id: 'omc', x: 350, y: 344 },
+  ];
+  const NW = 160, NH = 62;
+  const root = svg('svg', { viewBox: `0 0 ${W} ${H}`, class: 'sysmap-svg', role: 'group', 'aria-label': 'The five Intellica systems, each producing evidence that can be checked' });
+  const edges = svg('g', { class: 'sm-edges' });
+  const nodes = svg('g', {});
+  const byId = Object.fromEntries(family.products.map((p) => [p.id, p]));
+  place.forEach((pl, i) => {
+    const p = byId[pl.id];
+    if (!p) return;
+    const cx = pl.x + NW / 2;
+    const top = pl.y < 100;
+    const y1 = top ? pl.y + NH : pl.y;
+    const y2 = top ? spine.y : spine.y + spine.h;
+    const sx = spine.x + 40 + (i * (spine.w - 80)) / (place.length - 1);
+    const mid = (y1 + y2) / 2;
+    const d = `M${cx} ${y1} V${mid} H${sx} V${y2}`;
+    edges.append(svg('path', { d, class: 'sm-edge' }), svg('path', { d, class: 'sm-flow', style: null }));
+    const a = svg('a', { href: p.url, class: 'sm-node', 'aria-label': `${p.name}: ${p.short || ''}` });
+    a.append(
+      svg('rect', { x: pl.x, y: pl.y, width: NW, height: NH, class: 'sm-box' }),
+      svg('rect', { x: pl.x, y: pl.y, width: 4, height: NH, fill: p.accent }),
+      svg('text', { x: pl.x + 16, y: pl.y + 27, class: 'sm-name' }, p.name),
+      svg('text', { x: pl.x + 16, y: pl.y + 46, class: 'sm-sub' }, p.short || ''));
+    nodes.append(a);
+  });
+  const core = svg('g', { class: 'sm-core' },
+    svg('rect', { x: spine.x, y: spine.y, width: spine.w, height: spine.h, class: 'sm-spine' }),
+    svg('text', { x: spine.x + spine.w / 2, y: spine.y + 31, 'text-anchor': 'middle', class: 'sm-core-name' }, 'Checkable evidence'),
+    svg('text', { x: spine.x + spine.w / 2, y: spine.y + 54, 'text-anchor': 'middle', class: 'sm-sub' }, 'Every result ships with a way to verify it'));
+  root.append(edges, core, nodes);
+  host.replaceChildren(root);
+}
+
+/* Live proof: the page checks itself. It recomputes the manifest root and re-hashes a few key files in your browser. */
+async function runProof() {
+  const host = $('#proof');
+  if (!host) return;
+  const out = $('#proof-out', host), summary = $('#proof-summary', host);
+  let manifest;
+  try { manifest = await loadJSON('/site-manifest.json'); }
+  catch { summary.textContent = 'The manifest could not be loaded, so the check did not run. Open Verify this site to try again.'; return; }
+  const entries = Object.entries(manifest.files);
+  const root = await sha256Hex(new TextEncoder().encode(entries.map(([p, h]) => `${p}\t${h}\n`).join('')));
+  const spot = ['/index.html', '/kit/tokens.css', '/kit/dom.js', '/kit/theme-init.js', '/site.json', '/family.json'].filter((p) => manifest.files[p]);
+  let ok = root === manifest.root;
+  const rows = spot.map((p) => {
+    const mark = el('span', { class: 'pr-mark', 'aria-hidden': 'true' }, '·');
+    const hash = el('span', { class: 'pr-hash' }, 'hashing');
+    const row = el('li', { class: 'pr-row' }, mark, el('span', { class: 'pr-path' }, p), hash);
+    out.append(row);
+    return { p, mark, hash, row };
+  });
+  for (const r of rows) {
+    try {
+      const res = await fetch(r.p, { cache: 'no-store' });
+      const got = await sha256Hex(await res.arrayBuffer());
+      const good = got === manifest.files[r.p];
+      ok = ok && good;
+      r.mark.textContent = good ? '✓' : '✗';
+      r.hash.textContent = got.slice(0, 16);
+      r.row.setAttribute('data-ok', String(good));
+    } catch { ok = false; r.mark.textContent = '✗'; r.hash.textContent = 'unreachable'; r.row.setAttribute('data-ok', 'false'); }
+    await new Promise((res) => setTimeout(res, 90));
+  }
+  host.setAttribute('data-state', ok ? 'ok' : 'fail');
+  summary.replaceChildren(
+    ok ? `Manifest root recomputed and ${spot.length} files re-hashed: all match. ` : 'A file did not match its manifest. ',
+    el('code', {}, manifest.root.slice(0, 24) + '\u2026'), ` · ${entries.length} files listed. `,
+    el('a', { href: '/verify-site/' }, `Verify all ${entries.length}`));
 }
 
 /* ---------- page: overview (product) ---------- */
@@ -469,9 +602,8 @@ async function hydrateMarkdownPage() {
 /* ---------- page: support ---------- */
 
 function hydrateSupport(site, family) {
-  const contact = site.contact || (family && family.contact);
   const mail = $('#support-contact');
-  if (mail && contact) { mail.setAttribute('href', `mailto:${contact}`); mail.textContent = contact; }
+  if (mail) { const btn = contactButton(site, family); if (btn) mail.replaceWith(btn); }
   const faq = $('#support-faq');
   if (faq) {
     const items = site.faq || [];
