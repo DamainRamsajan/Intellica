@@ -337,6 +337,12 @@ main { overflow-x: clip; }
 body[data-tab="home"] .hero { align-items: start; padding-block: var(--s5) var(--s6); }
 body[data-tab="home"] .hero-copy { padding-top: var(--s5); }
 
+/* company mark stays on every page; a system's name sits beside it */
+.brand-group { display: flex; align-items: center; gap: var(--s3); min-width: 0; }
+.product-name { display: inline-flex; align-items: center; min-height: 44px; padding-left: var(--s3); border-left: 1px solid var(--line-hi); color: var(--text-hi); font-weight: 600; text-decoration: none; white-space: nowrap; }
+.product-name:hover { text-decoration: underline; }
+@media (max-width: 560px) { .product-name { display: none; } }
+
 /* fonts:start (written by tools/install-fonts.mjs) */
 @font-face { font-family: "IBM Plex Sans"; font-style: normal; font-weight: 400; font-display: optional; src: url("/assets/fonts/ibm-plex-sans-latin-400-normal.woff2") format("woff2"); }
 @font-face { font-family: "IBM Plex Sans"; font-style: normal; font-weight: 600; font-display: optional; src: url("/assets/fonts/ibm-plex-sans-latin-600-normal.woff2") format("woff2"); }

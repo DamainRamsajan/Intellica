@@ -56,7 +56,9 @@ async function setupUnlock(onUnlocked) {
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
       const code = parseCode($('input', form).value);
-      if (!code) { msg.textContent = 'That does not look like an access code. Paste the whole code from your email.'; return; }
+      const raw = $('input', form).value.trim();
+      if (!code && /^[A-Za-z0-9_-]{40,46}$/.test(raw) && !raw.startsWith('eyJ')) { msg.textContent = 'That is not an access code. Access codes are longer and start with "eyJ". Ask us for yours.'; return; }
+      if (!code) { msg.textContent = 'That does not look like an access code. Paste the whole code from your message. It starts with "eyJ".'; return; }
       msg.textContent = 'Checking…';
       if (!(await codeWorks(form, code))) { msg.textContent = 'That code does not unlock this course. Check you pasted all of it, or ask us for a new one.'; return; }
       storage.set(CODE_KEY, $('input', form).value.trim());

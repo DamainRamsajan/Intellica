@@ -122,7 +122,8 @@ function familyMenu(site, family) {
 }
 
 function primaryNav(site) {
-  const links = site.nav || [];
+  // Training stays in the header on every page, including the systems.
+  const links = site.nav && site.nav.length ? site.nav : [{ label: 'Training', href: '/training/' }];
   if (!links.length) return null;
   return el('nav', { class: 'bar-nav', 'aria-label': 'Primary' }, el('ul', {}, links.map((l) =>
     el('li', {}, el('a', { href: l.href, 'aria-current': location.pathname.startsWith(l.href) ? 'page' : null }, l.label)))));
@@ -134,7 +135,10 @@ function renderHeader(site, family, page) {
   const parts = [];
   parts.push(el('header', { class: 'shell-header' },
     el('div', { class: 'container bar' },
-      el('a', { class: 'brand', href: u('/'), 'aria-label': `${site.name}, home` }, brandMark(), el('span', { class: 'brand-name' }, site.name)),
+      el('div', { class: 'brand-group' },
+        // The company mark always goes to the Intellica home page; on a system's pages its name sits beside it.
+        el('a', { class: 'brand', href: '/', 'aria-label': 'Intellica, home' }, brandMark(), el('span', { class: 'brand-name' }, 'Intellica')),
+        BASE ? el('a', { class: 'product-name', href: u('/'), 'aria-label': `${site.name}, overview` }, site.name) : null),
       el('div', { class: 'bar-right' }, primaryNav(site), familyMenu(site, family), themeButton(), contactButton(site, family)))));
 
   const tabs = (site.tabs || []).filter((t) => TABS[t]);

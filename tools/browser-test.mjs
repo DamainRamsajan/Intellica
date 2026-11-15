@@ -411,6 +411,24 @@ await step('course: a paid lesson is locked without a code and its file holds no
   assert.ok(!(await p.content()).includes('Facilitator note'), 'paid text is in the page');
   await p.context().close();
 });
+await step('every system keeps the Intellica logo (to the home page) and the Training link in the header', async () => {
+  for (const [id, port] of PRODUCTS) {
+    const page = await open(`${ORIGIN(port)}/docs/`);
+    assert.equal(await page.locator('.brand').first().getAttribute('href'), '/', id);
+    assert.match(await page.locator('.brand').first().innerText(), /intellica/i, id);
+    assert.equal(await page.locator('.bar-nav a', { hasText: 'Training' }).getAttribute('href'), '/training/', id);
+    await page.context().close();
+  }
+});
+await step('course: pasting the secret key (not a code) says so clearly instead of failing silently', async () => {
+  const ctx = await browser.newContext(); const page = await ctx.newPage();
+  await page.goto(CRS);
+  await page.waitForSelector('form[data-unlock]:not([hidden])');
+  await page.fill('form[data-unlock] input', 'Ry-1dhA-qWvVPsJQyFKVpaERSf0SylUR0hfRztXI_GU');
+  await page.click('form[data-unlock] [type=submit]');
+  await page.waitForFunction(() => /not an access code/.test(document.body.innerText));
+  await ctx.close();
+});
 await step('course: pasting a code on the course page shows a clear "you are in" banner with a start button', async () => {
   const ctx = await browser.newContext();
   const page = await ctx.newPage();
