@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://omc.meeting-mind.com/sitemap.xml
+Sitemap: https://meeting-mind.com/omc/sitemap.xml

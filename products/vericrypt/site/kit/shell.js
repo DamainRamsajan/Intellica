@@ -7,6 +7,19 @@ import { renderMarkdown, slugify } from './markdown.js';
 
 export const KIT_VERSION = '0.6.0';
 
+// All five systems live on one domain, each under its own folder (for example /verichain/).
+// assemble.mjs writes <meta name="site-base" content="/verichain"> into a system's pages; the home site has none.
+const BASE = ((document.querySelector('meta[name="site-base"]') || {}).content || '').replace(/\/$/, '');
+const u = (path) => BASE + path;
+
+// family.json holds full https URLs (for search engines). In the browser, links to this site stay on this site.
+function localise(value) {
+  if (typeof value === 'string') return value.replace(/^https:\/\/meeting-mind\.com(?=\/|$)/, '') || '/';
+  if (Array.isArray(value)) return value.map(localise);
+  if (value && typeof value === 'object') return Object.fromEntries(Object.entries(value).map(([k, v]) => [k, k === 'name' || k === 'short' || k === 'tagline' ? v : localise(v)]));
+  return value;
+}
+
 const TABS = {
   overview: { label: 'Overview', path: '/' },
   demo: { label: 'Demo', path: '/demo/' },
@@ -121,7 +134,7 @@ function renderHeader(site, family, page) {
   const parts = [];
   parts.push(el('header', { class: 'shell-header' },
     el('div', { class: 'container bar' },
-      el('a', { class: 'brand', href: '/', 'aria-label': `${site.name}, home` }, brandMark(), el('span', { class: 'brand-name' }, site.name)),
+      el('a', { class: 'brand', href: u('/'), 'aria-label': `${site.name}, home` }, brandMark(), el('span', { class: 'brand-name' }, site.name)),
       el('div', { class: 'bar-right' }, primaryNav(site), familyMenu(site, family), themeButton(), contactButton(site, family)))));
 
   const tabs = (site.tabs || []).filter((t) => TABS[t]);
@@ -129,7 +142,7 @@ function renderHeader(site, family, page) {
     parts.push(el('nav', { class: 'tabs', 'aria-label': 'Sections' },
       el('div', { class: 'container' },
         el('ul', {}, tabs.map((t) =>
-          el('li', {}, el('a', { href: TABS[t].path, 'aria-current': t === page ? 'page' : null }, TABS[t].label)))))));
+          el('li', {}, el('a', { href: u(TABS[t].path), 'aria-current': t === page ? 'page' : null }, TABS[t].label)))))));
   }
 
   if (site.status || site.version) {
@@ -156,7 +169,7 @@ function renderFooter(site, family) {
         el('nav', { 'aria-label': 'Company' }, el('h2', { class: 'foot-h' }, 'Company'),
           el('ul', {},
             el('li', {}, el('a', { href: '/training/' }, 'Training')),
-            el('li', {}, el('a', { href: '/verify-site/' }, 'Verify this site')))),
+            el('li', {}, el('a', { href: u('/verify-site/') }, 'Verify this site')))),
         el('div', {}, el('h2', { class: 'foot-h' }, 'Talk to us'),
           el('p', { class: 'muted' }, 'Pilots, partnerships and questions.'),
           contactButton(site, family))),
@@ -266,7 +279,7 @@ async function runProof() {
   if (!host) return;
   const out = $('#proof-out', host), summary = $('#proof-summary', host);
   let manifest;
-  try { manifest = await loadJSON('/site-manifest.json'); }
+  try { manifest = await loadJSON(u('/site-manifest.json')); }
   catch { summary.textContent = 'The manifest could not be loaded, so the check did not run. Open Verify this site to try again.'; return; }
   const entries = Object.entries(manifest.files);
   const root = await sha256Hex(new TextEncoder().encode(entries.map(([p, h]) => `${p}\t${h}\n`).join('')));
@@ -281,7 +294,7 @@ async function runProof() {
   });
   for (const r of rows) {
     try {
-      const res = await fetch(r.p, { cache: 'no-store' });
+      const res = await fetch(u(r.p), { cache: 'no-store' });
       const got = await sha256Hex(await res.arrayBuffer());
       const good = got === manifest.files[r.p];
       ok = ok && good;
@@ -295,7 +308,7 @@ async function runProof() {
   summary.replaceChildren(
     ok ? `Manifest root recomputed and ${spot.length} files re-hashed: all match. ` : 'A file did not match its manifest. ',
     el('code', {}, manifest.root.slice(0, 24) + '\u2026'), ` · ${entries.length} files listed. `,
-    el('a', { href: '/verify-site/' }, `Verify all ${entries.length}`));
+    el('a', { href: u('/verify-site/') }, `Verify all ${entries.length}`));
 }
 
 /* ---------- page: overview (product) ---------- */
@@ -309,9 +322,9 @@ function hydrateOverview(site) {
   if (!root) return;
   const tabs = site.tabs || [];
   const actions = [];
-  if (tabs.includes('demo')) actions.push(el('a', { class: 'btn btn-primary', href: '/demo/' }, 'Try the demo'));
-  if (tabs.includes('download')) actions.push(el('a', { class: 'btn btn-ghost', href: '/download/' }, 'Download'));
-  if (tabs.includes('docs')) actions.push(el('a', { class: 'btn btn-ghost', href: '/docs/' }, 'Read the docs'));
+  if (tabs.includes('demo')) actions.push(el('a', { class: 'btn btn-primary', href: u('/demo/') }, 'Try the demo'));
+  if (tabs.includes('download')) actions.push(el('a', { class: 'btn btn-ghost', href: u('/download/') }, 'Download'));
+  if (tabs.includes('docs')) actions.push(el('a', { class: 'btn btn-ghost', href: u('/docs/') }, 'Read the docs'));
 
   const parts = [el('section', { class: 'hero' },
     el('p', { class: 'eyebrow' }, 'Intellica'),
@@ -331,8 +344,8 @@ function hydrateOverview(site) {
     parts.push(section('What it does not do yet', el('ul', { class: 'limits' }, site.limits.map((t) => el('li', {}, t)))));
   }
   if (site.verifyIt) {
-    const next = tabs.includes('demo') ? el('a', { class: 'btn btn-primary', href: '/demo/' }, 'Open the demo')
-      : tabs.includes('verify') ? el('a', { class: 'btn btn-primary', href: '/verify/' }, 'Go to Verify') : null;
+    const next = tabs.includes('demo') ? el('a', { class: 'btn btn-primary', href: u('/demo/') }, 'Open the demo')
+      : tabs.includes('verify') ? el('a', { class: 'btn btn-primary', href: u('/verify/') }, 'Go to Verify') : null;
     parts.push(el('section', { class: 'callout verify' },
       el('h2', {}, 'Verify it yourself'), el('p', {}, site.verifyIt), next ? el('div', { class: 'actions' }, next) : null));
   }
@@ -629,7 +642,7 @@ async function hydrateVerifySite() {
   const results = el('div', {});
   root.replaceChildren(status, results);
   let manifest;
-  try { manifest = await loadJSON('/site-manifest.json'); }
+  try { manifest = await loadJSON(u('/site-manifest.json')); }
   catch (err) { status.replaceWith(el('p', { class: 'callout bad' }, `The manifest could not be loaded: ${err.message}`)); return; }
 
   const files = Object.entries(manifest.files);
@@ -641,7 +654,7 @@ async function hydrateVerifySite() {
 
   await Promise.all(files.map(async ([path, expected]) => {
     try {
-      const res = await fetch(path, { cache: 'no-store' });
+      const res = await fetch(u(path), { cache: 'no-store' });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const actual = await sha256Hex(await res.arrayBuffer());
       if (actual !== expected) bad.push({ path, expected, actual });
@@ -681,7 +694,7 @@ const HYDRATE = {
 async function main() {
   const page = document.body.getAttribute('data-tab') || 'overview';
   try {
-    const [site, family] = await Promise.all([loadJSON('/site.json'), loadJSON('/family.json').catch(() => null)]);
+    const [site, family] = await Promise.all([loadJSON(u('/site.json')), loadJSON('/family.json').then(localise).catch(() => null)]);
     applyBrand(site);
     renderHeader(site, family, page);
     renderFooter(site, family);

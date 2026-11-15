@@ -4,3 +4,4 @@ node_modules/
 .course-key
 !site/training/arc42/example/*.zip
 out/
+dist/

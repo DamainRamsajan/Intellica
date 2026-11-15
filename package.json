@@ -11,7 +11,7 @@
     "dev:omc": "node tools/serve.mjs products/omc/site 8084",
     "check": "node tools/check.mjs --all",
     "test": "node tools/test-markdown.mjs",
-    "sync": "node tools/build-training.mjs && node tools/build-course.mjs && node tools/sync-kit.mjs && node tools/prerender.mjs && node tools/manifest.mjs",
+    "sync": "node tools/build-training.mjs && node tools/build-course.mjs && node tools/sync-kit.mjs && node tools/prerender.mjs && node tools/manifest.mjs && node tools/assemble.mjs",
     "scaffold": "node tools/new-product.mjs",
     "legacy": "node tools/import-legacy.mjs",
     "gate": "npm run test && npm run sync && npm run check",
@@ -28,7 +28,8 @@
     "course:video": "node tools/export-lesson-video.mjs",
     "example:pack": "python3 tools/pack-example.py",
     "example:test": "cd training-material/doubles-to-go/app && npm test",
-    "fonts": "node tools/install-fonts.mjs"
+    "fonts": "node tools/install-fonts.mjs",
+    "assemble": "node tools/assemble.mjs"
   },
   "engines": {
     "node": ">=20"

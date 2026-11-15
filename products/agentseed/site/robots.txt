@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://agentseed.meeting-mind.com/sitemap.xml
+Sitemap: https://meeting-mind.com/agentseed/sitemap.xml

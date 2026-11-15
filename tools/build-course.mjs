@@ -267,6 +267,15 @@ ${subnav(w, 'course/')}
       <figure class="c-preview" aria-label="A slide from the course" data-preview hidden>
         <div class="cstage-frame" data-frame><div class="cstage" data-stage>${'<section class="s on">' + previewHtml + '</section>'}</div></div>
         <figcaption>A real slide from “${esc(pl.title)}”. Every lesson is slides you can pause, read and replay.</figcaption>
+        <div class="c-incl">
+          <ul>
+            <li>${lessons.length} lessons, the first two free</li>
+            <li>A transcript for every slide</li>
+            <li>Recall cards and spaced review</li>
+            <li>The Doubles-to-Go worked example</li>
+          </ul>
+          <p class="c-incl-price">${c.price ? `${c.price.regular ? `<s>${esc(c.price.regular)}</s> ` : ''}<b>${esc(c.price.label)}</b> <span>lifetime access</span>` : '<span>Price on enquiry</span>'}</p>
+        </div>
       </figure>
     </section>
 

@@ -1,6 +1,6 @@
 # Checkpoints
 
-## Checkpoint 14 (current): v14
+## Checkpoint 14 (current): v14 — one domain: every system lives under meeting-mind.com/<system>/ and one deploy (`npm run deploy -- home`) uploads `dist/` (built by tools/assemble.mjs).  (kit files are now revalidated on every load, so a deploy shows at once)
 Includes 13. New logo (I-beam tile with a cyan checkable half), the original interactive twelve-section card on the workshop page (aligned with the headline), a visible "You are in" banner after a course code is pasted, `npm run course:check`, course price TT$299 (regular TT$399, shown crossed out), proof strip, "How it works" and a sales band on the home page, WhatsApp-only purchase.
 
 ## Checkpoint 13 (superseded): professional identity

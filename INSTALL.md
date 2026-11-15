@@ -60,7 +60,7 @@ Every deploy:
 ```
 npm run deploy -- home
 ```
-It runs `npm run sync` and the gate, creates the Pages project `intellica-web` the first time, and uploads `site/`. Open the `https://intellica-web.pages.dev` address it prints, check `/verify-site/` says all files match. Project names are in `tools/deploy.config.json`. `npm run deploy -- home --dry` shows the commands without running them. `_headers` is uploaded with the site and applied by Cloudflare.
+It runs `npm run sync` (which also builds `dist/`, the folder that is uploaded), runs the gate, creates the Pages project `intellica-web` the first time, and uploads `dist/`. Everything is one site on one domain: the home page at `/` and each system in its own folder (`/verichain/`, `/vericrypt/`, `/sovereign-erp/`, `/omc/`, `/agentseed/`). No subdomains and no other Pages projects are needed.
 
 Point the domain (once, in the dashboard, because it also creates the DNS record):
 1. Old MeetingMind Pages project > Custom domains > remove `meeting-mind.com` and `www`.
@@ -70,7 +70,7 @@ Point the domain (once, in the dashboard, because it also creates the DNS record
 
 Clean up only after that works: delete the old Pages project (copy any variables you still need first), delete any stray old DNS records (keep MX and TXT), then archive `meetingmind-v3` on GitHub and delete it when sure.
 
-Products later, one at a time: `npm run deploy -- vericrypt` (also `verichain`, `erp`, `omc`, `agentseed`, or `all`), then add `vericrypt.meeting-mind.com` and so on under that project's Custom domains. You can deploy them all from this one Codespace; the product repos are not needed for hosting.
+Systems are part of the same deploy. There is nothing extra to deploy or configure for them.
 
 ## 7. Product repos
 All five products have real docs now. Products: verichain, vericrypt, sovereign-erp, omc, agentseed.

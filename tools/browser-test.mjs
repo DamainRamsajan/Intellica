@@ -10,13 +10,15 @@ try { ({ chromium } = createRequire(import.meta.url)('playwright')); }
 catch { console.error('Playwright is not installed. Run: npm run setup'); process.exit(2); }
 
 const PRODUCTS = [['verichain', 8081], ['vericrypt', 8082], ['sovereign-erp', 8083], ['omc', 8084], ['agentseed', 8085]];
-const servers = [['site', 8080], ...PRODUCTS.map(([id, port]) => [`products/${id}/site`, port])].map(([dir, port]) =>
-  spawn('node', ['tools/serve.mjs', dir, String(port)], { stdio: 'ignore' }));
+// One site, one domain: the home site at / and each system in its own folder (see tools/assemble.mjs).
+const servers = [spawn('node', ['tools/serve.mjs', 'dist', '8080'], { stdio: 'ignore' })];
+const SLUG = Object.fromEntries(PRODUCTS.map(([id, port]) => [port, id]));
+const ORIGIN = (port) => (port === 8080 ? 'http://localhost:8080' : `http://localhost:8080/${SLUG[port]}`);
 const stop = () => servers.forEach((s) => s.kill());
 process.on('exit', stop);
 await new Promise((r) => setTimeout(r, 800));
 
-const HOME = 'http://localhost:8080', VC = 'http://localhost:8082';
+const HOME = 'http://localhost:8080', VC = 'http://localhost:8080/vericrypt';
 let failed = 0;
 const step = async (name, fn) => { try { await fn(); console.log('ok   ' + name); } catch (e) { failed++; console.log('FAIL ' + name + '\n     ' + e.message); } };
 
@@ -82,7 +84,7 @@ await step('download, verify and support tabs render without errors', async () =
 
 await step('every product: all tabs and every docs page load without errors', async () => {
   for (const [id, port] of PRODUCTS) {
-    const base = `http://localhost:${port}`;
+    const base = `${ORIGIN(port)}`;
     const index = await (await fetch(base + '/docs/docs.json')).json();
     for (const item of index.groups.flatMap((g) => g.items)) {
       const p = await open(`${base}/docs/?d=${encodeURIComponent(item.md)}`);
@@ -100,7 +102,7 @@ await step('every product: all tabs and every docs page load without errors', as
 });
 await step('no product page shows an unpublished placeholder in its main docs', async () => {
   for (const [id, port] of PRODUCTS) {
-    const p = await open(`http://localhost:${port}/docs/`);
+    const p = await open(`${ORIGIN(port)}/docs/`);
     assert.ok(!/Nothing is published here yet/.test(await p.locator('#docs-root').innerText()), id);
   }
 });
@@ -139,7 +141,7 @@ await step('accessibility: landmarks, headings, names, contrast, light and dark,
   const sites = [['home', 8080, ['/', '/verify-site/', '/training/', '/training/arc42/', '/training/arc42/guide/', '/training/arc42/register/', '/training/arc42/example/', '/training/arc42/course/', '/training/arc42/course/part-0-opening/', '/training/arc42/course/part-7-6-runtime/']], ...PRODUCTS.map(([id, port]) => [id, port, ['/', '/demo/', '/download/', '/docs/', '/verify/', '/support/', '/verify-site/']])];
   for (const scheme of ['light', 'dark']) {
     for (const [id, port, paths] of sites) for (const path of paths) {
-      const p = await open(`http://localhost:${port}${path}`, { viewport: { width: 1280, height: 900 }, colorScheme: scheme });
+      const p = await open(`${ORIGIN(port)}${path}`, { viewport: { width: 1280, height: 900 }, colorScheme: scheme });
       for (const issue of await p.evaluate(AUDIT)) bad.push(`${scheme} ${id}${path}: ${issue}`);
       await p.context().close();
     }
@@ -151,30 +153,30 @@ await step('every page has its own title, description and canonical link, with n
   const page = await ctx.newPage();
   const titles = new Set();
   for (const [id, port] of PRODUCTS) for (const path of ['/', '/demo/', '/download/', '/docs/', '/verify/', '/support/']) {
-    await page.goto(`http://localhost:${port}${path}`);
+    await page.goto(`${ORIGIN(port)}${path}`);
     const title = await page.title();
     assert.ok(title && title !== 'Overview' && !titles.has(id + title), `${id}${path} title: ${title}`);
     titles.add(id + title);
     assert.ok((await page.locator('meta[name=description]').getAttribute('content')).length > 20, `${id}${path} description`);
     assert.match(await page.locator('link[rel=canonical]').getAttribute('href'), /^https:\/\/[a-z-]*\.?meeting-mind\.com\//, `${id}${path} canonical`);
   }
-  await page.goto('http://localhost:8082/');
+  await page.goto(VC + '/');
   assert.match(await page.locator('noscript').first().innerText(), /VeriCrypt/);
   await ctx.close();
 });
 await step('download tab with no binaries shows build-from-source; support shows known problems', async () => {
   for (const [id, port] of PRODUCTS) {
-    let p = await open(`http://localhost:${port}/download/`);
+    let p = await open(`${ORIGIN(port)}/download/`);
     assert.match(await p.locator('#downloads-root').innerText(), /no packaged downloads/i, id);
     assert.ok(await p.locator('#downloads-root pre').count() >= 1, id + ' build steps');
-    p = await open(`http://localhost:${port}/support/`);
+    p = await open(`${ORIGIN(port)}/support/`);
     assert.ok(await p.locator('#support-faq details').count() >= 3, id + ' faq');
   }
 });
-await step('sitemap, robots and security.txt exist for every site', async () => {
+await step('sitemap exists for every site; robots and security.txt at the domain root', async () => {
   for (const port of [8080, ...PRODUCTS.map(([, x]) => x)]) {
-    for (const f of ['/sitemap.xml', '/robots.txt', '/.well-known/security.txt']) {
-      const r = await fetch(`http://localhost:${port}${f}`);
+    for (const f of ['/sitemap.xml', '/robots.txt', ...(port === 8080 ? ['/.well-known/security.txt'] : [])]) {
+      const r = await fetch(`${ORIGIN(port)}${f}`);
       assert.equal(r.status, 200, `${port}${f}`);
     }
   }
@@ -182,7 +184,7 @@ await step('sitemap, robots and security.txt exist for every site', async () => 
 
 await step('verify this site: every file matches, and a tampered file is caught', async () => {
   for (const [id, port] of [['home', 8080], ...PRODUCTS]) {
-    const p = await open(`http://localhost:${port}/verify-site/`);
+    const p = await open(`${ORIGIN(port)}/verify-site/`);
     await p.waitForSelector('.callout[role=status]', { timeout: 15000 });
     assert.match(await p.locator('.callout[role=status]').innerText(), /^All \d+ files match/, id);
     assert.ok(!/\bnull\b|undefined/.test(await p.locator('main').innerText()), id + ' shows a stray null/undefined');
@@ -198,16 +200,16 @@ await step('verify this site: every file matches, and a tampered file is caught'
 });
 await step('every product overview lists honest limits', async () => {
   for (const [id, port] of PRODUCTS) {
-    const p = await open(`http://localhost:${port}/`);
+    const p = await open(`${ORIGIN(port)}/`);
     assert.ok(await p.locator('ul.limits li').count() >= 3, id);
   }
 });
 
 await step('every HTML page is served with a Content-Security-Policy (strict, except legacy)', async () => {
   for (const [id, port] of [['home', 8080], ...PRODUCTS]) {
-    const manifest = await (await fetch(`http://localhost:${port}/site-manifest.json`)).json();
+    const manifest = await (await fetch(`${ORIGIN(port)}/site-manifest.json`)).json();
     for (const file of Object.keys(manifest.files).filter((f) => f.endsWith('.html') && !f.startsWith('/legacy/'))) {
-      const res = await fetch(`http://localhost:${port}${file}`);
+      const res = await fetch(`${ORIGIN(port)}${file}`);
       const csp = res.headers.get('content-security-policy') || '';
       assert.match(csp, /default-src 'self'/, `${id}${file} has no strict CSP`);
       assert.ok(!/unsafe-inline|(?<!wasm-)unsafe-eval/.test(csp), `${id}${file} CSP is loose`);
@@ -237,13 +239,13 @@ await step('structured data: valid JSON-LD on home and on every product overview
     assert.equal(JSON.parse(m[1])['@type'], type, url);
   };
   await check(HOME + '/', 'Organization');
-  for (const [, port] of PRODUCTS) await check(`http://localhost:${port}/`, 'SoftwareApplication');
+  for (const [, port] of PRODUCTS) await check(`${ORIGIN(port)}/`, 'SoftwareApplication');
 });
 await step('reflow: no horizontal scroll at 320px on any page (WCAG 1.4.10)', async () => {
   const bad = [];
   const sites = [['home', 8080, ['/', '/verify-site/', '/training/', '/training/arc42/', '/training/arc42/guide/', '/training/arc42/register/']], ...PRODUCTS.map(([id, port]) => [id, port, ['/', '/demo/', '/download/', '/docs/', '/verify/', '/support/']])];
   for (const [id, port, paths] of sites) for (const path of paths) {
-    const p = await open(`http://localhost:${port}${path}`, { viewport: { width: 320, height: 640 } });
+    const p = await open(`${ORIGIN(port)}${path}`, { viewport: { width: 320, height: 640 } });
     if (await p.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth)) bad.push(`${id}${path}`);
     await p.context().close();
   }
@@ -260,7 +262,7 @@ await step('performance budget: CLS under 0.1, LCP under 2.5 s, under 150 KB per
       new PerformanceObserver((l) => { for (const e of l.getEntries()) if (!e.hadRecentInput) window.__cls += e.value; }).observe({ type: 'layout-shift', buffered: true });
       new PerformanceObserver((l) => { for (const e of l.getEntries()) window.__lcp = e.startTime; }).observe({ type: 'largest-contentful-paint', buffered: true });
     });
-    await page.goto(`http://localhost:${port}${path}`);
+    await page.goto(`${ORIGIN(port)}${path}`);
     await page.waitForSelector('html[data-ready="true"]');
     await page.waitForTimeout(400);
     const m = await page.evaluate(() => ({ cls: window.__cls, lcp: window.__lcp, bytes: performance.getEntriesByType('resource').filter((r) => !/\.woff2/.test(r.name)).reduce((n, r) => n + (r.transferSize || r.encodedBodySize || 0), 0), fontBytes: performance.getEntriesByType('resource').filter((r) => /\.woff2/.test(r.name)).reduce((n, r) => n + (r.transferSize || r.encodedBodySize || 0), 0) }));
@@ -288,7 +290,7 @@ await step('training: home links to it, pages render with content and no console
   assert.ok(await p.locator('ol.day > li:not(.grp):not(.brk)').count() >= 10);
   assert.match(await p.locator('.t-hero').innerText(), /30 January 2027/);
   assert.deepEqual(p.problems, []);
-  p = await open('http://localhost:8082/');
+  p = await open(VC + '/');
   await p.locator('.family summary').click();
   assert.ok(await p.locator('.family a', { hasText: 'Training' }).count() === 1, 'product family menu has no Training link');
 });
