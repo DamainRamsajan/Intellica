@@ -23,6 +23,7 @@
     "training": "node tools/build-training.mjs",
     "deploy": "node tools/deploy.mjs",
     "course": "node tools/build-course.mjs",
+    "course:check": "node tools/course-check.mjs",
     "course:code": "node tools/course-code.mjs",
     "course:video": "node tools/export-lesson-video.mjs",
     "example:pack": "python3 tools/pack-example.py",

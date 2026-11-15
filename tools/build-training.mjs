@@ -91,6 +91,22 @@ function subnav(w, active) {
     </nav>`;
 }
 
+function heroTitle(w) {
+  const h = w.hero;
+  if (!h || !h.title) return esc(w.headline);
+  const t = esc(h.title), k = esc(h.highlight || '');
+  return k && t.includes(k) ? t.replace(k, `<span class="hl">${k}</span>`) : t;
+}
+
+// The twelve sections as a picker: tap one to see the question it answers. Plain links without JavaScript.
+function sheet(w) {
+  return `<div class="sheet" aria-label="The twelve arc42 sections">
+        <p class="sheet-k">Tap a section to see the question it answers.</p>
+        <div class="cells">${w.sections.map(([name, q], i) => `<a class="cell" href="#twelve-${i + 1}" data-q="${esc(q)}"><b>${i + 1}</b><span>${esc(name)}</span></a>`).join('')}</div>
+        <p class="sheet-q" data-sheet-q aria-live="polite">Start with section 1.</p>
+      </div>`;
+}
+
 function factsheet(w) {
   return `<dl class="factsheet">
         <div><dt>Date</dt><dd>${esc(w.dateLong)}</dd></div>
@@ -140,16 +156,17 @@ ${subnav(w, '')}
 
     <section class="t-hero" aria-labelledby="t-title">
       <div class="t-hero-copy">
-        <p class="eyebrow">Intellica Training</p>
-        <h1 id="t-title">${esc(w.headline)}</h1>
+        <span class="t-pill" data-eb data-until="${w.price.earlyUntil}" data-label="${esc(w.price.label)}" data-until-label="${esc(w.price.earlyUntilLabel)}" data-after="${esc(w.price.standardNote)}">${esc(ebText(w))}</span>
+        <h1 id="t-title">${heroTitle(w)}</h1>
         <p class="lead">${esc(w.lead)}</p>
         <div class="actions">
           <a class="btn btn-primary" href="${w.path}register/">Reserve a seat</a>
           <a class="btn btn-ghost" href="#day">See the day</a>
         </div>
+        <p class="t-facts">${esc(w.dateLong)}, ${esc(w.time)}, ${esc(w.venue)}. ${esc(w.format)}.</p>
         <p class="fine">Led by a ${esc(w.facilitator.role.charAt(0).toLowerCase() + w.facilitator.role.slice(1))}.</p>
       </div>
-      ${factsheet(w)}
+      ${sheet(w)}
     </section>
 
     <section class="t-strip" aria-label="At a glance">
@@ -160,7 +177,7 @@ ${subnav(w, '')}
       ${kicker(++n, 'The template')}
       <h2 id="twelve-t">Twelve sections, twelve questions</h2>
       <p class="sub">arc42 gives each kind of architecture information one place to live. By the end of the day you will have answered every one of these for your own system.</p>
-      <ol class="twelve">${w.sections.map(([name, q], i) => `<li><span class="num">${i + 1}</span><div><strong>${esc(name)}</strong><span>${esc(q)}</span></div></li>`).join('')}</ol>
+      <ol class="twelve">${w.sections.map(([name, q], i) => `<li id="twelve-${i + 1}"><span class="num">${i + 1}</span><div><strong>${esc(name)}</strong><span>${esc(q)}</span></div></li>`).join('')}</ol>
     </section>
 
     <section class="t-block" id="what" aria-labelledby="what-t">

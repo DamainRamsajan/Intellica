@@ -202,21 +202,19 @@ function subnav(w, active) {
 }
 
 function enrolBlock(w, c, priceLabel) {
-  const subject = `${w.short || w.title} online course: access request`;
-  const mail = `mailto:${w.contact}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent('Name (as it should appear on your access code):\nEmail:\nHow I will pay (see the options on the course page):\n')}`;
-  const wa = `https://wa.me/${w.whatsapp}?text=${encodeURIComponent(`Hello, I\u2019d like access to the ${w.title} online course.`)}`;
-  const price = c.price ? `${esc(c.price.label)} for lifetime access to this edition` : 'Price confirmed when you enquire';
+  const wa = `https://wa.me/${w.whatsapp}?text=${encodeURIComponent(`Hello, I\u2019d like access to the ${w.title} online course${c.price ? ` (${c.price.label})` : ''}.`)}`;
+  const shown = c.price && c.price.regular ? `<s class="was" aria-label="Regular price ${esc(c.price.regular)}">${esc(c.price.regular)}</s> ${priceLabel}` : priceLabel;
   return `<aside class="enrol" aria-label="Price and how to buy">
         <p class="eyebrow">Full course</p>
-        <p class="c-price">${priceLabel}</p>
-        <p class="muted small">${c.price ? 'Lifetime access to this edition.' : 'Confirmed when you enquire. No payment is taken on this site.'}</p>
+        <p class="c-price">${shown}</p>
+        <p class="muted small">${c.price && c.price.note ? esc(c.price.note) + ' ' : ''}${c.price ? 'Lifetime access to this edition.' : 'Confirmed when you enquire. No payment is taken on this site.'}</p>
         <ol class="steps">
-          <li><div><strong>Ask for access.</strong> Email or WhatsApp us. We reply with the price and how to pay${c.methods && c.methods.length ? ` (${esc(c.methods.join(', '))})` : ''}.</div></li>
+          <li><div><strong>Message sales on WhatsApp.</strong> We reply with how to pay${c.methods && c.methods.length ? ` (${esc(c.methods.join(', '))})` : ''}.</div></li>
           <li><div><strong>Pay.</strong> No account and no card form on this site: payment is arranged with you directly.</div></li>
-          <li><div><strong>Receive your access code</strong> by email, normally within one working day of payment.</div></li>
+          <li><div><strong>Receive your access code</strong>, normally within one working day of payment.</div></li>
           <li><div><strong>Paste it below</strong> to unlock every lesson on this device. It is kept in this browser only.</div></li>
         </ol>
-        <div class="actions"><a class="btn btn-primary" href="${esc(mail)}">Email to ask for access</a><a class="btn btn-ghost" href="${esc(wa)}" rel="noopener">WhatsApp</a></div>
+        <div class="actions"><a class="btn btn-primary contact-btn" href="${esc(wa)}" rel="noopener">Buy on WhatsApp</a></div>
       </aside>`;
 }
 

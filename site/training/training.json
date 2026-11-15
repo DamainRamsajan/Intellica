@@ -652,8 +652,12 @@
           "part-0-opening",
           "part-1-foundations"
         ],
-        "price": null,
-        "priceNote": "Includes every lesson and the worked-example material.",
+        "price": {
+          "label": "TT$299",
+          "regular": "TT$399",
+          "note": "Launch price, 25% off the regular TT$399."
+        },
+        "priceNote": "Lifetime access to this edition. Includes every lesson and the worked-example material.",
         "methods": [],
         "method": [
           {
@@ -683,7 +687,7 @@
           },
           {
             "q": "How do I get access?",
-            "a": "Ask by email or WhatsApp. We reply with the price and how to pay, and send an access code when payment is confirmed."
+            "a": "Message sales on WhatsApp. We reply with how to pay, and send your access code when payment is confirmed."
           },
           {
             "q": "Can I share my code?",
@@ -803,6 +807,10 @@
             "/training/arc42/example/arc42.md"
           ]
         ]
+      },
+      "hero": {
+        "title": "Master arc42: architecture docs people and AI can act on",
+        "highlight": "arc42"
       }
     }
   ]

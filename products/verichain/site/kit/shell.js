@@ -71,13 +71,12 @@ function svg(tag, attrs = {}, ...kids) {
 }
 
 // The mark is an I-beam: the letter I, and the member that carries load in structural engineering.
-// The small square is the one element you can check.
+// The cyan half of the web is the part you can check.
 function brandMark() {
-  return svg('svg', { viewBox: '0 0 24 24', class: 'brand-mark', 'aria-hidden': 'true', focusable: 'false' },
-    svg('rect', { x: 3, y: 3, width: 18, height: 4, class: 'bm-beam' }),
-    svg('rect', { x: 9.5, y: 7, width: 5, height: 10, class: 'bm-beam' }),
-    svg('rect', { x: 3, y: 17, width: 18, height: 4, class: 'bm-beam' }),
-    svg('rect', { x: 15.5, y: 9.5, width: 3, height: 3, class: 'bm-node' }));
+  return svg('svg', { viewBox: '0 0 64 64', class: 'brand-mark', 'aria-hidden': 'true', focusable: 'false' },
+    svg('rect', { width: 64, height: 64, rx: 8, class: 'bm-tile' }),
+    svg('path', { d: 'M12 12h40v10H38v20h14v10H12V42h14V22H12z', class: 'bm-beam' }),
+    svg('rect', { x: 38, y: 22, width: 14, height: 20, class: 'bm-node' }));
 }
 
 function waIcon() {
@@ -187,6 +186,7 @@ function hydrateHome(site, family) {
   if (cards) {
     cards.replaceChildren(...family.products.map((p) => {
       const card = el('article', { class: 'card product' },
+        p.short ? el('p', { class: 'kicker-m' }, p.short) : null,
         el('h3', {}, el('a', { href: p.url }, p.name)),
         el('p', {}, p.tagline),
         p.status ? el('p', {}, el('span', { class: 'badge' }, p.status)) : null,

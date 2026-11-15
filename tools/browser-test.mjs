@@ -286,7 +286,7 @@ await step('training: home links to it, pages render with content and no console
   p = await open(HOME + WS);
   assert.equal(await p.locator('ol.twelve li').count(), 12);
   assert.ok(await p.locator('ol.day > li:not(.grp):not(.brk)').count() >= 10);
-  assert.match(await p.locator('.factsheet').innerText(), /30 January 2027/);
+  assert.match(await p.locator('.t-hero').innerText(), /30 January 2027/);
   assert.deepEqual(p.problems, []);
   p = await open('http://localhost:8082/');
   await p.locator('.family summary').click();
@@ -296,7 +296,7 @@ await step('training: the content is in the HTML itself (no JavaScript needed)',
   const ctx = await browser.newContext({ javaScriptEnabled: false });
   const page = await ctx.newPage();
   await page.goto(HOME + WS);
-  assert.match(await page.locator('h1').innerText(), /Architecture documentation/);
+  assert.match(await page.locator('h1').innerText(), /architecture docs people and AI can act on/);
   assert.ok(await page.locator('ol.day li').count() >= 15);
   await page.goto(HOME + WS + 'register/');
   assert.match(await page.locator('a[href^="mailto:"]').first().getAttribute('href'), /^mailto:dpramsajan@meeting-mind\.com\?subject=/);
@@ -309,7 +309,7 @@ await step('training: early bird counts down, then ends on its own', async () =>
     await page.clock.install({ time: new Date(now) });
     await page.goto(HOME + WS);
     await page.waitForSelector('html[data-ready="true"]');
-    assert.match(await page.locator('.factsheet .eb').innerText(), re, now);
+    assert.match(await page.locator('.t-pill').innerText(), re, now);
     await ctx.close();
   }
 });
@@ -408,6 +408,28 @@ await step('course: a paid lesson is locked without a code and its file holds no
   assert.ok(!/<h2|Runtime|scenario/i.test(Buffer.from(enc.ct, 'base64url').toString('latin1')), 'the paid lesson file contains readable text');
   assert.ok(!(await p.content()).includes('Facilitator note'), 'paid text is in the page');
   await p.context().close();
+});
+await step('course: pasting a code on the course page shows a clear "you are in" banner with a start button', async () => {
+  const ctx = await browser.newContext();
+  const page = await ctx.newPage();
+  await page.goto(CRS);
+  await page.waitForSelector('form[data-unlock]:not([hidden])');
+  await page.fill('form[data-unlock] input', mkCode('Banner Buyer'));
+  await page.click('form[data-unlock] [type=submit]');
+  await page.waitForSelector('.unlock-banner');
+  const t = await page.locator('.unlock-banner').innerText();
+  assert.match(t, /You are in, Banner Buyer/);
+  assert.match(t, /Start lesson 1/);
+  assert.ok(await page.locator('.unlock-banner a.btn').isVisible());
+  await ctx.close();
+});
+await step('workshop page: the twelve-section card shows the question for the section you tap, and lines up with the headline', async () => {
+  const page = await open(HOME + WS);
+  await page.locator('.sheet .cell').nth(2).click();
+  assert.match(await page.locator('[data-sheet-q]').innerText(), /Who do we talk to/);
+  const h = await page.locator('.t-pill').boundingBox(), c = await page.locator('.sheet').boundingBox();
+  assert.ok(Math.abs(h.y - c.y) < 40, `card top ${c.y} vs pill top ${h.y}`);
+  await page.context().close();
 });
 await step('course: a wrong code is refused, the right code unlocks every lesson and shows the buyer name', async () => {
   const ctx = await browser.newContext();

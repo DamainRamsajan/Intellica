@@ -52,3 +52,17 @@ if (form) {
     $('#reserve-msg').textContent = 'Your email app should open with your details ready to send. If it does not, use the WhatsApp button or write to us directly.';
   });
 }
+
+/* hero: tap one of the twelve sections to see the question it answers */
+{
+  const cells = $$('.sheet .cell');
+  const out = $('[data-sheet-q]');
+  for (const c of cells) {
+    c.addEventListener('click', (e) => {
+      e.preventDefault();
+      for (const o of cells) o.classList.remove('on');
+      c.classList.add('on');
+      if (out) out.textContent = c.dataset.q;
+    });
+  }
+}

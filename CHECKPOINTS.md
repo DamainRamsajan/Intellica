@@ -1,6 +1,9 @@
 # Checkpoints
 
-## Checkpoint 13 (current): professional identity
+## Checkpoint 14 (current): v14
+Includes 13. New logo (I-beam tile with a cyan checkable half), the original interactive twelve-section card on the workshop page (aligned with the headline), a visible "You are in" banner after a course code is pasted, `npm run course:check`, course price TT$299 (regular TT$399, shown crossed out), proof strip, "How it works" and a sales band on the home page, WhatsApp-only purchase.
+
+## Checkpoint 13 (superseded): professional identity
 Includes checkpoint 12. Kit 0.6.0.
 - No personal name or email address is displayed anywhere. Contact is a WhatsApp button labelled "Contact sales" (icon plus label; the number is only in the link). Facilitator is described by role.
 - "Intellica family" is now "Systems".

@@ -2,7 +2,7 @@
 // the access-code unlock, recall cards, spaced review and saved progress.
 // Paid lessons are AES-256-GCM files. The access code carries the key; nothing about it is sent anywhere.
 // Everything is stored in this browser only (localStorage), and every read is wrapped in try/catch.
-import { $, $$, storage } from '/kit/dom.js';
+import { $, $$, el, storage } from '/kit/dom.js';
 
 const CODE_KEY = 'iw-course-code';
 const PROGRESS_KEY = 'iw-course-progress';
@@ -60,7 +60,8 @@ async function setupUnlock(onUnlocked) {
       msg.textContent = 'Checking…';
       if (!(await codeWorks(form, code))) { msg.textContent = 'That code does not unlock this course. Check you pasted all of it, or ask us for a new one.'; return; }
       storage.set(CODE_KEY, $('input', form).value.trim());
-      msg.textContent = 'Unlocked. Loading…';
+      storage.set('iw-course-just', '1');
+      msg.textContent = 'Code accepted. Opening your course…';
       location.reload();
     });
     forget.addEventListener('click', () => { try { localStorage.removeItem(CODE_KEY); } catch { /* ignore */ } location.reload(); });
@@ -242,6 +243,17 @@ async function indexPage() {
     const badge = $('[data-badge]', li);
     if (d[id]) { count++; badge.textContent = 'Done'; badge.classList.add('badge-done'); }
     else if (code && !li.classList.contains('is-free')) badge.textContent = 'Unlocked';
+  }
+  if (code) {
+    const next = rows.find((li) => !d[li.dataset.lesson]) || rows[0];
+    const link = $('a', next);
+    const just = storage.get('iw-course-just') === '1';
+    const banner = el('div', { class: 'unlock-banner', role: 'status', tabindex: '-1' },
+      el('div', {}, el('strong', {}, `You are in${code.name ? `, ${code.name}` : ''}. All ${rows.length} lessons are open.`),
+        el('span', {}, count ? ` ${count} of ${rows.length} finished on this device.` : ' Your progress is saved in this browser.')),
+      el('a', { class: 'btn btn-primary', href: link.getAttribute('href') }, count ? 'Continue' : 'Start lesson 1'));
+    $('main').prepend(banner);
+    if (just) { storage.set('iw-course-just', ''); window.scrollTo(0, 0); banner.focus(); }
   }
   const prog = $('[data-progress]');
   if (prog && count) { prog.hidden = false; prog.textContent = `${count} of ${rows.length} lessons finished on this device.`; }
