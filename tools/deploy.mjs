@@ -2,7 +2,9 @@
 // Deploys a site to Cloudflare Pages by direct upload (Wrangler), bypassing the GitHub integration.
 //   npm run deploy -- home                 one target: home | verichain | vericrypt | erp | omc | agentseed
 //   npm run deploy -- all                  every target
-//   options: --dry (print what would run), --no-gate (skip sync and check), --branch=main
+//   options: --dry (print what would run), --no-gate (skip sync and check), --branch=main,
+//            --project=NAME (upload to this Pages project instead of the one in deploy.config.json)
+//   npm run deploy:where                   list your Pages projects and which domains each one serves
 // Needs two environment variables (Codespaces secrets, see INSTALL.md):
 //   CLOUDFLARE_API_TOKEN   token with Account > Cloudflare Pages > Edit
 //   CLOUDFLARE_ACCOUNT_ID  your account id
@@ -16,6 +18,7 @@ const flags = args.filter((a) => a.startsWith('--'));
 const names = args.filter((a) => !a.startsWith('--'));
 const dry = flags.includes('--dry');
 const branch = (flags.find((f) => f.startsWith('--branch=')) || '--branch=main').split('=')[1];
+const projectOverride = (flags.find((f) => f.startsWith('--project=')) || '').split('=')[1] || '';
 const targets = names.includes('all') ? Object.keys(cfg).filter((k) => k !== 'note') : names;
 
 if (!targets.length || targets.some((t) => !cfg[t] || t === 'note')) {
@@ -42,7 +45,8 @@ if (!flags.includes('--no-gate')) {
 }
 
 for (const t of targets) {
-  const { dir, project } = cfg[t];
+  const { dir } = cfg[t];
+  const project = projectOverride || cfg[t].project;
   if (!dry && !fs.existsSync(`${dir}/index.html`)) { console.error(`${dir}/index.html not found`); process.exit(1); }
   // create the project the first time; harmless if it exists
   const made = run('npx', ['--yes', WRANGLER, 'pages', 'project', 'create', project, '--production-branch', branch], { capture: true });
@@ -51,5 +55,9 @@ for (const t of targets) {
   if (made.status === 0 && !dry) console.log(`created project ${project}`);
   const dep = run('npx', ['--yes', WRANGLER, 'pages', 'deploy', dir, '--project-name', project, '--branch', branch, '--commit-dirty=true']);
   if (dep.status !== 0) { console.error(`\nDeploy of ${t} failed.`); process.exit(1); }
-  console.log(`\n${t}: https://${project}.pages.dev   (open /verify-site/ on it: it must say all files match)`);
+  console.log(`\n${t}: uploaded to the Pages project "${project}".`);
+  console.log(`  Test address: https://${project}.pages.dev`);
+  console.log('  Your domain (meeting-mind.com) shows this upload only if it is attached to this project.');
+  console.log('  Check with: npm run deploy:where   (the project whose Domains column lists meeting-mind.com is the one to deploy to)');
+  console.log('  Then open https://meeting-mind.com/verify-site/ : it must say all files match.');
 }

@@ -1,3 +1,7 @@
+# Checkpoint 19: lab shown on the course page; deploy can target the project that holds meeting-mind.com
+
+`npm run deploy:where` lists Pages projects and their domains; `npm run deploy -- home --project=NAME` uploads to a named project. Course page, inclusion card and lesson rows now mention the lab.
+
 # Checkpoint 18: hands-on lab (your own arc42 inside the course)
 
 New: `/training/arc42/course/lab/`. 16 lab steps, one per lesson, from the workshop's real exercises (source: `site/training/arc42/lab.json`; paid steps are encrypted like the lessons). Autosave in the browser (`iw-lab-doc`), live preview, health check, Markdown import and download, a lab card on each lesson and on My course. Logo SVGs slimmed 30%.

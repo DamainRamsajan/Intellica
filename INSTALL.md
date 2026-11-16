@@ -62,6 +62,8 @@ npm run deploy -- home
 ```
 It runs `npm run sync` (which also builds `dist/`, the folder that is uploaded), runs the gate, creates the Pages project `intellica-web` the first time, and uploads `dist/`. Everything is one site on one domain: the home page at `/` and each system in its own folder (`/verichain/`, `/vericrypt/`, `/sovereign-erp/`, `/omc/`, `/agentseed/`). No subdomains and no other Pages projects are needed.
 
+**Which project does meeting-mind.com show?** Only the one it is attached to. `npm run deploy:where` lists your Pages projects with a Domains column. If `meeting-mind.com` is listed against a different project than `intellica-web`, deploy to that one: `npm run deploy -- home --project=<that project name>`. Or move the domain to `intellica-web` as below.
+
 Point the domain (once, in the dashboard, because it also creates the DNS record):
 1. Old MeetingMind Pages project > Custom domains > remove `meeting-mind.com` and `www`.
 2. Workers & Pages > `intellica-web` > Custom domains > Set up a domain > `meeting-mind.com`. Optional: the same for `www`, plus a Redirect Rule from `www` to the apex.

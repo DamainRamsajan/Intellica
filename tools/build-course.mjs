@@ -231,13 +231,15 @@ function unlockBlock(probe) {
       </form>`;
 }
 
+const labFor = (l) => (LAB ? LAB.steps.find((x) => x.id === l.id) : null);
+
 function modulesHtml(w, c, byId) {
   return c.modules.map((m, mi) => `
         <section class="module" aria-labelledby="m${mi}" data-module>
           <header><h3 id="m${mi}">${esc(m.title)}</h3><p>${esc(m.note)}</p></header>
           <ol class="lessons" start="${m.lessons.length ? byId[m.lessons[0]].num : 1}">
 ${m.lessons.map((id) => { const l = byId[id]; return `            <li data-lesson="${l.id}" data-min="${l.minutes}" class="lesson${l.free ? ' is-free' : ''}">
-              <a href="${w.path}course/${l.id}/"><span class="ln">${l.num}</span><span class="lt"><strong>${esc(l.title)}</strong><span class="lm">${l.titles.length} slides, about ${l.minutes} min${l.optional ? ', optional' : ''}</span></span></a>
+              <a href="${w.path}course/${l.id}/"><span class="ln">${l.num}</span><span class="lt"><strong>${esc(l.title)}</strong><span class="lm">${l.titles.length} slides, about ${l.minutes} min${l.optional ? ', optional' : ''}${labFor(l) ? ` · lab ${labFor(l).minutes} min` : ''}</span></span></a>
               <span class="badge ${l.free ? 'badge-free' : 'badge-paid'}" data-badge>${l.free ? 'Free preview' : 'Course'}</span>
             </li>`; }).join('\n')}
           </ol>
@@ -280,6 +282,7 @@ ${subnav(w, 'course/')}
           <ul>
             <li>${lessons.length} lessons, the first two free</li>
             <li>A transcript for every slide</li>
+            ${LAB ? `<li>${LAB.steps.length} hands-on lab steps: write your own arc42</li>` : ''}
             <li>Recall cards and spaced review</li>
             <li>The Doubles-to-Go worked example</li>
           </ul>
@@ -293,6 +296,7 @@ ${subnav(w, 'course/')}
       <div><b>${hours} hours</b><span>of study</span></div>
       <div><b>${slideCount}</b><span>slides with transcripts</span></div>
       <div><b>${exercises}</b><span>timed exercises</span></div>
+      ${LAB ? `<div><b>${LAB.steps.length}</b><span>lab steps on your own arc42</span></div>` : ''}
       <div><b>1</b><span>worked example you can run</span></div>
     </div>
 
@@ -329,6 +333,7 @@ ${c.method.map((m) => `        <div><h3>${esc(m.title)}</h3><p>${esc(m.text)}</p
           <ul class="facts">
             <li>All ${lessons.length} lessons, in the player, on any device</li>
             <li>A transcript and read-aloud for every slide</li>
+            ${LAB ? `<li>A hands-on lab: ${LAB.steps.length} steps that build your own arc42 in the browser, ready to download</li>` : ''}
             <li>Recall questions and spaced review</li>
             <li>The Doubles-to-Go arc42 and working app, with its tests</li>
             <li>Lifetime access to this edition</li>

@@ -29,7 +29,8 @@
     "example:pack": "python3 tools/pack-example.py",
     "example:test": "cd training-material/doubles-to-go/app && npm test",
     "fonts": "node tools/install-fonts.mjs",
-    "assemble": "node tools/assemble.mjs"
+    "assemble": "node tools/assemble.mjs",
+    "deploy:where": "npx --yes wrangler@4 pages project list"
   },
   "engines": {
     "node": ">=20"
