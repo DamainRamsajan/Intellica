@@ -56,8 +56,5 @@ for (const t of targets) {
   const dep = run('npx', ['--yes', WRANGLER, 'pages', 'deploy', dir, '--project-name', project, '--branch', branch, '--commit-dirty=true']);
   if (dep.status !== 0) { console.error(`\nDeploy of ${t} failed.`); process.exit(1); }
   console.log(`\n${t}: uploaded to the Pages project "${project}".`);
-  console.log(`  Test address: https://${project}.pages.dev`);
-  console.log('  Your domain (meeting-mind.com) shows this upload only if it is attached to this project.');
-  console.log('  Check with: npm run deploy:where   (the project whose Domains column lists meeting-mind.com is the one to deploy to)');
-  console.log('  Then open https://meeting-mind.com/verify-site/ : it must say all files match.');
+  console.log('  Live at https://meeting-mind.com . Check https://meeting-mind.com/verify-site/ : it must say all files match.');
 }

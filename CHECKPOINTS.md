@@ -1,3 +1,5 @@
+# Checkpoint 20: deploy message points at meeting-mind.com (project intellica-web)
+
 # Checkpoint 19: lab shown on the course page; deploy can target the project that holds meeting-mind.com
 
 `npm run deploy:where` lists Pages projects and their domains; `npm run deploy -- home --project=NAME` uploads to a named project. Course page, inclusion card and lesson rows now mention the lab.
