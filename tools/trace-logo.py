@@ -42,6 +42,17 @@ out = 'site/assets/logo'
 os.makedirs(out, exist_ok=True)
 LIGHT, TEAL_D, NAVY, TEAL = '#e8eeff', '#19c5c0', '#06214d', '#00a9a6'
 # on dark backgrounds (the site): white navy parts, brighter teal
+import re as _re
+def slim(svg):
+    # whole-pixel coordinates and implicit lineto: the logo is drawn at most ~70 px tall, so this is invisible and ~40% smaller
+    def d(m):
+        p = _re.sub(r'(-?\d+\.\d+)', lambda x: str(round(float(x.group(1)))), m.group(1))
+        p = _re.sub(r'L(?=-?\d)', ' ', p)
+        p = _re.sub(r'M(-?\d+ -?\d+) ', r'M\1 L', p)
+        return ' d="' + _re.sub(r'\s+', ' ', p) + '"'
+    return _re.sub(r' d="([^"]*)"', d, svg)
+_svg = svg
+svg = lambda *a, **k: slim(_svg(*a, **k))
 open(f'{out}/intellica-mark.svg', 'w').write(svg((180, 100, 440, 500), ['mark'], LIGHT, TEAL_D))
 open(f'{out}/intellica-logo.svg', 'w').write(svg((180, 100, 1840, 500), ['mark', 'word'], LIGHT, TEAL_D))
 open(f'{out}/intellica-logo-tagline.svg', 'w').write(svg((180, 100, 1840, 480), ['mark', 'word', 'tag'], LIGHT, TEAL_D))

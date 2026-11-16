@@ -462,6 +462,92 @@ await step('course: "My course" without a valid code sends you back to the cours
   await page.waitForURL((u) => /\/course\/$/.test(u.pathname));
   await ctx.close();
 });
+await step('lab: a free step works without a code, autosaves, survives a reload, and exports the document', async () => {
+  const ctx = await browser.newContext({ acceptDownloads: true }); const page = await ctx.newPage();
+  const errs = []; page.on('pageerror', (e) => errs.push(e.message));
+  await page.goto(CRS + 'lab/');
+  await page.waitForSelector('[data-lab-page]:not([hidden]) [data-step-panel] h2');
+  assert.match(await page.locator('[data-step-panel] h2').innerText(), /Set up your project/);
+  await page.fill('[data-sys]', 'Test Shop');
+  await page.fill('[data-text]', '| | |\n|---|---|\n| **System** | A shop for tests |\n');
+  for (let k = 0; k < 4; k++) await page.locator('.lab-done input').nth(k).check();
+  await page.waitForFunction(() => /Saved on this device/.test(document.querySelector('[data-status]').textContent));
+  await page.reload();
+  await page.waitForSelector('[data-step-panel] h2');
+  assert.equal(await page.inputValue('[data-sys]'), 'Test Shop');
+  assert.match(await page.inputValue('[data-text]'), /A shop for tests/);
+  assert.equal(await page.locator('.lab-done input:checked').count(), 4, 'ticked checks persist');
+  assert.match(await page.locator('[data-prog]').innerText(), /^1 of 16/);
+  // a paid step is locked without a code, but its section can still be written
+  await page.selectOption('[data-step-select]', 'part-2-1-goals');
+  await page.waitForSelector('[data-step-panel] .btn');
+  assert.match(await page.locator('[data-step-panel]').innerText(), /part of the full course/);
+  await page.locator('[data-sec="s1"]').click();
+  assert.match(await page.inputValue('[data-text]'), /## 1\. Introduction and Goals/);
+  const [dl] = await Promise.all([page.waitForEvent('download'), page.click('[data-download]')]);
+  assert.equal(dl.suggestedFilename(), 'test-shop-arc42.md');
+  const md = (await import('node:fs')).readFileSync(await dl.path(), 'utf8');
+  assert.match(md, /^# Test Shop: architecture documentation \(arc42\)/);
+  assert.match(md, /A shop for tests/);
+  for (let n = 1; n <= 12; n++) assert.ok(new RegExp(`^## ${n}\\. `, 'm').test(md), `section ${n} is in the export`);
+  assert.deepEqual(errs, []);
+  await ctx.close();
+});
+await step('lab: with a code the paid steps open with instructions, the example, the health check and the preview', async () => {
+  const ctx = await browser.newContext(); const page = await ctx.newPage();
+  await page.goto(CRS);
+  await page.evaluate((c) => localStorage.setItem('iw-course-code', c), mkCode('Lab Buyer'));
+  await page.goto(CRS + 'lab/?step=part-2-1-goals');
+  await page.waitForSelector('[data-step-panel] .lab-do');
+  assert.match(await page.locator('[data-step-panel] h2').innerText(), /section 1/);
+  assert.ok((await page.locator('.lab-ex summary').count()) === 1, 'worked example is offered');
+  assert.equal(await page.locator('[data-sec].is-on').getAttribute('data-sec'), 's1', 'opens on the section the step is about');
+  // the health check reports gaps and clears them as the document is written
+  await page.click('[data-check] summary');
+  assert.match(await page.locator('[data-check-badge]').innerText(), /to look at/i);
+  assert.match(await page.locator('[data-check-list]').innerText(), /Every section has been written/);
+  // a scenario without a number is called out
+  await page.locator('[data-sec="s10"]').click();
+  await page.fill('[data-text]', '## 10. Quality Requirements\n\n| ID | Goal | Stimulus | Response | Measure |\n|---|---|---|---|---|\n| Q1 | #fast | a click | a page | quickly |\n');
+  assert.match(await page.locator('[data-check-list]').innerText(), /No number: Q1/);
+  // preview renders tables as tables, and a diagram offers Mermaid Live
+  await page.locator('[data-sec="head"]').click();
+  await page.click('[data-snip="Mermaid graph"]');
+  await page.click('[data-view="preview"]');
+  assert.ok(await page.locator('.lab-preview table').count() >= 1);
+  assert.match(await page.locator('.lab-preview figcaption a').first().getAttribute('href'), /^https:\/\/mermaid\.live\/edit#base64:/);
+  // nothing the student writes becomes markup
+  await page.click('[data-view="write"]');
+  await page.fill('[data-text]', '<img src=x onerror=window.__pwn=1> **bold**');
+  await page.click('[data-view="preview"]');
+  assert.equal(await page.evaluate(() => window.__pwn), undefined);
+  assert.equal(await page.locator('.lab-preview img').count(), 0);
+  // import: a document pasted in elsewhere comes in as sections
+  await page.click('[data-view="write"]');
+  page.once('dialog', (d) => d.accept());
+  await page.setInputFiles('[data-file]', { name: 'mine.md', mimeType: 'text/markdown', buffer: Buffer.from('# Pet Shop: architecture documentation (arc42)\n\n## 1. Introduction and Goals\n\nWe sell pets.\n\n## 2. Constraints\n\nNone yet.\n') });
+  await page.waitForFunction(() => document.querySelector('[data-sys]').value === 'Pet Shop');
+  await page.locator('[data-sec="s1"]').click();
+  assert.match(await page.inputValue('[data-text]'), /We sell pets\./);
+  await page.locator('[data-sec="s2"]').click();
+  assert.match(await page.inputValue('[data-text]'), /None yet\./);
+  await ctx.close();
+});
+await step('lab: finishing a lesson offers its lab step, and "My course" shows lab progress', async () => {
+  const ctx = await browser.newContext(); const page = await ctx.newPage();
+  await page.goto(CRS);
+  await page.evaluate((c) => localStorage.setItem('iw-course-code', c), mkCode('Lab Buyer'));
+  await page.goto(CRS + 'part-2-1-goals/');
+  await page.waitForSelector('[data-lab-cta]:not([hidden])');
+  const href = await page.locator('[data-lab-cta] a').getAttribute('href');
+  assert.match(href, /\/course\/lab\/\?step=part-2-1-goals$/);
+  await page.evaluate(() => localStorage.setItem('iw-lab-doc', JSON.stringify({ v: 1, system: 'X', sections: { s1: '## 1. Introduction and Goals\nhello' }, steps: { 'part-0-opening': { checks: [true], done: true } } })));
+  await page.goto(CRS + 'learn/');
+  await page.waitForSelector('[data-learn-page]:not([hidden])');
+  assert.match(await page.locator('[data-lab-sum]').innerText(), /1 of 16 steps finished/);
+  assert.match(await page.locator('[data-lab-link]').innerText(), /Continue your lab/);
+  await ctx.close();
+});
 await step('workshop page: the twelve-section card shows the question for the section you tap, and lines up with the headline', async () => {
   const page = await open(HOME + WS);
   await page.locator('.sheet .cell').nth(2).click();

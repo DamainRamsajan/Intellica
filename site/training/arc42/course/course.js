@@ -4,7 +4,8 @@
 // Everything is stored in this browser only (localStorage), and every read is wrapped in try/catch.
 import { $, $$, el, storage } from '/kit/dom.js';
 
-const CODE_KEY = 'iw-course-code';
+export const CODE_KEY = 'iw-course-code';
+export const LAB_KEY = 'iw-lab-doc'; // the student's own arc42 (see lab.js)
 const PROGRESS_KEY = 'iw-course-progress';
 const REVIEW_KEY = 'iw-course-review';
 const POS_KEY = 'iw-course-pos';
@@ -24,7 +25,7 @@ export function parseCode(text) {
   return null;
 }
 
-async function decryptLesson(url, id, code) {
+export async function decryptLesson(url, id, code) {
   const res = await fetch(url);
   if (!res.ok) throw new Error('missing');
   const enc = await res.json();
@@ -92,6 +93,7 @@ function rate(lesson, i, ok) {
 /* ---------- the player ---------- */
 
 function initPlayer(root, data, code) {
+  showLabCta();
   const stage = $('[data-stage]', root), frame = $('[data-frame]', root);
   const pos = $('[data-pos]', root), prev = $('[data-prev]', root), next = $('[data-next]', root);
   const reveal = $('[data-reveal]', root), speak = $('[data-speak]', root), rateSel = $('[data-rate]', root);
@@ -214,6 +216,41 @@ function initPlayer(root, data, code) {
 
   const resumeAt = readJSON(POS_KEY, {})[lesson];
   show(Number.isInteger(resumeAt) && resumeAt > 0 && resumeAt < n - 1 ? resumeAt : 0);
+}
+
+/* ---------- the lab, seen from lessons and from "My course" ---------- */
+
+const readLab = () => readJSON(LAB_KEY, { sections: {}, steps: {} });
+
+// Shown under a lesson once it is open: the hands-on step for this lesson, with a hint of where the student's own document stands.
+function showLabCta() {
+  const box = $('[data-lab-cta]');
+  if (!box) return;
+  const doc = readLab();
+  const started = Object.keys(doc.sections || {}).filter((k) => /^s\d+$/.test(k)).length;
+  const st = (doc.steps || {})[box.dataset.step];
+  const meta = $('[data-lab-meta]', box);
+  if (st && st.done) meta.textContent = 'You finished this step. Open it again to refine your work.';
+  else if (started) meta.textContent = `Your arc42 so far: ${started} of 12 sections started. This step opens where you left off.`;
+  box.hidden = false;
+}
+
+function showLabCard(root) {
+  const card = $('[data-lab-card]', root);
+  if (!card) return;
+  const ids = card.dataset.labSteps.split(','), titles = card.dataset.labTitles.split('|');
+  const doc = readLab();
+  const doneN = ids.filter((id) => doc.steps && doc.steps[id] && doc.steps[id].done).length;
+  const nextI = ids.findIndex((id) => !(doc.steps && doc.steps[id] && doc.steps[id].done));
+  const started = Object.keys(doc.sections || {}).length > 0;
+  $('[data-lab-fill]', card).style.width = `${Math.round((doneN / ids.length) * 100)}%`;
+  const link = $('[data-lab-link]', card);
+  if (nextI < 0) { $('[data-lab-sum]', card).textContent = `All ${ids.length} lab steps finished. Your arc42 is yours to keep: download it from the lab.`; link.textContent = 'Open your arc42'; return; }
+  if (started || doneN) {
+    $('[data-lab-sum]', card).textContent = `${doneN} of ${ids.length} steps finished. Next: ${titles[nextI]}.`;
+    link.setAttribute('href', `${link.getAttribute('href').split('?')[0]}?step=${ids[nextI]}`);
+    link.textContent = 'Continue your lab';
+  }
 }
 
 /* ---------- pages ---------- */
@@ -342,6 +379,7 @@ async function learnPage() {
     $('[data-next-meta]', root).textContent = 'Review anything again, or work through the recall cards.';
     link.setAttribute('href', $('a', rows[0]).getAttribute('href')); link.textContent = 'Review from lesson 1';
   }
+  showLabCard(root);
   const due = dueByLesson();
   const ids = Object.keys(due).filter((id) => rows.some((li) => li.dataset.lesson === id));
   $('[data-dueN]', root).textContent = String(ids.reduce((a, id) => a + due[id], 0));
@@ -358,3 +396,4 @@ async function learnPage() {
 
 const kind = document.body.dataset.course;
 if (kind === 'lesson') lessonPage(); else if (kind === 'index') indexPage(); else if (kind === 'learn') learnPage();
+else if (kind === 'lab') import('/training/arc42/course/lab.js').then((m) => m.labPage());

@@ -151,6 +151,7 @@ function buildLessons(deck, freeIds, skip = []) {
 /* ---------- pages ---------- */
 
 let base = '';
+let LAB = null; // the hands-on lab (site/training/<id>/lab.json), loaded per workshop in the run block
 
 function page({ title, description, canonicalPath, body, bodyAttrs = '', extraHead = '' }) {
   const url = base + canonicalPath;
@@ -402,6 +403,12 @@ function learnPage(w, c, lessons) {
           </div>
         </section>
         <aside class="l-side" aria-label="Review and resources">
+          ${LAB ? `<section class="l-card l-lab" data-lab-card data-lab-steps="${LAB.steps.map((x) => x.id).join(',')}" data-lab-titles="${esc(LAB.steps.map((x) => x.title).join('|'))}">
+            <h2>Your lab</h2>
+            <p class="muted small" data-lab-sum>Your own arc42, built step by step after each lesson. ${LAB.steps.length} steps. Saved on this device.</p>
+            <div class="cbar" aria-hidden="true"><i data-lab-fill></i></div>
+            <a class="btn btn-primary" data-lab-link href="${w.path}course/lab/">Open your lab</a>
+          </section>` : ''}
           <section class="l-card" data-due hidden>
             <h2>Review today</h2>
             <p class="muted small">Questions you missed or are due again. A few minutes now saves hours later.</p>
@@ -485,6 +492,8 @@ ${subnav(w, 'course/')}
       <noscript><p>The lesson player needs JavaScript. If you cannot use it, write to us and we will send the material another way.</p></noscript>
     </div>
 
+    ${labCta(w, l)}
+
     <nav class="lesson-nav" aria-label="Lessons">
       ${prev ? `<a class="btn btn-ghost" href="${w.path}course/${prev.id}/">&larr; ${esc(prev.title)}</a>` : '<span></span>'}
       ${next ? `<a class="btn btn-ghost" href="${w.path}course/${next.id}/">${esc(next.title)} &rarr;</a>` : ''}
@@ -497,6 +506,112 @@ ${subnav(w, 'course/')}
     body,
     bodyAttrs: ' data-course="lesson"',
   });
+}
+
+/* ---------- the hands-on lab ---------- */
+
+// Reads lab.json and joins the lesson order onto each step. A step whose lesson does not exist is an error, not a silent skip.
+function loadLab(dir, lessons) {
+  const f = path.join(dir, 'lab.json');
+  if (!fs.existsSync(f)) return null;
+  const raw = JSON.parse(fs.readFileSync(f, 'utf8'));
+  const keys = new Set(raw.sections.map((x) => x.key));
+  const steps = raw.steps.map((st) => {
+    const l = lessons.find((x) => x.id === st.id);
+    if (!l) throw new Error(`lab.json: step "${st.id}" names an unknown lesson`);
+    for (const k of st.sections) if (!keys.has(k)) throw new Error(`lab.json: step "${st.id}" names an unknown section "${k}"`);
+    const nx = lessons[lessons.indexOf(l) + 1];
+    return { ...st, free: l.free, lessonNum: l.num, lessonTitle: l.title, next: nx ? { id: nx.id, title: nx.title } : null };
+  });
+  steps.sort((a, b) => a.lessonNum - b.lessonNum);
+  return { sections: raw.sections, steps };
+}
+
+// Pulls each section out of the worked example so a student can read the finished version next to their own.
+function exampleSections(dir) {
+  const f = path.join(dir, 'example', 'arc42.md');
+  const out = {};
+  if (!fs.existsSync(f)) return out;
+  const text = fs.readFileSync(f, 'utf8');
+  const parts = text.split(/^## /m);
+  const cap = (t) => { const L = t.trim().split('\n'); return L.length > 70 ? L.slice(0, 70).join('\n') + '\n\n…(the full example is in the worked example)' : L.join('\n'); };
+  out.head = cap(parts[0].split('\n').slice(2).join('\n').split('---')[0]);
+  for (const part of parts.slice(1)) {
+    const m = part.match(/^(\d+)\. /);
+    if (m) out['s' + m[1]] = cap('## ' + part.replace(/\n---\s*$/, ''));
+  }
+  return out;
+}
+
+function labCta(w, l) {
+  const st = LAB && LAB.steps.find((x) => x.id === l.id);
+  if (!st) return '';
+  return `<aside class="lab-cta" data-lab-cta data-step="${st.id}" hidden aria-labelledby="lab-cta-t">
+      <p class="kicker-m">Hands-on lab · ${st.minutes} min</p>
+      <h2 id="lab-cta-t">${esc(st.title)}</h2>
+      <p class="muted" data-lab-meta>Apply this lesson to your own arc42. It opens where you left off, and saves on this device as you type.</p>
+      <div class="actions"><a class="btn btn-primary" href="${w.path}course/lab/?step=${st.id}">Open this lab step</a></div>
+    </aside>`;
+}
+
+function labPage(w, c, lessons) {
+  const first = lessons.find((l) => !l.free);
+  const body = `
+${subnav(w, 'course/')}
+    <div class="lab" data-lab-page data-index="${w.path}course/data/lab-index.json" data-course-url="${w.path}course/" data-learn="${w.path}course/learn/" data-probe-url="${w.path}course/data/${first.id}.json" data-probe-id="${first.id}" data-example="${w.path}example/" hidden>
+      <header class="lab-top">
+        <div class="lab-title">
+          <p class="eyebrow">Hands-on lab</p>
+          <h1>Your arc42</h1>
+        </div>
+        <label class="lab-sys">System name<input data-sys type="text" autocomplete="off" spellcheck="false" maxlength="80" placeholder="e.g. Doubles-to-Go"></label>
+        <div class="lab-tools" role="group" aria-label="Document actions">
+          <span class="lab-status muted small" role="status" data-status>Saved on this device</span>
+          <button class="btn btn-ghost" type="button" data-download>Download arc42.md</button>
+          <button class="btn btn-ghost" type="button" data-download-agents hidden>Download AGENTS.md</button>
+          <button class="btn btn-ghost" type="button" data-import>Import .md</button>
+          <button class="btn btn-ghost" type="button" data-reset>Start over</button>
+          <input type="file" accept=".md,.markdown,.txt,text/markdown,text/plain" data-file hidden aria-label="Import a Markdown file">
+        </div>
+      </header>
+
+      <div class="lab-stepbar" role="group" aria-label="Lab steps">
+        <button class="btn btn-ghost" type="button" data-prev aria-label="Previous step">&larr;</button>
+        <label class="lab-pick">Step<select data-step-select></select></label>
+        <button class="btn btn-ghost" type="button" data-next aria-label="Next step">&rarr;</button>
+        <div class="lab-prog"><span class="muted small" data-prog>0 of 0 steps done</span><div class="cbar" aria-hidden="true"><i data-prog-fill></i></div></div>
+        <p class="muted small lab-note">Your work is stored in this browser only. Download it often: clearing browser data removes it.</p>
+      </div>
+
+      <div class="lab-grid">
+        <div class="lab-main">
+          <section class="lab-step" data-step-panel aria-live="polite" aria-label="Current lab step"></section>
+
+          <section class="lab-editor" aria-label="Document editor">
+            <div class="lab-secs" role="tablist" aria-label="Sections" data-secs></div>
+            <div class="lab-bar">
+              <div class="lab-views" role="group" aria-label="View">
+                <button type="button" class="seg is-on" data-view="write" aria-pressed="true">Write</button>
+                <button type="button" class="seg" data-view="preview" aria-pressed="false">Preview</button>
+                <button type="button" class="seg" data-view="whole" aria-pressed="false">Whole document</button>
+              </div>
+              <div class="lab-snips" role="group" aria-label="Insert" data-snips></div>
+            </div>
+            <textarea class="lab-text" data-text spellcheck="false" aria-label="Section text (Markdown)"></textarea>
+            <div class="lab-preview" data-preview hidden></div>
+            <p class="muted small lab-count" data-count></p>
+          </section>
+
+          <details class="lab-check" data-check>
+            <summary><span>Health check</span><span class="badge" data-check-badge>0 issues</span></summary>
+            <p class="muted small">Quick automatic checks, like the ones a reviewer does by eye. They catch gaps, not quality.</p>
+            <ul data-check-list></ul>
+          </details>
+        </div>
+      </div>
+    </div>
+    <noscript><p class="lead">The lab needs JavaScript. It runs entirely in your browser.</p></noscript>`;
+  return page({ title: `Lab: your arc42 | ${w.title} online`, description: `Write your own arc42 documentation inside the ${w.title} course, one lesson at a time.`, canonicalPath: `${w.path}course/lab/`, body, bodyAttrs: ' data-course="lab"', extraHead: '<meta name="robots" content="noindex">' });
 }
 
 /* ---------- run ---------- */
@@ -520,6 +635,7 @@ if (import.meta.url === `file://${process.argv[1]}`) {
       lessons.sort((a, b) => rank(a) - rank(b));
       lessons.forEach((l, i) => { l.num = i + 1; });
     }
+    LAB = loadLab(dir, lessons);
     for (const f of c.free || []) if (!lessons.some((l) => l.id === f)) throw new Error(`course.free names an unknown lesson: ${f}`);
     if (process.argv.includes('--print-lessons')) { for (const l of lessons) console.log(l.id.padEnd(34), String(l.titles.length).padStart(3), 'slides', l.free ? 'FREE' : '    ', l.title); continue; }
     const out = path.join(dir, 'course');
@@ -528,6 +644,20 @@ if (import.meta.url === `file://${process.argv[1]}`) {
     fs.mkdirSync(path.join(out, 'data'), { recursive: true });
     fs.writeFileSync(path.join(out, 'course.css'), `/* Generated by tools/build-course.mjs: the deck's own look, scoped to .cstage, plus the course layout. */\n${scopedCss(deck.css)}\n${fs.readFileSync(path.join(SITE, 'training', 'course-layout.css'), 'utf8')}`);
     fs.writeFileSync(path.join(out, 'index.html'), indexPage(w, c, lessons));
+    if (LAB) {
+      const ex = exampleSections(dir);
+      const join = (a) => (Array.isArray(a) ? a.join('\n') : a);
+      const idx = { sections: LAB.sections.map((x) => ({ key: x.key, title: x.title, short: x.short, extra: !!x.extra, template: join(x.template), snippets: (x.snippets || []).map((n) => ({ label: n.label, text: join(n.text) })) })),
+        steps: LAB.steps.map((x) => ({ id: x.id, title: x.title, sections: x.sections, minutes: x.minutes, free: x.free, lessonNum: x.lessonNum, lessonTitle: x.lessonTitle, next: x.next })) };
+      fs.writeFileSync(path.join(out, 'data', 'lab-index.json'), JSON.stringify(idx));
+      for (const st of LAB.steps) {
+        const detail = { brief: st.brief, do: st.do, done: st.done, experienced: st.experienced || '', example: ex[st.sections[0]] || '', exampleKey: st.sections[0] };
+        const fid = `lab-${st.id}`;
+        fs.writeFileSync(path.join(out, 'data', `${fid}.json`), JSON.stringify(st.free ? detail : encrypt(key, fid, detail)));
+      }
+      fs.mkdirSync(path.join(out, 'lab'), { recursive: true });
+      fs.writeFileSync(path.join(out, 'lab', 'index.html'), labPage(w, c, lessons));
+    }
     fs.mkdirSync(path.join(out, 'learn'), { recursive: true });
     fs.writeFileSync(path.join(out, 'learn', 'index.html'), learnPage(w, c, lessons));
     for (const l of lessons) {

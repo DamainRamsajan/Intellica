@@ -1,3 +1,7 @@
+# Checkpoint 18: hands-on lab (your own arc42 inside the course)
+
+New: `/training/arc42/course/lab/`. 16 lab steps, one per lesson, from the workshop's real exercises (source: `site/training/arc42/lab.json`; paid steps are encrypted like the lessons). Autosave in the browser (`iw-lab-doc`), live preview, health check, Markdown import and download, a lab card on each lesson and on My course. Logo SVGs slimmed 30%.
+
 # Checkpoint 17: dark-only, new logo, player upgrades, hero layout fix
 
 # Checkpoints
