@@ -351,6 +351,22 @@ body[data-tab="home"] .hero-copy { padding-top: var(--s5); }
 .brand-logo { aspect-ratio: 1840 / 500; }
 .foot-brand .brand-logo { aspect-ratio: 1840 / 480; }
 
+/* v0.7 home: what we do */
+.do-card { display: flex; flex-direction: column; gap: var(--s2); text-decoration: none; color: var(--text); border-top: 3px solid var(--accent); }
+.do-card h3 { color: var(--text-hi); font-size: var(--text-lg); margin: 0; }
+.do-card p { margin: 0; font-size: var(--text-sm); }
+.do-k { font: 500 var(--text-xs)/1 var(--font-mono); letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent-ink); }
+.do-go { margin-top: auto; padding-top: var(--s3); color: var(--accent-ink); font-weight: 600; font-size: var(--text-sm); }
+
+/* v0.7 phones: logo on its own row, then Consulting, Training, Systems and the WhatsApp button on one row */
+@media (max-width: 760px) {
+  .bar-right { width: 100%; flex-wrap: nowrap; justify-content: space-between; gap: var(--s1); }
+  .bar-nav ul { gap: 0; }
+  .bar-nav a { padding: 0 var(--s2); font-size: var(--text-sm); }
+  .family summary { padding-inline: var(--s3); }
+}
+@media (max-width: 400px) { .bar-right { flex-wrap: wrap; justify-content: flex-start; } .bar-nav a { padding: 0 var(--s2); } }
+
 /* fonts:start (written by tools/install-fonts.mjs) */
 @font-face { font-family: "IBM Plex Sans"; font-style: normal; font-weight: 400; font-display: optional; src: url("/assets/fonts/ibm-plex-sans-latin-400-normal.woff2") format("woff2"); }
 @font-face { font-family: "IBM Plex Sans"; font-style: normal; font-weight: 600; font-display: optional; src: url("/assets/fonts/ibm-plex-sans-latin-600-normal.woff2") format("woff2"); }

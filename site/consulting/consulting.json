@@ -1,0 +1,98 @@
+{
+  "title": "Consulting",
+  "description": "Intellica consulting: AI readiness reviews, architecture for AI-assisted delivery, AI and agent engineering, governance, post-quantum readiness and AI value proof. Check where you stand with three free self-assessments.",
+  "hero": {
+    "kicker": "Consulting · AI engineering",
+    "title": "AI that works in your organisation, and evidence that it does.",
+    "highlight": "evidence",
+    "lead": "Intellica helps engineering, risk and finance leaders adopt AI with their eyes open: find where you really stand, fix the foundations that decide whether AI helps or hurts, and leave with results your own team can check.",
+    "primary": { "label": "Check your AI readiness", "href": "#assess" },
+    "secondary": { "label": "See how we work", "href": "#engagements" }
+  },
+  "why": {
+    "kicker": "Why measure first",
+    "title": "The evidence says: AI amplifies what is already there",
+    "lead": "Four findings that shape how we work. None of them says AI does not work. All of them say the result depends on the foundations, and on measuring instead of assuming.",
+    "cards": [
+      { "stat": "Amplifier", "title": "AI magnifies your existing practice", "text": "The 2025 DORA report on AI-assisted software development concludes that AI's primary role is that of an amplifier: strong practices get stronger, and weak ones get exposed.", "src": "dora" },
+      { "stat": "19%", "title": "Feeling faster is not being faster", "text": "In a randomised trial of 16 experienced open-source developers on 246 real tasks, using AI tools made them 19% slower. They expected a 24% speed-up and still believed they had been about 20% faster afterwards. The authors stress that this is early-2025 tools in one setting.", "src": "metr" },
+      { "stat": "+20%", "title": "Context files are not free", "text": "An ETH Zurich study reported in March 2026 found that machine-generated agent context files lowered coding-agent success by about 3% while raising inference cost by over 20%. Developer-written files helped only slightly (about 4%). What you write, and how short you keep it, matters.", "src": "eth" },
+      { "stat": "2027", "title": "The rules are moving; the expectation is not", "text": "The EU's 2026 AI omnibus moved the high-risk obligations of the AI Act to 2 December 2027 (stand-alone systems) and 2 August 2028 (AI inside regulated products). The dates slipped. The expectation that you can show what AI you run and how you control it did not.", "src": "fpf" }
+    ]
+  },
+  "engagements": {
+    "kicker": "How we can work with you",
+    "title": "Six ways to start, each ending in something you can check",
+    "lead": "Every engagement begins with a written scope: the question we are answering, the evidence we will produce, and the end date. We hand over documents, tests and tools in open formats, so your team can re-run what we did.",
+    "items": [
+      { "id": "readiness", "n": "01", "title": "AI Readiness Review", "tag": "Start here",
+        "pitch": "Where you really stand, by evidence instead of opinion.",
+        "gets": ["A scored review across strategy, data, technology, talent, governance and culture", "Interviews and checks of real artefacts, not just questionnaires", "A ranked plan with owners, so the first month is obvious"],
+        "check": "Every score links to the evidence behind it.",
+        "cta": "Begin with the free self-check below." },
+      { "id": "architecture", "n": "02", "title": "Architecture for AI-assisted delivery", "tag": "Engineering",
+        "pitch": "One source of truth that people and coding agents both work from.",
+        "gets": ["Current arc42 documentation of your system, written with your team", "Decision records, and a short hand-written guide for coding agents", "Architecture rules turned into tests that fail when generated code breaks them"],
+        "check": "The rules run in your own CI, and anyone can read them.",
+        "cta": "Your team can learn the method in our arc42 workshop." },
+      { "id": "agents", "n": "03", "title": "AI features and agents, built to be evaluated", "tag": "Build",
+        "pitch": "LLM and agent features that ship with proof they work.",
+        "gets": ["Evaluation sets written before launch, so quality has a number", "Guardrails, human approval points, and cost and latency budgets", "Tracing and monitoring so you can see what the system did and why"],
+        "check": "Evaluation results and traces you can re-run yourself.",
+        "cta": "Related systems: AgentSeed and VeriChain." },
+      { "id": "assurance", "n": "04", "title": "Assurance and governance", "tag": "Risk",
+        "pitch": "Evidence an auditor, a regulator or a customer can follow.",
+        "gets": ["An AI inventory with risk tiers, owners and data use", "Controls mapped to the NIST AI RMF, ISO/IEC 42001 and EU AI Act obligations", "Tamper-evident audit trails for consequential agent actions"],
+        "check": "Logs and reports that verify offline, without trusting us.",
+        "cta": "Related system: VeriChain." },
+      { "id": "pqc", "n": "05", "title": "Post-quantum readiness", "tag": "Security",
+        "pitch": "Know your cryptography before you have to migrate it.",
+        "gets": ["An inventory of the cryptography across your estate", "A ranking of quantum-vulnerable assets by exposure", "A migration plan, and a signed report anyone can verify offline"],
+        "check": "The report verifies on any machine, offline.",
+        "cta": "Related system: VeriCrypt." },
+      { "id": "value", "n": "06", "title": "AI value and cost proof", "tag": "Finance",
+        "pitch": "Show what AI work is actually worth.",
+        "gets": ["Baselines set before the work, so the comparison is fair", "Attribution for work shared between people, models and agents", "Statements your finance team can recompute"],
+        "check": "Your finance team recomputes the numbers.",
+        "cta": "Related system: OMC (in design)." }
+    ],
+    "enable": { "title": "Building the skill inside your team", "text": "Our workshops and the online course teach teams the method, and the new hands-on lab has each learner build their own architecture document as they go.", "href": "/training/", "label": "See training" }
+  },
+  "how": {
+    "kicker": "How we work",
+    "title": "Four habits that run through every engagement",
+    "items": [
+      { "t": "Check, don't trust", "p": "Every deliverable says how to verify it yourself. If we cannot say how, we do not claim it." },
+      { "t": "Measure before and after", "p": "We set the baseline first. Without one, a result is an anecdote." },
+      { "t": "Your team keeps the skill", "p": "We write things down, teach the method and hand over the tools. You should need us less each month." },
+      { "t": "Plain formats", "p": "Markdown, open standards and tests that run in your pipeline. Nothing locks you in." }
+    ],
+    "steps": [
+      { "t": "Scope", "p": "We agree the question, the evidence we will produce and the end date, in writing." },
+      { "t": "Work", "p": "We work alongside your team on your real system, with a short written update each week." },
+      { "t": "Hand over", "p": "You receive the documents, tests and tools, and how to re-run them." }
+    ]
+  },
+  "assess": {
+    "kicker": "Free self-check",
+    "title": "Check where you stand in five minutes",
+    "lead": "Three short assessments. Each answer describes something observable, so you can pick what is true today instead of what you hope is true. Scores are worked out in your browser: nothing is sent or stored anywhere else unless you choose to share it.",
+    "note": "In Cisco's first AI Readiness Index (2023), 14% of 8,161 organisations surveyed were fully ready across six pillars: strategy, infrastructure, data, talent, governance and culture. Self-assessments tend to run optimistic, so when two answers seem to fit, choose the lower one.",
+    "caveat": "A self-assessment is a starting point, not an audit or a validated instrument. It shows where to look. An evidence-based review confirms."
+  },
+  "systems": {
+    "kicker": "Built on what we build",
+    "title": "Our own systems are the proof of the method",
+    "lead": "We build the tools we recommend, and each has a way to check its results yourself.",
+    "href": "/#products",
+    "label": "See all systems"
+  },
+  "cta": { "title": "Not sure where to start?", "text": "Tell us what you are trying to achieve with AI, and what you would need to be able to prove. We reply on WhatsApp." },
+  "sources": [
+    { "id": "dora", "label": "DORA, State of AI-assisted Software Development 2025", "url": "https://blog.google/technology/developers/dora-report-2025/" },
+    { "id": "metr", "label": "METR, early-2025 AI and experienced open-source developers (July 2025)", "url": "https://metr.org/blog/2025-07-10-early-2025-ai-experienced-os-dev-study/" },
+    { "id": "eth", "label": "InfoQ, review of the ETH Zurich study on AGENTS.md context files (March 2026)", "url": "https://infoq.com/news/2026/03/agents-context-file-value-review/" },
+    { "id": "fpf", "label": "Future of Privacy Forum, EU Digital Omnibus on AI", "url": "https://fpf.org/?p=250371" },
+    { "id": "cisco", "label": "Cisco AI Readiness Index 2023 (via Futurum)", "url": "https://futurumgroup.com/insights/cisco-study-finds-only-14-of-global-organizations-are-ai-ready" }
+  ]
+}

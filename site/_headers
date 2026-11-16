@@ -45,6 +45,9 @@
 /training/*
   Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'
 
+/consulting/*
+  Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'
+
 # The slides are a private presenter page: unlisted (not linked, not in the sitemap or manifest), kept out of
 # search engines, and allowed the microphone and screen capture its recording feature uses. This does NOT
 # make it secret: anyone with the link can open it. For real access control put Cloudflare Access in front

@@ -1,0 +1,162 @@
+{
+  "levels": [
+    { "max": 25, "name": "Starting", "text": "The foundations are not in place yet. A few simple, inexpensive moves will change both your risk and your speed." },
+    { "max": 50, "name": "Building", "text": "There are pockets of good practice, but they are not yet consistent. The work now is making the good parts the default." },
+    { "max": 75, "name": "Operating", "text": "Practice is solid and repeatable. The next gains come from measuring results and closing your weakest dimension." },
+    { "max": 100, "name": "Leading", "text": "Strong across the board. Keep it that way with independent evidence and continued measurement, not self-assessment." }
+  ],
+  "assessments": [
+    {
+      "id": "org",
+      "title": "AI readiness",
+      "for": "Leaders and heads of function",
+      "minutes": 5,
+      "intro": "How ready is your organisation to get lasting value from AI, beyond demos and pilots? Eighteen questions across six dimensions.",
+      "basis": "Six dimensions that mirror the pillars used in industry readiness studies: strategy, data, technology, talent, governance and culture.",
+      "dims": [
+        { "key": "strategy", "name": "Strategy and value", "short": "Strategy",
+          "qs": [
+            { "q": "How do you choose which AI use cases to pursue?", "a": ["Vendors and enthusiasm decide. There are no shared criteria.", "We keep a list of ideas but choose by gut feel.", "Ideas are scored on value and feasibility, and each has a named owner.", "A portfolio is reviewed on a schedule, and projects that miss their measures are stopped."] },
+            { "q": "How do you know an AI initiative paid off?", "a": ["We do not measure it.", "We report usage numbers or anecdotes.", "We compare against a baseline set before launch.", "Finance accepts the numbers, and they change budget decisions."] },
+            { "q": "How aligned is leadership on AI?", "a": ["Leaders hold different views and nobody is accountable.", "A sponsor exists, but time and budget are ad hoc.", "A named executive owns an agreed AI stance and budget.", "The stance is communicated and reviewed each quarter, and teams can say what it means for their work."] }
+          ],
+          "low": "Pick two use cases. For each, write down the baseline you will measure against and who owns it. Stop anything that has neither.",
+          "high": "Review your portfolio against measured outcomes this quarter, and retire one initiative that has not earned its place." },
+        { "key": "data", "name": "Data", "short": "Data",
+          "qs": [
+            { "q": "Can people find the data they need?", "a": ["Nobody can say where key data lives.", "A few people know. Nothing is documented.", "A catalogue or owner list covers the key datasets.", "Key datasets have owners, quality checks and documented access rules."] },
+            { "q": "How is data quality handled?", "a": ["Users find the problems.", "We clean data project by project.", "Quality is checked automatically on key datasets.", "Quality is monitored against thresholds, and bad data is stopped before it reaches a model."] },
+            { "q": "What may be used with AI tools?", "a": ["It is unclear.", "Rules exist, but people do not know them.", "Data is classified, and there is a clear rule for what can go to AI tools.", "The rules are enforced in tooling, logged and tested."] }
+          ],
+          "low": "List your five most important datasets: the owner, where each lives, and who may use it with AI. One page is enough.",
+          "high": "Add automated quality checks to your most-used datasets, and make bad data stop the pipeline instead of flowing on." },
+        { "key": "tech", "name": "Technology and platform", "short": "Technology",
+          "qs": [
+            { "q": "Where does AI work get built and run?", "a": ["Individuals use personal accounts.", "A few tools are approved. There is no standard setup.", "An approved platform with security review and cost tracking.", "A self-service platform with evaluation, monitoring and spend limits built in."] },
+            { "q": "How does AI connect to your systems?", "a": ["It sits outside them.", "People copy and paste between tools and systems.", "APIs connect AI to some workflows.", "Systems expose clean, versioned interfaces that AI features and agents use safely."] },
+            { "q": "How do changes reach production?", "a": ["Releases are manual and infrequent.", "CI exists, but tests are patchy.", "Automated tests and deployment cover most services.", "Changes ship in small batches with automated checks and fast rollback."] }
+          ],
+          "low": "Offer one approved way to use AI, with a cost cap and a security review, so people stop using personal accounts.",
+          "high": "Build evaluation and monitoring into the platform so every AI feature ships with tests and spend limits." },
+        { "key": "talent", "name": "Talent and skills", "short": "Talent",
+          "qs": [
+            { "q": "How skilled is your workforce with AI tools?", "a": ["Few people have used them at work.", "Enthusiasts learn on their own.", "Role-based training and shared practices.", "Skills are practised on real work, assessed, and refreshed as the tools change."] },
+            { "q": "How is AI output reviewed?", "a": ["It is used as it comes.", "People are told to check it, without guidance.", "Teams have review standards for AI-generated work.", "Standards are tested with exercises, and escaped errors are tracked."] },
+            { "q": "Who owns the capability?", "a": ["We depend on outside vendors for all of it.", "One or two people carry it.", "A small team owns it and documents its practices.", "It is spread across teams, with a community that shares what works."] }
+          ],
+          "low": "Run one hands-on session on a real task from your own work, including how to review AI output critically.",
+          "high": "Test review skills with exercises that contain planted errors, and track what slips through." },
+        { "key": "gov", "name": "Governance and risk", "short": "Governance",
+          "qs": [
+            { "q": "Do you know which AI is in use?", "a": ["No.", "A partial list exists.", "A maintained inventory with owners.", "An inventory with risk tier, data use, vendor and review dates, audited."] },
+            { "q": "What does your AI policy do?", "a": ["We do not have one.", "It exists on paper.", "It includes approval steps that people follow.", "It is enforced through process and tooling, and reviewed against incidents."] },
+            { "q": "What happens when an AI system goes wrong?", "a": ["We would work it out when it happens.", "The general IT incident process applies.", "There are AI-specific steps and a named contact.", "We rehearse it, and what we learn feeds back into the controls."] }
+          ],
+          "low": "Build the inventory first: what AI is used, by whom, with what data. Every other control depends on it.",
+          "high": "Tie risk tiers to controls, and rehearse an AI incident before you need to." },
+        { "key": "culture", "name": "Culture and change", "short": "Culture",
+          "qs": [
+            { "q": "How do people experiment with AI?", "a": ["Experiments are discouraged or ungoverned.", "They happen in pockets.", "There is a safe space with rules for experiments and sharing results.", "Failures are written up and shared, and successes are scaled deliberately."] },
+            { "q": "How do you involve people whose work changes?", "a": ["They worry and are told little.", "There are announcements and little dialogue.", "Staff are consulted on how AI changes their work.", "Role changes are co-designed with those affected, with support and reskilling."] },
+            { "q": "Do processes change, or is AI bolted on?", "a": ["AI is bolted on to old processes.", "Occasional tweaks.", "Processes are redesigned around where AI helps.", "Processes are measured end to end and continually redesigned."] }
+          ],
+          "low": "Pick one process and redesign it around AI with the people who do the work, not for them.",
+          "high": "Share failures as well as wins: write up what each experiment taught, and who it helps next." }
+      ]
+    },
+    {
+      "id": "eng",
+      "title": "Engineering and agent readiness",
+      "for": "Engineering leads and architects",
+      "minutes": 4,
+      "intro": "Will AI coding assistants and agents make your team faster and safer, or just faster at making a mess? Twelve questions across six dimensions, answered for one team or codebase.",
+      "basis": "Built from published evidence on AI-assisted delivery: AI amplifies the practices already in place, so the questions look at those practices rather than at tool adoption.",
+      "dims": [
+        { "key": "arch", "name": "Architecture knowledge", "short": "Architecture",
+          "qs": [
+            { "q": "A new engineer, or an agent, needs to understand how the system is organised. What do they find?", "a": ["Only the code, and whoever remembers.", "Old diagrams and a wiki that is partly wrong.", "Current, structured documents for structure, context and key flows.", "Documents versioned with the code, checked in CI, and cited in reviews."] },
+            { "q": "Where do significant decisions live?", "a": ["In chat.", "Some are written down after the fact.", "They are recorded with options and consequences.", "They link to goals and constraints, and are revisited when the facts change."] }
+          ],
+          "low": "Write one page: a context diagram, the main blocks, and the three decisions that would hurt most to lose. Start with arc42 sections 3, 5 and 9.",
+          "high": "Make documentation part of the change: a pull request that changes structure updates the docs, and CI checks it." },
+        { "key": "context", "name": "Agent context", "short": "Context",
+          "qs": [
+            { "q": "Do coding agents get project guidance?", "a": ["No. Each person prompts alone.", "A long file generated once by a tool.", "A short, hand-written guide that points to the docs and states rules with what to do instead.", "A short guide whose rules are backed by automated checks and reviewed when they fail."] },
+            { "q": "How do you know the guidance helps?", "a": ["We do not.", "People say it feels better.", "We compare agent results with and without it on a few real tasks.", "We run repeatable trials and prune guidance that does not earn its place."] }
+          ],
+          "low": "Write a guide by hand, under 100 lines: what the system is, where the docs are, and three rules each with what to do instead. Do not generate it.",
+          "high": "Run a small trial: the same task with and without the guide, repeated. Delete the lines that do not earn their place." },
+        { "key": "verify", "name": "Verification", "short": "Verification",
+          "qs": [
+            { "q": "How good are your automated tests?", "a": ["Few or none.", "Unit tests, with unknown coverage.", "Reliable automated tests on the critical paths.", "Tests plus contract or property checks that would catch a plausible but wrong change."] },
+            { "q": "How are architecture rules enforced?", "a": ["They live in people's heads.", "They are written in documents.", "Some are enforced by tests or linters.", "Most are executable and block merges."] }
+          ],
+          "low": "Pick one architecture rule and turn it into a test that fails when the rule is broken.",
+          "high": "Add checks that catch plausible but wrong changes: contract or property tests on your riskiest module." },
+        { "key": "flow", "name": "Delivery flow", "short": "Flow",
+          "qs": [
+            { "q": "How big are changes?", "a": ["Large and infrequent.", "Medium, with slow review.", "Small pull requests, reviewed within a day.", "Small batches on trunk, fast rollback, and AI-generated changes follow the same path."] },
+            { "q": "How is AI-generated code reviewed?", "a": ["It is merged without special attention.", "Reviewers are told to be careful.", "A checklist covers intent, tests, security and fit with the architecture.", "The checklist is backed by automated gates, and escapes are analysed."] }
+          ],
+          "low": "Cap pull request size and set a review-time expectation. Treat AI-generated changes exactly like any other.",
+          "high": "Add an AI-change review checklist, and measure rework so you can see whether it works." },
+        { "key": "access", "name": "Knowledge and data access", "short": "Access",
+          "qs": [
+            { "q": "Can your tools safely reach internal code, docs and tickets?", "a": ["No. People paste fragments.", "Some tools see some repositories.", "Access is controlled and permissioned.", "Access is logged, scoped per task, and tested for leakage."] },
+            { "q": "How is sensitive data handled with AI tools?", "a": ["There is no rule.", "A rule exists that people may not know.", "A clear rule and approved tools.", "The rule is enforced by tooling, with detection and review."] }
+          ],
+          "low": "Decide what code, docs and data assistants may see. Allow approved tools only.",
+          "high": "Scope tool access per task, and test for leakage on purpose." },
+        { "key": "measure", "name": "Measurement", "short": "Measurement",
+          "qs": [
+            { "q": "What do you track about AI's effect on delivery?", "a": ["Nothing.", "Adoption and sentiment.", "Lead time, change failure rate and rework, before and after.", "Controlled comparisons on real tasks, shared with the team."] },
+            { "q": "Do you watch delivery instability?", "a": ["We have not looked.", "We notice incidents informally.", "We track failed changes and recovery time.", "We link instability to practices, and change the practices."] }
+          ],
+          "low": "Record lead time and failed-change rate this month, before you judge any tool.",
+          "high": "Run a controlled comparison on real tasks. A 2025 randomised trial found experienced developers 19% slower with AI tools, while believing they were faster." }
+      ]
+    },
+    {
+      "id": "gov",
+      "title": "AI governance and risk",
+      "for": "Risk, compliance and security leads",
+      "minutes": 4,
+      "intro": "Could you show an auditor, a regulator or a customer how you control your AI? Twelve questions across four dimensions.",
+      "basis": "Organised around the four functions of the NIST AI Risk Management Framework (Govern, Map, Measure, Manage), with the EU AI Act and ISO/IEC 42001 as reference points. It is a self-check, not a compliance assessment.",
+      "dims": [
+        { "key": "govern", "name": "Govern: ownership and policy", "short": "Govern",
+          "qs": [
+            { "q": "Who is accountable for AI risk?", "a": ["Nobody.", "It is spread informally across IT and legal.", "A named owner and a forum that meets.", "Board-level visibility, defined responsibilities and a review cycle."] },
+            { "q": "What rules govern AI use?", "a": ["None.", "A policy on paper.", "A policy with approval steps that people follow.", "Enforced through process and tooling, and revised after incidents."] },
+            { "q": "How do you handle vendors' AI?", "a": ["It is not reviewed.", "Ad hoc questions.", "Standard due diligence for AI vendors.", "Contracts, monitoring and exit plans for AI vendors."] }
+          ],
+          "low": "Name one accountable owner, and agree a one-page AI policy: approved tools, allowed data, and who decides.",
+          "high": "Extend vendor due diligence to AI features inside existing products, and write exit plans." },
+        { "key": "map", "name": "Map: inventory and context", "short": "Map",
+          "qs": [
+            { "q": "Do you have an inventory of AI systems?", "a": ["No.", "A partial list.", "A maintained list with purpose, data and owner.", "A list that is audited and tied to risk tiers and review dates."] },
+            { "q": "Do you tier AI systems by impact?", "a": ["No.", "Informally.", "Yes, by impact on people and on the business.", "Yes, and each tier triggers specific controls."] },
+            { "q": "Do you know which rules apply?", "a": ["We have not checked.", "Legal is aware in general terms.", "Obligations are mapped to our systems (for example the EU AI Act and data protection law).", "Obligations map to controls with owners and dates, and are tracked as the rules change."] }
+          ],
+          "low": "Build the inventory this week: system, purpose, data, owner. Then tier each system by its impact on people.",
+          "high": "Map obligations to controls with dates, and keep the mapping live. The EU AI Act's high-risk dates moved in 2026, and they may move again." },
+        { "key": "measure", "name": "Measure: testing and monitoring", "short": "Measure",
+          "qs": [
+            { "q": "How do you evaluate an AI feature before release?", "a": ["We tried it by hand a few times.", "Informal checks.", "A defined evaluation set with pass criteria.", "Evaluation covers accuracy, robustness, bias and security, and re-runs on every change."] },
+            { "q": "Is it tested for attack?", "a": ["Not considered.", "A general security review.", "Tested for prompt injection and data leakage.", "Regular red-teaming, with findings tracked to closure."] },
+            { "q": "How do you monitor it in use?", "a": ["We do not.", "We hear complaints.", "Dashboards for quality, cost and drift.", "Alerts with thresholds and sampled human review, feeding back into releases."] }
+          ],
+          "low": "Write ten test cases for your riskiest AI feature, with the pass mark, before its next release.",
+          "high": "Add red-teaming for prompt injection and data leakage, and track findings to closure." },
+        { "key": "manage", "name": "Manage: oversight and response", "short": "Manage",
+          "qs": [
+            { "q": "Where do humans stay in the loop?", "a": ["AI acts without review, even where it matters.", "Review exists in theory.", "Defined review points for consequential actions.", "Consequential actions are approved or recorded, with an audit trail others can verify."] },
+            { "q": "What is your incident response for AI?", "a": ["None.", "The general IT process.", "AI-specific steps and a named contact.", "Rehearsed, and lessons update the controls."] },
+            { "q": "How are models and prompts changed?", "a": ["Whenever.", "With informal notice.", "Versioned, with approvals.", "Tested against the evaluation set before release, with rollback."] }
+          ],
+          "low": "Decide which actions need a human approval, and record every consequential action an AI takes.",
+          "high": "Rehearse an AI incident, and test that rolling back a model or a prompt works." }
+      ]
+    }
+  ]
+}

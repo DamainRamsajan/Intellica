@@ -72,8 +72,72 @@
       <div><b>1</b><span>worked example you can run</span></div>
     </div>
 
+    <section class="t-block c-lab" id="lab" aria-labelledby="lab-t">
+      <p class="kicker"><span class="kn">01</span>The hands-on lab</p>
+      <h2 id="lab-t">Don’t just learn arc42. Build yours.</h2>
+      <p class="sub">Watching a course is not the same as having written the document. After every lesson, a lab step opens your own arc42 in the browser: write the section you just learned, check it against what done looks like, and pick up exactly where you left off. Nothing to copy into another app.</p>
+      <div class="lx-show">
+        <div class="lx-demo" data-lab-demo hidden>
+          <p class="kicker-m">Try it</p>
+          <h3>Try a lab check</h3>
+          <p class="muted small">This is the kind of check the lab runs on your document. Edit the quality scenario until all three checks pass.</p>
+          <label class="lx-sr" for="lx-demo-t">Quality scenario, as a Markdown table row</label>
+          <textarea id="lx-demo-t" rows="3" spellcheck="false" data-hint="Hint: how quickly, exactly?">| Q1 | #fast | A vendor taps Ready | The customer is notified | quickly |</textarea>
+          <ul class="lx-checks" data-demo-checks aria-live="polite"></ul>
+          <p class="lx-msg" data-demo-msg></p>
+        </div>
+        <ul class="lx-points">
+          <li><h3>Your document is already there</h3><p>The twelve-section skeleton is loaded and waiting, with a live preview. No pasting, no setup.</p></li>
+          <li><h3>A step after every lesson</h3><p>Each step is a real exercise from the workshop, with the exact moves to make and what done looks like.</p></li>
+          <li><h3>Pick up where you left off</h3><p>It saves as you type, and reopens at your last step and section. Come back tomorrow or next month.</p></li>
+          <li><h3>A health check that reads your draft</h3><p>It flags missing sections, scenarios with no number, IDs that nothing refers to, decisions with one option, and anything that looks like a password.</p></li>
+          <li><h3>Compare with a finished version</h3><p>Open the worked example for the section you are on, side by side with your own. Only when you want it.</p></li>
+          <li><h3>Take it with you</h3><p>Download your arc42 as Markdown, ready for your repository, or import a draft you started elsewhere. Your work is stored in your browser, so download it often.</p></li>
+        </ul>
+      </div>
+      <h3 class="lx-h">16 lab steps, one after each lesson</h3>
+      <ol class="lx-steps">
+        <li><span class="lx-n">1</span><b>Set up your project</b><i>10 min · free</i></li>
+        <li><span class="lx-n">2</span><b>Team table and first diagram</b><i>10 min · free</i></li>
+        <li><span class="lx-n">3</span><b>Write section 1: goals</b><i>25 min</i></li>
+        <li><span class="lx-n">4</span><b>Write section 2: constraints</b><i>8 min</i></li>
+        <li><span class="lx-n">5</span><b>Write section 3: context</b><i>20 min</i></li>
+        <li><span class="lx-n">6</span><b>Write section 4: strategy</b><i>15 min</i></li>
+        <li><span class="lx-n">7</span><b>Write section 5: building blocks</b><i>35 min</i></li>
+        <li><span class="lx-n">8</span><b>Write section 6: runtime</b><i>15 min</i></li>
+        <li><span class="lx-n">9</span><b>Write section 7: deployment</b><i>8 min</i></li>
+        <li><span class="lx-n">10</span><b>Write section 8: concepts</b><i>10 min</i></li>
+        <li><span class="lx-n">11</span><b>Write section 9: one decision</b><i>20 min</i></li>
+        <li><span class="lx-n">12</span><b>Write section 10: scenarios</b><i>8 min</i></li>
+        <li><span class="lx-n">13</span><b>Write sections 11 and 12</b><i>8 min</i></li>
+        <li><span class="lx-n">14</span><b>Red-team your draft with AI</b><i>40 min</i></li>
+        <li><span class="lx-n">15</span><b>Write an agent index</b><i>15 min</i></li>
+        <li><span class="lx-n">16</span><b>Assemble and check</b><i>10 min</i></li>
+      </ol>
+      <div class="lx-out"><h3>What you leave with</h3><ul><li>A complete arc42 draft of a system you know, all twelve sections</li><li>A contract, a decision record and quality scenarios with numbers, ready to reuse</li><li>A short agent guide (AGENTS.md) written by hand, not generated</li><li>A health-checked Markdown file to commit to your repository this week</li></ul></div>
+    </section>
+
+    <section class="t-block c-research" id="research" aria-labelledby="res-t">
+      <p class="kicker"><span class="kn">02</span>Designed from the evidence</p>
+      <h2 id="res-t">Why the lab works the way it does</h2>
+      <p class="sub">We build the learning the way the research says it works, and we say where the evidence is limited.</p>
+      <div class="lx-research">
+        <article class="lx-r"><h3>Producing beats rereading</h3><p>A review of ten study techniques found that practice testing and distributed practice earned the highest utility ratings, while summarising, highlighting and rereading rated low. So each lesson ends with recall questions, reviews return at 1, 3, 7 and 21 days, and the lab has you write the document instead of reading about it.</p><p class="lx-src"><a href="#res-dunlosky">Source 1</a></p></article>
+        <article class="lx-r"><h3>Draft first, then AI</h3><p>In a 2025 PNAS study of nearly 1,000 high-school students, unrestricted GPT-4 access raised practice grades by 48%, yet students scored 17% lower on the exam once it was removed. A version built with tutoring guardrails largely mitigated the harm. In the lab you write your own sections before any AI sees them, and when you red-team a draft with AI you record each suggestion as accepted, rejected or edited, with a reason.</p><p class="lx-src"><a href="#res-bastani">Source 2</a></p></article>
+        <article class="lx-r"><h3>Design beats a chatbot</h3><p>In a 2025 Harvard randomised trial (194 students analysed), a carefully designed AI tutor taught physics better than an active-learning class, in a median 49 minutes against an assumed 60. It was built on research-based teaching principles. We use the same principles without handing your thinking to a machine: one step at a time, a worked example to compare with, and immediate checks on your own work.</p><p class="lx-src"><a href="#res-kestin">Source 3</a></p></article>
+        <article class="lx-r"><h3>Support that can fade</h3><p>Guidance that helps beginners can get in the way of experts, a finding known as the expertise reversal effect. So the worked example is optional, and every lab step has an “Experienced?” version that asks more of you.</p><p class="lx-src"><a href="#res-kalyuga">Source 4</a></p></article>
+      </div>
+      <p class="muted small">These studies involve school and university students, not working engineers, and effect sizes vary between settings. We treat them as design guidance, not as a promise of results.</p>
+      <ol class="lx-sources" aria-label="Sources">
+        <li id="res-dunlosky"><a href="https://www.psychologicalscience.org/news/releases/which-study-strategies-make-the-grade.html" rel="noopener">Dunlosky et al. (2013), Psychological Science in the Public Interest, summarised by the Association for Psychological Science</a></li>
+        <li id="res-bastani"><a href="https://doi.org/10.1073/pnas.2422633122" rel="noopener">Bastani et al. (2025), Proceedings of the National Academy of Sciences 122(26)</a></li>
+        <li id="res-kestin"><a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC12179260/" rel="noopener">Kestin et al. (2025), Scientific Reports 15, 17458</a></li>
+        <li id="res-kalyuga"><a href="https://ro.uow.edu.au/edupapers/136" rel="noopener">Kalyuga, Ayres, Chandler and Sweller (2003), The expertise reversal effect, Educational Psychologist 38(1)</a></li>
+      </ol>
+    </section>
+
     <section class="t-block" aria-labelledby="how-t">
-      <p class="kicker"><span class="kn">01</span>How it teaches</p>
+      <p class="kicker"><span class="kn">03</span>How it teaches</p>
       <h2 id="how-t">Built from how people learn</h2>
       <div class="cols c4">
         <div><h3>Short lessons you control</h3><p>Each lesson is a few minutes of slides. You move at your own pace, go back, and stop when you like.</p></div>
@@ -86,7 +150,7 @@
     </section>
 
     <section class="t-block" aria-labelledby="les-t">
-      <p class="kicker"><span class="kn">02</span>Syllabus</p>
+      <p class="kicker"><span class="kn">04</span>Syllabus</p>
       <h2 id="les-t">19 lessons in four modules</h2>
       <p class="sub">Study in order or jump to what you need. The first two lessons are free and need no code.</p>
       <p class="progress" data-progress hidden></p>
@@ -191,13 +255,13 @@
     </section>
 
     <section class="t-block" aria-labelledby="due-t" data-due hidden>
-      <p class="kicker"><span class="kn">03</span>Review</p>
+      <p class="kicker"><span class="kn">05</span>Review</p>
       <h2 id="due-t">Ready to review today</h2>
       <ul class="due-list" data-due-list></ul>
     </section>
 
     <section class="t-block" aria-labelledby="get-t">
-      <p class="kicker"><span class="kn">04</span>Access</p>
+      <p class="kicker"><span class="kn">06</span>Access</p>
       <h2 id="get-t">Get the full course</h2>
       <div class="c-access">
         <div class="c-included">

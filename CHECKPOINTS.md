@@ -1,3 +1,7 @@
+# Checkpoint 21: Consulting page and assessments, new header, home messaging, lab showcase and evidence on workshop and course pages
+
+Header is Consulting, Training, Systems (kit 0.7.0). New: site/consulting (consulting.json, assessments.json, consulting.js), tools/build-consulting.mjs, tools/lab-html.mjs. Home leads with "AI engineering for work that has to be right". Old contact email removed from structured data. CSP rule added for /consulting/*.
+
 # Checkpoint 20: deploy message points at meeting-mind.com (project intellica-web)
 
 # Checkpoint 19: lab shown on the course page; deploy can target the project that holds meeting-mind.com

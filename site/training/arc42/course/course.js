@@ -253,6 +253,30 @@ function showLabCard(root) {
   }
 }
 
+/* ---------- the lab demo on the course page: the same kind of check the lab runs ---------- */
+
+function labDemo() {
+  const box = $('[data-lab-demo]');
+  if (!box) return;
+  const ta = $('textarea', box), list = $('[data-demo-checks]', box), msg = $('[data-demo-msg]', box);
+  const cells = (t) => t.trim().replace(/^\||\|$/g, '').split('|').map((c) => c.trim());
+  function run() {
+    const c = cells(ta.value.split('\n')[0] || '');
+    const rows = [
+      ['It names a quality goal (a #tag)', /#\w+/.test(ta.value)],
+      ['It has a stimulus and a response', c.length >= 5 && !!c[2] && !!c[3]],
+      ['The measure has a number', c.length >= 5 && /\d/.test(c[c.length - 1])]
+    ];
+    list.replaceChildren(...rows.map(([t, ok]) => el('li', { class: ok ? 'ok' : 'warn' }, el('span', { class: 'ck', 'aria-hidden': 'true' }, ok ? '✓' : '!'), el('span', {}, t), el('span', { class: 'lx-sr' }, ok ? ' passed' : ' needs attention'))));
+    const all = rows.every(([, ok]) => ok);
+    msg.textContent = all ? 'All three pass. In the lab, the health check runs checks like these across your whole document.' : ta.dataset.hint;
+    msg.classList.toggle('is-ok', all);
+  }
+  ta.addEventListener('input', run);
+  run();
+  box.hidden = false;
+}
+
 /* ---------- pages ---------- */
 
 async function lessonPage() {
@@ -395,5 +419,5 @@ async function learnPage() {
 }
 
 const kind = document.body.dataset.course;
-if (kind === 'lesson') lessonPage(); else if (kind === 'index') indexPage(); else if (kind === 'learn') learnPage();
+if (kind === 'lesson') lessonPage(); else if (kind === 'index') { indexPage(); labDemo(); } else if (kind === 'learn') learnPage();
 else if (kind === 'lab') import('/training/arc42/course/lab.js').then((m) => m.labPage());

@@ -220,6 +220,44 @@ body[data-section] main.tr {
 @media (max-width: 960px) { .t-hero { align-items: start; } }
 @media (prefers-reduced-motion: reduce) { .cell { transition: none; } }
 
+/* ---------- The hands-on lab, as shown on the workshop and course pages (lx-) ---------- */
+.lx-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.lx-show { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr); gap: var(--s6); align-items: start; margin-top: var(--s5); }
+.lx-demo { border: 1px solid var(--line-hi); border-top: 3px solid var(--accent); background: var(--card); padding: var(--s5); position: sticky; top: var(--s4); }
+.lx-demo[hidden] { display: none; }
+.lx-demo h3 { margin: 0 0 var(--s2); font-size: var(--text-lg); }
+.lx-demo textarea { display: block; width: 100%; box-sizing: border-box; margin: var(--s3) 0; padding: var(--s3); font: 400 0.9rem/1.5 var(--font-mono); color: var(--text-hi); background: var(--bg); border: 1px solid var(--line-hi); border-radius: var(--r); resize: vertical; }
+.lx-demo textarea:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+.lx-checks { list-style: none; margin: 0 0 var(--s3); padding: 0; display: grid; gap: var(--s2); }
+.lx-checks li { display: flex; gap: var(--s3); align-items: center; font-size: var(--text-sm); }
+.lx-checks .ck { flex: none; width: 22px; height: 22px; display: grid; place-items: center; border: 1px solid var(--line-hi); font: 0.8rem var(--font-mono); }
+.lx-checks li.ok .ck { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
+.lx-checks li.warn .ck { border-color: #f2b631; color: #f2b631; }
+.lx-msg { margin: 0; min-height: 2.8em; font-size: var(--text-sm); color: var(--muted); }
+.lx-msg.is-ok { color: var(--accent-ink); }
+.lx-points { list-style: none; margin: 0; padding: 0; display: grid; gap: 0; border-top: 2px solid var(--text-hi); }
+.lx-points li { padding: var(--s3) 0; border-bottom: 1px solid var(--line); }
+.lx-points h3 { margin: 0 0 4px; font-size: var(--text-md); }
+.lx-points p { margin: 0; font-size: var(--text-sm); color: var(--text); }
+.lx-h { margin: var(--s7) 0 var(--s3); font-size: var(--text-lg); }
+.lx-steps { list-style: none; margin: 0; padding: 0; columns: 2 320px; column-gap: var(--s6); border-top: 2px solid var(--text-hi); }
+.lx-steps li { break-inside: avoid; display: grid; grid-template-columns: 3ch minmax(0, 1fr) auto; gap: var(--s3); align-items: baseline; padding: var(--s3) 0; border-bottom: 1px solid var(--line); font-size: var(--text-sm); }
+.lx-n { font-family: var(--font-mono); color: var(--accent-ink); text-align: right; }
+.lx-steps b { color: var(--text-hi); font-weight: 600; }
+.lx-steps i { font-style: normal; color: var(--muted); font-size: var(--text-xs); white-space: nowrap; }
+.lx-out { margin-top: var(--s6); border: 1px solid var(--line-hi); background: var(--card); padding: var(--s5); }
+.lx-out h3 { margin: 0 0 var(--s3); }
+.lx-out ul { margin: 0; padding-left: 1.2em; display: grid; gap: var(--s2); }
+.lx-research { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr)); gap: var(--s5); margin: var(--s5) 0; }
+.lx-r { border-top: 2px solid var(--accent); padding-top: var(--s3); }
+.lx-r h3 { margin: 0 0 var(--s2); }
+.lx-r p { margin: 0 0 var(--s2); font-size: var(--text-sm); color: var(--text); }
+.lx-src { font: 500 var(--text-xs) var(--font-mono); letter-spacing: 0.06em; }
+.lx-sources { margin: var(--s4) 0 0; padding-left: 1.3em; font-size: var(--text-sm); color: var(--muted); }
+.lx-sources li { margin: 4px 0; }
+.lx-sources li:target { color: var(--text-hi); }
+@media (max-width: 860px) { .lx-show { grid-template-columns: minmax(0, 1fr); } .lx-demo { position: static; } }
+
 /* fonts:start (written by tools/install-fonts.mjs) */
 body[data-section] main.tr { --serif: "IBM Plex Sans", system-ui, sans-serif; }
 .tr h1, .tr h2 { font-weight: 600; letter-spacing: -0.02em; }

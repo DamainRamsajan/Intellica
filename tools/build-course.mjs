@@ -15,6 +15,7 @@
 
 import fs from 'node:fs';
 import path from 'node:path';
+import { researchHtml } from './lab-html.mjs';
 import vm from 'node:vm';
 import crypto from 'node:crypto';
 
@@ -300,8 +301,37 @@ ${subnav(w, 'course/')}
       <div><b>1</b><span>worked example you can run</span></div>
     </div>
 
+    ${LAB && c.lab ? `<section class="t-block c-lab" id="lab" aria-labelledby="lab-t">
+      <p class="kicker"><span class="kn">01</span>${esc(c.lab.kicker)}</p>
+      <h2 id="lab-t">${esc(c.lab.title)}</h2>
+      <p class="sub">${esc(c.lab.lead)}</p>
+      <div class="lx-show">
+        <div class="lx-demo" data-lab-demo hidden>
+          <p class="kicker-m">Try it</p>
+          <h3>${esc(c.lab.demo.title)}</h3>
+          <p class="muted small">${esc(c.lab.demo.text)}</p>
+          <label class="lx-sr" for="lx-demo-t">Quality scenario, as a Markdown table row</label>
+          <textarea id="lx-demo-t" rows="3" spellcheck="false" data-hint="${esc(c.lab.demo.hint)}">${esc(c.lab.demo.start)}</textarea>
+          <ul class="lx-checks" data-demo-checks aria-live="polite"></ul>
+          <p class="lx-msg" data-demo-msg></p>
+        </div>
+        <ul class="lx-points">
+${c.lab.points.map((p) => `          <li><h3>${esc(p.title)}</h3><p>${esc(p.text)}</p></li>`).join('\n')}
+        </ul>
+      </div>
+      <h3 class="lx-h">${LAB.steps.length} lab steps, one after each lesson</h3>
+      <ol class="lx-steps">
+${LAB.steps.map((x, i) => `        <li><span class="lx-n">${i + 1}</span><b>${esc(x.title)}</b><i>${x.minutes} min${x.free ? ' · free' : ''}</i></li>`).join('\n')}
+      </ol>
+      <div class="lx-out"><h3>${esc(c.lab.outcomes.title)}</h3><ul>${c.lab.outcomes.items.map((t) => `<li>${esc(t)}</li>`).join('')}</ul></div>
+    </section>
+
+    <section class="t-block c-research" id="research" aria-labelledby="res-t">
+      ${researchHtml(c.lab.research, `<p class="kicker"><span class="kn">02</span>${esc(c.lab.research.kicker)}</p>`)}
+    </section>
+` : ''}
     <section class="t-block" aria-labelledby="how-t">
-      <p class="kicker"><span class="kn">01</span>How it teaches</p>
+      <p class="kicker"><span class="kn">03</span>How it teaches</p>
       <h2 id="how-t">Built from how people learn</h2>
       <div class="cols c4">
 ${c.method.map((m) => `        <div><h3>${esc(m.title)}</h3><p>${esc(m.text)}</p></div>`).join('\n')}
@@ -310,7 +340,7 @@ ${c.method.map((m) => `        <div><h3>${esc(m.title)}</h3><p>${esc(m.text)}</p
     </section>
 
     <section class="t-block" aria-labelledby="les-t">
-      <p class="kicker"><span class="kn">02</span>Syllabus</p>
+      <p class="kicker"><span class="kn">04</span>Syllabus</p>
       <h2 id="les-t">${lessons.length} lessons in four modules</h2>
       <p class="sub">Study in order or jump to what you need. The first two lessons are free and need no code.</p>
       <p class="progress" data-progress hidden></p>
@@ -319,13 +349,13 @@ ${c.method.map((m) => `        <div><h3>${esc(m.title)}</h3><p>${esc(m.text)}</p
     </section>
 
     <section class="t-block" aria-labelledby="due-t" data-due hidden>
-      <p class="kicker"><span class="kn">03</span>Review</p>
+      <p class="kicker"><span class="kn">05</span>Review</p>
       <h2 id="due-t">Ready to review today</h2>
       <ul class="due-list" data-due-list></ul>
     </section>
 
     <section class="t-block" aria-labelledby="get-t">
-      <p class="kicker"><span class="kn">04</span>Access</p>
+      <p class="kicker"><span class="kn">06</span>Access</p>
       <h2 id="get-t">Get the full course</h2>
       <div class="c-access">
         <div class="c-included">

@@ -139,7 +139,7 @@ const AUDIT = () => {
 };
 await step('accessibility: landmarks, headings, names, contrast, light and dark, every page', async () => {
   const bad = [];
-  const sites = [['home', 8080, ['/', '/verify-site/', '/training/', '/training/arc42/', '/training/arc42/guide/', '/training/arc42/register/', '/training/arc42/example/', '/training/arc42/course/', '/training/arc42/course/part-0-opening/', '/training/arc42/course/part-7-6-runtime/']], ...PRODUCTS.map(([id, port]) => [id, port, ['/', '/demo/', '/download/', '/docs/', '/verify/', '/support/', '/verify-site/']])];
+  const sites = [['home', 8080, ['/', '/verify-site/', '/consulting/', '/training/', '/training/arc42/', '/training/arc42/guide/', '/training/arc42/register/', '/training/arc42/example/', '/training/arc42/course/', '/training/arc42/course/part-0-opening/', '/training/arc42/course/part-7-6-runtime/']], ...PRODUCTS.map(([id, port]) => [id, port, ['/', '/demo/', '/download/', '/docs/', '/verify/', '/support/', '/verify-site/']])];
   for (const scheme of ['light', 'dark']) {
     for (const [id, port, paths] of sites) for (const path of paths) {
       const p = await open(`${ORIGIN(port)}${path}`, { viewport: { width: 1280, height: 900 }, colorScheme: scheme });
@@ -244,7 +244,7 @@ await step('structured data: valid JSON-LD on home and on every product overview
 });
 await step('reflow: no horizontal scroll at 320px on any page (WCAG 1.4.10)', async () => {
   const bad = [];
-  const sites = [['home', 8080, ['/', '/verify-site/', '/training/', '/training/arc42/', '/training/arc42/guide/', '/training/arc42/register/']], ...PRODUCTS.map(([id, port]) => [id, port, ['/', '/demo/', '/download/', '/docs/', '/verify/', '/support/']])];
+  const sites = [['home', 8080, ['/', '/verify-site/', '/consulting/', '/training/', '/training/arc42/', '/training/arc42/guide/', '/training/arc42/register/']], ...PRODUCTS.map(([id, port]) => [id, port, ['/', '/demo/', '/download/', '/docs/', '/verify/', '/support/']])];
   for (const [id, port, paths] of sites) for (const path of paths) {
     const p = await open(`${ORIGIN(port)}${path}`, { viewport: { width: 320, height: 640 } });
     if (await p.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth)) bad.push(`${id}${path}`);
@@ -254,7 +254,7 @@ await step('reflow: no horizontal scroll at 320px on any page (WCAG 1.4.10)', as
 });
 await step('performance budget: CLS under 0.1, LCP under 2.5 s, under 150 KB per page plus at most 100 KB of cached fonts (local, uncached)', async () => {
   const problems = [];
-  const sites = [['home', 8080, ['/', '/training/', '/training/arc42/', '/training/arc42/guide/', '/training/arc42/register/']], ...PRODUCTS.map(([id, port]) => [id, port, ['/', '/demo/', '/docs/', '/download/', '/verify/', '/support/']])];
+  const sites = [['home', 8080, ['/', '/consulting/', '/training/', '/training/arc42/', '/training/arc42/guide/', '/training/arc42/register/']], ...PRODUCTS.map(([id, port]) => [id, port, ['/', '/demo/', '/docs/', '/download/', '/verify/', '/support/']])];
   for (const [id, port, paths] of sites) for (const path of paths) {
     const ctx = await browser.newContext({ viewport: { width: 412, height: 800 } });
     const page = await ctx.newPage();
@@ -324,7 +324,7 @@ await step('training: Event structured data is valid and matches the page', asyn
   assert.equal(ld.offers.priceCurrency, 'TTD');
   assert.ok(new Date(ld.offers.validThrough) < new Date(ld.startDate));
   const sitemap = await (await fetch(HOME + '/sitemap.xml')).text();
-  for (const u of ['/training/', '/training/arc42/', '/training/arc42/guide/', '/training/arc42/register/']) assert.ok(sitemap.includes(`https://meeting-mind.com${u}<`), u);
+  for (const u of ['/consulting/', '/training/', '/training/arc42/', '/training/arc42/guide/', '/training/arc42/register/']) assert.ok(sitemap.includes(`https://meeting-mind.com${u}<`), u);
 });
 await step('training: guide ticks are remembered, copy button works', async () => {
   const ctx = await browser.newContext({ permissions: ['clipboard-read', 'clipboard-write'] });
@@ -412,12 +412,13 @@ await step('course: a paid lesson is locked without a code and its file holds no
   assert.ok(!(await p.content()).includes('Facilitator note'), 'paid text is in the page');
   await p.context().close();
 });
-await step('every system keeps the Intellica logo (to the home page) and the Training link in the header', async () => {
+await step('every system keeps the Intellica logo (to the home page), and the Consulting and Training links in the header', async () => {
   for (const [id, port] of PRODUCTS) {
     const page = await open(`${ORIGIN(port)}/docs/`);
     assert.equal(await page.locator('.brand').first().getAttribute('href'), '/', id);
     assert.equal(await page.locator('.brand img').first().getAttribute('alt'), 'Intellica', id);
     assert.equal(await page.locator('.bar-nav a', { hasText: 'Training' }).getAttribute('href'), '/training/', id);
+    assert.equal(await page.locator('.bar-nav a', { hasText: 'Consulting' }).getAttribute('href'), '/consulting/', id);
     await page.context().close();
   }
 });
@@ -547,6 +548,76 @@ await step('lab: finishing a lesson offers its lab step, and "My course" shows l
   assert.match(await page.locator('[data-lab-sum]').innerText(), /1 of 16 steps finished/);
   assert.match(await page.locator('[data-lab-link]').innerText(), /Continue your lab/);
   await ctx.close();
+});
+await step('consulting: header, six offers, evidence with sources, and the example radar', async () => {
+  const page = await open(`${HOME}/consulting/`);
+  assert.equal(await page.locator('.bar-nav a[aria-current="page"]').innerText(), 'Consulting');
+  assert.equal(await page.locator('.k-offer').count(), 6);
+  assert.equal(await page.locator('.k-card').count(), 4);
+  assert.ok((await page.locator('.k-sources li').count()) >= 4);
+  assert.ok((await page.locator('#k-sample-radar svg polygon').count()) > 4);
+  for (const a of await page.locator('.k-ref').all()) { const h = await a.getAttribute('href'); assert.ok(await page.locator(h).count(), `${h} exists`); }
+  await page.context().close();
+});
+await step('consulting: each assessment runs end to end, scores in the browser, remembers the result, and shares only on request', async () => {
+  const ctx = await browser.newContext(); const page = await ctx.newPage();
+  const sent = []; page.on('request', (r) => { if (!r.url().startsWith(HOME)) sent.push(r.url()); });
+  await page.goto(`${HOME}/consulting/`);
+  await page.waitForSelector('#assess-app .k-a');
+  assert.equal(await page.locator('#assess-app .k-a').count(), 3);
+  for (const [id, dims, per] of [['org', 6, 3], ['eng', 6, 2], ['gov', 4, 3]]) {
+    await page.click(`[data-start="${id}"]`);
+    for (let d = 0; d < dims; d++) {
+      assert.ok(await page.locator('[data-next]').isDisabled(), 'Next waits for every answer');
+      for (let q = 0; q < per; q++) await page.check(`#q-${d}-${q}-3`, { force: true });
+      await page.click('[data-next]');
+    }
+    await page.waitForSelector('.k-result');
+    assert.match(await page.locator('.k-result h3').first().innerText(), /^100%: Leading/);
+    assert.equal(await page.locator('.k-bars li').count(), dims);
+    assert.ok(await page.locator('.k-result .rd-area').count());
+    const wa = await page.locator('.k-result a.btn-primary').getAttribute('href');
+    assert.match(decodeURIComponent(wa), /Overall 100% \(Leading\)/);
+    await page.click('[data-all]');
+  }
+  // the lowest answers give the lowest level and point at the first moves
+  await page.click('[data-start="org"]');
+  for (let d = 0; d < 6; d++) { for (let q = 0; q < 3; q++) await page.check(`#q-${d}-${q}-0`, { force: true }); await page.click('[data-next]'); }
+  assert.match(await page.locator('.k-result h3').first().innerText(), /^0%: Starting/);
+  assert.equal(await page.locator('.k-focus li').count(), 2);
+  // the result survives a reload
+  await page.reload(); await page.waitForSelector('#assess-app .k-a');
+  assert.match(await page.locator('[data-result="org"]').innerText(), /See my result \(0%\)/);
+  assert.deepEqual(sent, [], 'nothing leaves the browser');
+  await ctx.close();
+});
+await step('course page: the lab is shown, with a live check that passes when the scenario is fixed', async () => {
+  const page = await open(CRS);
+  await page.waitForSelector('[data-lab-demo]:not([hidden])');
+  assert.equal(await page.locator('.lx-steps li').count(), 16);
+  assert.equal(await page.locator('.lx-r').count(), 4);
+  assert.equal(await page.locator('.lx-checks li.ok').count(), 2);
+  await page.fill('#lx-demo-t', '| Q1 | #fast | A vendor taps Ready | The customer is notified | within 2 seconds |');
+  assert.equal(await page.locator('.lx-checks li.ok').count(), 3);
+  assert.match(await page.locator('[data-demo-msg]').innerText(), /All three pass/);
+  for (const a of await page.locator('.lx-src a').all()) assert.ok(await page.locator(await a.getAttribute('href')).count());
+  await page.context().close();
+});
+await step('workshop page: the lab and the evidence behind it are shown', async () => {
+  const page = await open(`${HOME}/training/arc42/`);
+  assert.ok(await page.locator('#lab-after a[href$="/course/"]').count());
+  assert.equal(await page.locator('#research .lx-r').count(), 4);
+  await page.context().close();
+});
+await step('home: leads with AI engineering, links to consulting, and the header has the four entries', async () => {
+  const page = await open(`${HOME}/`);
+  assert.match(await page.locator('h1').innerText(), /AI engineering for work that has to be right/);
+  assert.ok(await page.locator('#what a[href="/consulting/"]').count());
+  const nav = (await page.locator('.bar-nav a').allInnerTexts()).join('|');
+  assert.equal(nav, 'Consulting|Training');
+  assert.ok(await page.locator('.family summary').count());
+  assert.equal(await page.locator('script[type="application/ld+json"]').first().innerText().then((t) => /@/.test(t.replace(/@context|@type/g, ''))), false, 'no email in the structured data');
+  await page.context().close();
 });
 await step('workshop page: the twelve-section card shows the question for the section you tap, and lines up with the headline', async () => {
   const page = await open(HOME + WS);

@@ -758,6 +758,102 @@
         "preview": {
           "lesson": "part-1-foundations",
           "slideTitle": "Trade-offs"
+        },
+        "lab": {
+          "kicker": "The hands-on lab",
+          "title": "Don’t just learn arc42. Build yours.",
+          "lead": "Watching a course is not the same as having written the document. After every lesson, a lab step opens your own arc42 in the browser: write the section you just learned, check it against what done looks like, and pick up exactly where you left off. Nothing to copy into another app.",
+          "points": [
+            {
+              "title": "Your document is already there",
+              "text": "The twelve-section skeleton is loaded and waiting, with a live preview. No pasting, no setup."
+            },
+            {
+              "title": "A step after every lesson",
+              "text": "Each step is a real exercise from the workshop, with the exact moves to make and what done looks like."
+            },
+            {
+              "title": "Pick up where you left off",
+              "text": "It saves as you type, and reopens at your last step and section. Come back tomorrow or next month."
+            },
+            {
+              "title": "A health check that reads your draft",
+              "text": "It flags missing sections, scenarios with no number, IDs that nothing refers to, decisions with one option, and anything that looks like a password."
+            },
+            {
+              "title": "Compare with a finished version",
+              "text": "Open the worked example for the section you are on, side by side with your own. Only when you want it."
+            },
+            {
+              "title": "Take it with you",
+              "text": "Download your arc42 as Markdown, ready for your repository, or import a draft you started elsewhere. Your work is stored in your browser, so download it often."
+            }
+          ],
+          "demo": {
+            "title": "Try a lab check",
+            "text": "This is the kind of check the lab runs on your document. Edit the quality scenario until all three checks pass.",
+            "start": "| Q1 | #fast | A vendor taps Ready | The customer is notified | quickly |",
+            "hint": "Hint: how quickly, exactly?"
+          },
+          "outcomes": {
+            "title": "What you leave with",
+            "items": [
+              "A complete arc42 draft of a system you know, all twelve sections",
+              "A contract, a decision record and quality scenarios with numbers, ready to reuse",
+              "A short agent guide (AGENTS.md) written by hand, not generated",
+              "A health-checked Markdown file to commit to your repository this week"
+            ]
+          },
+          "research": {
+            "kicker": "Designed from the evidence",
+            "title": "Why the lab works the way it does",
+            "lead": "We build the learning the way the research says it works, and we say where the evidence is limited.",
+            "items": [
+              {
+                "title": "Producing beats rereading",
+                "text": "A review of ten study techniques found that practice testing and distributed practice earned the highest utility ratings, while summarising, highlighting and rereading rated low. So each lesson ends with recall questions, reviews return at 1, 3, 7 and 21 days, and the lab has you write the document instead of reading about it.",
+                "src": "dunlosky"
+              },
+              {
+                "title": "Draft first, then AI",
+                "text": "In a 2025 PNAS study of nearly 1,000 high-school students, unrestricted GPT-4 access raised practice grades by 48%, yet students scored 17% lower on the exam once it was removed. A version built with tutoring guardrails largely mitigated the harm. In the lab you write your own sections before any AI sees them, and when you red-team a draft with AI you record each suggestion as accepted, rejected or edited, with a reason.",
+                "src": "bastani"
+              },
+              {
+                "title": "Design beats a chatbot",
+                "text": "In a 2025 Harvard randomised trial (194 students analysed), a carefully designed AI tutor taught physics better than an active-learning class, in a median 49 minutes against an assumed 60. It was built on research-based teaching principles. We use the same principles without handing your thinking to a machine: one step at a time, a worked example to compare with, and immediate checks on your own work.",
+                "src": "kestin"
+              },
+              {
+                "title": "Support that can fade",
+                "text": "Guidance that helps beginners can get in the way of experts, a finding known as the expertise reversal effect. So the worked example is optional, and every lab step has an “Experienced?” version that asks more of you.",
+                "src": "kalyuga"
+              }
+            ],
+            "honesty": "These studies involve school and university students, not working engineers, and effect sizes vary between settings. We treat them as design guidance, not as a promise of results.",
+            "sources": [
+              {
+                "id": "dunlosky",
+                "label": "Dunlosky et al. (2013), Psychological Science in the Public Interest, summarised by the Association for Psychological Science",
+                "url": "https://www.psychologicalscience.org/news/releases/which-study-strategies-make-the-grade.html"
+              },
+              {
+                "id": "bastani",
+                "label": "Bastani et al. (2025), Proceedings of the National Academy of Sciences 122(26)",
+                "url": "https://doi.org/10.1073/pnas.2422633122"
+              },
+              {
+                "id": "kestin",
+                "label": "Kestin et al. (2025), Scientific Reports 15, 17458",
+                "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC12179260/"
+              },
+              {
+                "id": "kalyuga",
+                "label": "Kalyuga, Ayres, Chandler and Sweller (2003), The expertise reversal effect, Educational Psychologist 38(1)",
+                "url": "https://ro.uow.edu.au/edupapers/136"
+              }
+            ]
+          }
         }
       },
       "example": {

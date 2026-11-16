@@ -5,7 +5,7 @@
 import { $, el, loadJSON, loadText, copyText, safeHref, storage } from './dom.js';
 import { renderMarkdown, slugify } from './markdown.js';
 
-export const KIT_VERSION = '0.6.0';
+export const KIT_VERSION = '0.7.0';
 
 // All five systems live on one domain, each under its own folder (for example /verichain/).
 // assemble.mjs writes <meta name="site-base" content="/verichain"> into a system's pages; the home site has none.
@@ -102,8 +102,8 @@ function familyMenu(site, family) {
 }
 
 function primaryNav(site) {
-  // Training stays in the header on every page, including the systems.
-  const links = site.nav && site.nav.length ? site.nav : [{ label: 'Training', href: '/training/' }];
+  // Consulting and Training stay in the header on every page, including the systems.
+  const links = site.nav && site.nav.length ? site.nav : [{ label: 'Consulting', href: '/consulting/' }, { label: 'Training', href: '/training/' }];
   if (!links.length) return null;
   return el('nav', { class: 'bar-nav', 'aria-label': 'Primary' }, el('ul', {}, links.map((l) =>
     el('li', {}, el('a', { href: l.href, 'aria-current': location.pathname.startsWith(l.href) ? 'page' : null }, l.label)))));
@@ -147,11 +147,12 @@ function renderFooter(site, family) {
       el('div', { class: 'foot-grid' },
         el('div', { class: 'foot-brand' },
           el('a', { class: 'brand', href: family ? family.home : '/', 'aria-label': 'Intellica, home' }, brandLogo('intellica-logo-tagline.svg', 64)),
-          el('p', { class: 'muted' }, 'Systems whose results you can check yourself.')),
+          el('p', { class: 'muted' }, 'AI engineering for work that has to be right.')),
         systems.length ? el('nav', { 'aria-label': 'Systems' }, el('h2', { class: 'foot-h' }, 'Systems'),
           el('ul', {}, systems.map((p) => el('li', {}, el('a', { href: p.url }, p.name))))) : null,
         el('nav', { 'aria-label': 'Company' }, el('h2', { class: 'foot-h' }, 'Company'),
           el('ul', {},
+            el('li', {}, el('a', { href: '/consulting/' }, 'Consulting')),
             el('li', {}, el('a', { href: '/training/' }, 'Training')),
             el('li', {}, el('a', { href: u('/verify-site/') }, 'Verify this site')))),
         el('div', {}, el('h2', { class: 'foot-h' }, 'Talk to us'),

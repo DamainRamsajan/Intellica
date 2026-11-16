@@ -11,6 +11,7 @@
 
 import fs from 'node:fs';
 import path from 'node:path';
+import { researchHtml } from './lab-html.mjs';
 
 const SITE = path.resolve('site');
 const data = JSON.parse(fs.readFileSync(path.join(SITE, 'training', 'training.json'), 'utf8'));
@@ -242,6 +243,18 @@ ${subnav(w, '')}
       ${cols(w.learn.items, 'c3')}
     </section>
 
+    ${w.course && w.course.lab ? `<section class="t-block" id="lab-after" aria-labelledby="lab-after-t">
+      ${kicker(++n, 'After the day')}
+      <h2 id="lab-after-t">Keep building in the hands-on lab</h2>
+      <p class="sub">The online course turns the same material into short lessons, and after each one a lab step opens your own arc42 document in the browser. Finish the sections the day did not have time for, at your own pace, with a health check that reads your draft.</p>
+      <div class="actions"><a class="btn btn-ghost" href="${w.path}course/">See the course and the lab</a><a class="btn btn-ghost" href="${w.path}course/lab/">Open the lab editor</a></div>
+      <p class="muted small">The lab editor opens with the twelve-section skeleton, a live preview and Markdown export, and you can use it without an access code. Your work stays in your browser, so download it often.</p>
+    </section>
+
+    <section class="t-block" id="research" aria-labelledby="res-t">
+      ${researchHtml(w.course.lab.research, kicker(++n, w.course.lab.research.kicker))}
+    </section>
+` : ''}
     <section class="t-block" id="who" aria-labelledby="who-t">
       ${kicker(++n, 'Audience')}
       <h2 id="who-t">Who it\u2019s for</h2>

@@ -28,7 +28,7 @@ function siteUrl(site) {
 function describe(site, tab) {
   const n = site.name;
   switch (tab) {
-    case 'home': return site.description || site.tagline || `${n}: systems you can verify without trusting us.`;
+    case 'home': return site.description || site.tagline || `${n}: AI engineering for work that has to be right.`;
     case 'overview': return site.tagline;
     case 'demo': return `Try ${n} in your browser. ${site.demo && site.demo.summary ? site.demo.summary : ''}`.trim();
     case 'download': return `Download ${n}, or build it from source, and check the SHA-256 of what you get.`;
@@ -41,7 +41,7 @@ function describe(site, tab) {
 }
 
 function titleFor(site, tab) {
-  if (tab === 'home') return `${site.name}: systems you can verify without trusting us`;
+  if (tab === 'home') return `${site.name}: AI engineering for work that has to be right`;
   if (tab === 'overview') return `${site.name} | Intellica`;
   return `${TAB_LABEL[tab] || tab} | ${site.name}`;
 }
@@ -66,7 +66,7 @@ function summaryHtml(site, tab, base) {
 
 // Structured data for search engines. Only states what the page itself says.
 function jsonLd(site, tab, base, url) {
-  if (tab === 'home') return { '@context': 'https://schema.org', '@type': 'Organization', name: 'Intellica', url: base + '/', description: site.description || site.tagline, email: site.contact || family.contact };
+  if (tab === 'home') return { '@context': 'https://schema.org', '@type': 'Organization', name: 'Intellica', url: base + '/', description: site.description || site.tagline };
   if (tab === 'overview') {
     const d = { '@context': 'https://schema.org', '@type': 'SoftwareApplication', name: site.name, description: site.tagline, url, publisher: { '@type': 'Organization', name: 'Intellica', url: family.home } };
     if (site.repo) d.codeRepository = site.repo;
