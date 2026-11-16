@@ -3,7 +3,7 @@
    change it in the Intellica repo, then run `npm run sync`. */
 
 :root {
-  color-scheme: dark light;
+  color-scheme: dark; /* Intellica is dark only: the diagrams and animations are designed for it */
 
   /* Neutral base: carried over from the existing Intellica palette */
   --bg: #080c16;
@@ -44,38 +44,4 @@
   --s8: 72px;
   --r: 3px;
   --maxw: 1120px;
-}
-
-:root[data-theme="light"] {
-  --bg: #f6f8fc;
-  --surface: #ffffff;
-  --card: #ffffff;
-  --card-hi: #eef2fa;
-  --line: #d5dcea;
-  --line-hi: #b9c4dc;
-  --text: #26324d;
-  --text-hi: #0b1428;
-  --muted: #55658a;
-  --good: #12803f;
-  --warn: #8a5a00;
-  --bad: #b3261e;
-  --accent-ink: color-mix(in srgb, var(--accent) 60%, black);
-}
-
-@media (prefers-color-scheme: light) {
-  :root:not([data-theme="dark"]) {
-    --bg: #f6f8fc;
-    --surface: #ffffff;
-    --card: #ffffff;
-    --card-hi: #eef2fa;
-    --line: #d5dcea;
-    --line-hi: #b9c4dc;
-    --text: #26324d;
-    --text-hi: #0b1428;
-    --muted: #55658a;
-    --good: #12803f;
-    --warn: #8a5a00;
-    --bad: #b3261e;
-    --accent-ink: color-mix(in srgb, var(--accent) 60%, black);
-  }
 }

@@ -343,6 +343,14 @@ body[data-tab="home"] .hero-copy { padding-top: var(--s5); }
 .product-name:hover { text-decoration: underline; }
 @media (max-width: 560px) { .product-name { display: none; } }
 
+/* logo */
+.brand-logo { display: block; height: 34px; width: auto; }
+.foot-brand .brand-logo { height: 64px; }
+.brand { min-height: 44px; }
+@media (max-width: 560px) { .brand-logo { height: 28px; } }
+.brand-logo { aspect-ratio: 1840 / 500; }
+.foot-brand .brand-logo { aspect-ratio: 1840 / 480; }
+
 /* fonts:start (written by tools/install-fonts.mjs) */
 @font-face { font-family: "IBM Plex Sans"; font-style: normal; font-weight: 400; font-display: optional; src: url("/assets/fonts/ibm-plex-sans-latin-400-normal.woff2") format("woff2"); }
 @font-face { font-family: "IBM Plex Sans"; font-style: normal; font-weight: 600; font-display: optional; src: url("/assets/fonts/ibm-plex-sans-latin-600-normal.woff2") format("woff2"); }

@@ -55,22 +55,6 @@ function applyBrand(site) {
   if (desc && site.tagline) desc.setAttribute('content', site.tagline);
 }
 
-const THEMES = ['auto', 'light', 'dark'];
-
-function themeButton() {
-  let mode = storage.get('iw-theme');
-  mode = THEMES.includes(mode) ? mode : 'auto';
-  const btn = el('button', { type: 'button', class: 'btn btn-ghost theme-btn' }, svg('svg', { viewBox: '0 0 24 24', 'aria-hidden': 'true', focusable: 'false', class: 'theme-icon' }, svg('circle', { cx: 12, cy: 12, r: 8, fill: 'none', stroke: 'currentColor', 'stroke-width': 1.8 }), svg('path', { d: 'M12 4a8 8 0 0 1 0 16z', fill: 'currentColor' })));
-  const paint = () => { btn.setAttribute('data-mode', mode); btn.setAttribute('title', `Colour theme: ${mode}`); btn.setAttribute('aria-label', `Colour theme: ${mode}. Activate to change.`); };
-  btn.addEventListener('click', () => {
-    mode = THEMES[(THEMES.indexOf(mode) + 1) % THEMES.length];
-    if (mode === 'auto') { document.documentElement.removeAttribute('data-theme'); storage.set('iw-theme', 'auto'); }
-    else { document.documentElement.setAttribute('data-theme', mode); storage.set('iw-theme', mode); }
-    paint();
-  });
-  paint();
-  return btn;
-}
 
 
 /* ---------- brand, icons, contact ---------- */
@@ -83,13 +67,9 @@ function svg(tag, attrs = {}, ...kids) {
   return n;
 }
 
-// The mark is an I-beam: the letter I, and the member that carries load in structural engineering.
-// The cyan half of the web is the part you can check.
-function brandMark() {
-  return svg('svg', { viewBox: '0 0 64 64', class: 'brand-mark', 'aria-hidden': 'true', focusable: 'false' },
-    svg('rect', { width: 64, height: 64, rx: 8, class: 'bm-tile' }),
-    svg('path', { d: 'M12 12h40v10H38v20h14v10H12V42h14V22H12z', class: 'bm-beam' }),
-    svg('rect', { x: 38, y: 22, width: 14, height: 20, class: 'bm-node' }));
+// The Intellica logo (vector, traced from the supplied artwork). Reversed for the dark site.
+function brandLogo(file = 'intellica-logo.svg', height = 34) {
+  return el('img', { class: 'brand-logo', src: `/assets/logo/${file}`, alt: 'Intellica', height: String(height), decoding: 'async' });
 }
 
 function waIcon() {
@@ -137,9 +117,9 @@ function renderHeader(site, family, page) {
     el('div', { class: 'container bar' },
       el('div', { class: 'brand-group' },
         // The company mark always goes to the Intellica home page; on a system's pages its name sits beside it.
-        el('a', { class: 'brand', href: '/', 'aria-label': 'Intellica, home' }, brandMark(), el('span', { class: 'brand-name' }, 'Intellica')),
+        el('a', { class: 'brand', href: '/', 'aria-label': 'Intellica, home' }, brandLogo()),
         BASE ? el('a', { class: 'product-name', href: u('/'), 'aria-label': `${site.name}, overview` }, site.name) : null),
-      el('div', { class: 'bar-right' }, primaryNav(site), familyMenu(site, family), themeButton(), contactButton(site, family)))));
+      el('div', { class: 'bar-right' }, primaryNav(site), familyMenu(site, family), contactButton(site, family)))));
 
   const tabs = (site.tabs || []).filter((t) => TABS[t]);
   if (tabs.length) {
@@ -166,7 +146,7 @@ function renderFooter(site, family) {
     el('div', { class: 'container foot' },
       el('div', { class: 'foot-grid' },
         el('div', { class: 'foot-brand' },
-          el('a', { class: 'brand', href: family ? family.home : '/' }, brandMark(), el('span', { class: 'brand-name' }, 'Intellica')),
+          el('a', { class: 'brand', href: family ? family.home : '/', 'aria-label': 'Intellica, home' }, brandLogo('intellica-logo-tagline.svg', 64)),
           el('p', { class: 'muted' }, 'Systems whose results you can check yourself.')),
         systems.length ? el('nav', { 'aria-label': 'Systems' }, el('h2', { class: 'foot-h' }, 'Systems'),
           el('ul', {}, systems.map((p) => el('li', {}, el('a', { href: p.url }, p.name))))) : null,
@@ -379,8 +359,7 @@ async function hydrateDemo(site) {
     mountArea.replaceChildren(el('p', { class: 'muted' }, 'Loading the demo…'));
     try {
       const mod = await import(new URL('./demo.js', location.href).href);
-      const theme = document.documentElement.getAttribute('data-theme') ||
-        (matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+      const theme = 'dark';
       handle = await mod.mount(mountArea, {
         base: new URL('./', location.href).href,
         theme,

@@ -44,11 +44,12 @@ await step('home has no horizontal scroll at 390px', async () => {
   const p = await open(HOME, { viewport: { width: 390, height: 844 } });
   assert.equal(await p.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth), false);
 });
-await step('theme button switches theme', async () => {
-  const p = await open(HOME);
-  const before = await p.evaluate(() => document.documentElement.getAttribute('data-theme'));
-  await p.locator('.theme-btn').click();
-  assert.notEqual(await p.evaluate(() => document.documentElement.getAttribute('data-theme')), before);
+await step('the site is dark only: dark even when the system asks for light, and no theme button', async () => {
+  const p = await open(HOME, { colorScheme: 'light' });
+  assert.equal(await p.locator('.theme-btn').count(), 0);
+  const bg = await p.evaluate(() => getComputedStyle(document.body).backgroundColor);
+  const [r, g, b] = bg.match(/\d+/g).map(Number);
+  assert.ok(r + g + b < 150, `background should be dark, got ${bg}`);
 });
 await step('keyboard: skip link is first focus', async () => {
   const p = await open(VC);
@@ -415,7 +416,7 @@ await step('every system keeps the Intellica logo (to the home page) and the Tra
   for (const [id, port] of PRODUCTS) {
     const page = await open(`${ORIGIN(port)}/docs/`);
     assert.equal(await page.locator('.brand').first().getAttribute('href'), '/', id);
-    assert.match(await page.locator('.brand').first().innerText(), /intellica/i, id);
+    assert.equal(await page.locator('.brand img').first().getAttribute('alt'), 'Intellica', id);
     assert.equal(await page.locator('.bar-nav a', { hasText: 'Training' }).getAttribute('href'), '/training/', id);
     await page.context().close();
   }

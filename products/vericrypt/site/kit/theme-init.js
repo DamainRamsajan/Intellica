@@ -1,7 +1,2 @@
-/* Applies a saved theme choice before first paint. Classic script, loaded in <head>. */
-(function () {
-  try {
-    var t = localStorage.getItem('iw-theme');
-    if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t);
-  } catch (e) { /* storage unavailable: follow the system setting */ }
-})();
+/* Intellica is dark only. Classic script in <head> so the first paint is already dark. */
+document.documentElement.setAttribute('data-theme', 'dark');

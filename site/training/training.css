@@ -8,10 +8,6 @@ body[data-section] main.tr {
   --accent-ink: color-mix(in srgb, var(--accent) 62%, white);
   --serif: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 }
-:root[data-theme="light"] body[data-section] main.tr { --accent-ink: color-mix(in srgb, var(--accent) 42%, black); }
-@media (prefers-color-scheme: light) {
-  :root:not([data-theme="dark"]) body[data-section] main.tr { --accent-ink: color-mix(in srgb, var(--accent) 42%, black); }
-}
 
 .tr h1, .tr h2 { font-family: var(--serif); font-weight: 600; letter-spacing: -0.012em; }
 .tr h1 { font-size: clamp(2.35rem, 5.4vw, 4.1rem); line-height: 1.04; max-width: 20ch; text-wrap: balance; margin-bottom: var(--s5); }
@@ -199,7 +195,7 @@ body[data-section] main.tr {
 
 /* ===== v14 hero: the original picker card, a price pill, drafting-paper background ===== */
 .t-hero { position: relative; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: var(--s6); align-items: stretch; padding-block: var(--s5) var(--s5); }
-.t-hero-single { align-items: start; }
+.t-hero-single { grid-template-columns: minmax(0, 1fr); max-width: 860px; align-items: start; }
 .t-hero::before { content: ""; position: absolute; inset: 0 -50vw; z-index: -1; background-image: linear-gradient(var(--grid) 1px, transparent 1px), linear-gradient(90deg, var(--grid) 1px, transparent 1px); background-size: 36px 36px; -webkit-mask-image: linear-gradient(#000 35%, transparent); mask-image: linear-gradient(#000 35%, transparent); }
 .t-hero-copy { display: flex; flex-direction: column; align-items: flex-start; min-width: 0; }
 .t-pill { display: inline-flex; align-items: center; gap: var(--s2); border: 1px solid var(--line-hi); background: var(--card); padding: 6px 14px; font-size: var(--text-sm); font-weight: 500; margin-bottom: var(--s4); }

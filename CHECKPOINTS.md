@@ -1,3 +1,5 @@
+# Checkpoint 17: dark-only, new logo, player upgrades, hero layout fix
+
 # Checkpoints
 
 ## Checkpoint 16 (current): after a code is entered the buyer lands on a new "My course" page (welcome, next lesson, progress ring, curriculum with status, review, resources); lessons numbered in study order. Earlier: cp15 header fix.

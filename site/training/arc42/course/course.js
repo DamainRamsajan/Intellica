@@ -7,6 +7,7 @@ import { $, $$, el, storage } from '/kit/dom.js';
 const CODE_KEY = 'iw-course-code';
 const PROGRESS_KEY = 'iw-course-progress';
 const REVIEW_KEY = 'iw-course-review';
+const POS_KEY = 'iw-course-pos';
 const GAPS = [1, 3, 7, 21]; // days until a card returns, by how many times it was remembered in a row
 
 const b64u = (s) => Uint8Array.from(atob(s.replace(/-/g, '+').replace(/_/g, '/')), (c) => c.charCodeAt(0));
@@ -105,12 +106,19 @@ function initPlayer(root, data, code) {
   const canSpeak = 'speechSynthesis' in window;
   if (!canSpeak && !data.audio.some(Boolean)) speak.hidden = true;
 
+  const theatre = $('[data-theatre]', root), full = $('[data-full]', root);
   const fit = () => {
-    const s = frame.clientWidth / 1280;
+    const fs = document.fullscreenElement === theatre;
+    // in full screen the slide is as large as fits the screen, centred; otherwise it fills the column
+    const s = fs ? Math.min(innerWidth / 1280, innerHeight / 720) : theatre.clientWidth / 1280;
+    frame.style.width = fs ? `${Math.floor(1280 * s)}px` : '';
     stage.style.transform = `scale(${s})`;
     frame.style.height = `${Math.round(720 * s)}px`;
   };
-  new ResizeObserver(fit).observe(frame);
+  new ResizeObserver(fit).observe(theatre);
+  document.addEventListener('fullscreenchange', fit);
+  if (theatre.requestFullscreen) full.addEventListener('click', () => { if (document.fullscreenElement) document.exitFullscreen(); else theatre.requestFullscreen().catch(() => {}); });
+  else full.hidden = true;
   const items = data.titles.map((t, k) => {
     const li = document.createElement('li'), b = document.createElement('button');
     b.type = 'button'; b.textContent = t; b.addEventListener('click', () => show(k));
@@ -119,6 +127,7 @@ function initPlayer(root, data, code) {
 
   function show(k) {
     i = Math.max(0, Math.min(n - 1, k));
+    { const p = readJSON(POS_KEY, {}); p[lesson] = i; writeJSON(POS_KEY, p); }
     const sec = document.createElement('section');
     sec.className = 's on';
     sec.innerHTML = data.slides[i]; // trusted: built by tools/build-course.mjs from our own deck; paid lessons are authenticated by AES-GCM
@@ -166,9 +175,12 @@ function initPlayer(root, data, code) {
   prev.addEventListener('click', () => show(i - 1));
   next.addEventListener('click', () => { if (i === n - 1) finish(); else show(i + 1); });
   document.addEventListener('keydown', (e) => {
+    if (/^(INPUT|SELECT|TEXTAREA|BUTTON|A)$/.test(e.target.tagName) && e.key === ' ') return;
     if (/^(INPUT|SELECT|TEXTAREA)$/.test(e.target.tagName) || e.metaKey || e.ctrlKey || e.altKey) return;
-    if (e.key === 'ArrowRight') { e.preventDefault(); next.click(); }
+    // like a presenter: forward builds the next piece of the slide first, then moves on
+    if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); if (!reveal.hidden) reveal.click(); else next.click(); }
     if (e.key === 'ArrowLeft') { e.preventDefault(); prev.click(); }
+    if (e.key === 'f' || e.key === 'F') { e.preventDefault(); full.click(); }
   });
 
   function finish() {
@@ -200,7 +212,8 @@ function initPlayer(root, data, code) {
     if (!rec.hidden) rec.scrollIntoView({ block: 'start' });
   }
 
-  show(0);
+  const resumeAt = readJSON(POS_KEY, {})[lesson];
+  show(Number.isInteger(resumeAt) && resumeAt > 0 && resumeAt < n - 1 ? resumeAt : 0);
 }
 
 /* ---------- pages ---------- */

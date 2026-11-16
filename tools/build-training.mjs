@@ -45,8 +45,11 @@ function page({ title, description, canonicalPath, ld, body, section = 'training
   <meta property="og:title" content="${esc(title)}">
   <meta property="og:description" content="${esc(description)}">
   <meta property="og:url" content="${url}">
-  <meta name="twitter:card" content="summary">
+  <meta property="og:image" content="https://meeting-mind.com/assets/og.png">
+  <meta name="twitter:card" content="summary_large_image">
 ${ld ? `  <script type="application/ld+json">${JSON.stringify(ld).replace(/</g, '\\u003c')}</script>\n` : ''}  <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="/assets/favicon-32.png" type="image/png" sizes="32x32">
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
   <script src="/kit/theme-init.js"></script>
   <link rel="stylesheet" href="/kit/tokens.css">
   <link rel="stylesheet" href="/kit/shell.css">

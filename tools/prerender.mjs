@@ -105,7 +105,8 @@ function render(file, site, base) {
     is404 ? null : `<meta property="og:title" content="${esc(title)}">`,
     is404 ? null : `<meta property="og:description" content="${esc(desc)}">`,
     canonical ? `<meta property="og:url" content="${canonical}">` : null,
-    is404 ? null : `<meta name="twitter:card" content="summary">`,
+    is404 ? null : `<meta property="og:image" content="https://meeting-mind.com/assets/og.png">`,
+    is404 ? null : `<meta name="twitter:card" content="summary_large_image">`,
   ].filter(Boolean).join('\n  ');
 
   html = html.replace(/<title>[\s\S]*?<\/title>/, `<title>${esc(title)}</title>`);

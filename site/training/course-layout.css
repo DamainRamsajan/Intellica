@@ -162,3 +162,19 @@
 .linklike:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
 @media (max-width: 1000px) { .l-top, .l-grid { grid-template-columns: 1fr; } .l-stats { grid-template-columns: auto 1fr 1fr; } .l-side { position: static; } }
 @media (max-width: 560px) { .l-stats { grid-template-columns: auto 1fr; } .l-resume { box-shadow: 5px 5px 0 var(--accent); margin-right: 5px; } }
+
+/* ===== player: dark cinema stage, slide transitions, full screen ===== */
+.theatre { width: 100%; max-width: 1100px; }
+.theatre:fullscreen { max-width: none; display: grid; place-items: center; background: #000; }
+.cstage-frame { border-color: var(--line-hi); box-shadow: 0 0 0 1px #000, 0 24px 60px -24px rgba(0, 200, 255, .28); background: #0b1721; }
+.theatre:fullscreen .cstage-frame { box-shadow: none; border: 0; border-radius: 0; max-width: none; }
+@media (prefers-reduced-motion: no-preference) {
+  .cstage .s.on { animation: s-in .38s cubic-bezier(.2, .7, .2, 1) both; }
+  @keyframes s-in { from { opacity: 0; transform: translateX(18px); } to { opacity: 1; transform: none; } }
+  .cstage .fr { transition: opacity .45s ease, transform .45s ease; }
+}
+.controls .pos { color: var(--accent-ink); }
+@media (prefers-reduced-motion: no-preference) {
+  .cstage .fr { transform: translateY(10px); }
+  .cstage .fr.on { transform: none; }
+}
