@@ -429,18 +429,36 @@ await step('course: pasting the secret key (not a code) says so clearly instead 
   await page.waitForFunction(() => /not an access code/.test(document.body.innerText));
   await ctx.close();
 });
-await step('course: pasting a code on the course page shows a clear "you are in" banner with a start button', async () => {
+await step('course: pasting a code on the course page jumps to "My course" with welcome, next lesson, progress and the curriculum', async () => {
   const ctx = await browser.newContext();
   const page = await ctx.newPage();
   await page.goto(CRS);
   await page.waitForSelector('form[data-unlock]:not([hidden])');
   await page.fill('form[data-unlock] input', mkCode('Banner Buyer'));
   await page.click('form[data-unlock] [type=submit]');
+  await page.waitForURL(/\/course\/learn\/$/);
+  await page.waitForSelector('[data-learn-page]:not([hidden])');
+  assert.match(await page.locator('h1').innerText(), /Welcome, Banner Buyer/);
+  assert.match(await page.locator('[data-next-link]').innerText(), /Start lesson 1/);
+  assert.equal(await page.locator('li.lesson').count(), 19);
+  assert.equal(await page.locator('[data-pct]').innerText(), '0%');
+  assert.ok(!(await page.locator('.enrol').count()), 'no price or buy box on the learner page');
+  // finish lesson 1 in storage, reload: progress and the next lesson move on
+  await page.evaluate(() => localStorage.setItem('iw-course-progress', JSON.stringify({ 'part-0-opening': Date.now() })));
+  await page.reload();
+  await page.waitForSelector('[data-learn-page]:not([hidden])');
+  assert.notEqual(await page.locator('[data-pct]').innerText(), '0%');
+  assert.match(await page.locator('[data-next-link]').innerText(), /Resume/);
+  // the sales page now offers the way back in
+  await page.goto(CRS);
   await page.waitForSelector('.unlock-banner');
-  const t = await page.locator('.unlock-banner').innerText();
-  assert.match(t, /You are in, Banner Buyer/);
-  assert.match(t, /Start lesson 1/);
-  assert.ok(await page.locator('.unlock-banner a.btn').isVisible());
+  assert.match(await page.locator('.unlock-banner').innerText(), /Go to my course/);
+  await ctx.close();
+});
+await step('course: "My course" without a valid code sends you back to the course page', async () => {
+  const ctx = await browser.newContext(); const page = await ctx.newPage();
+  await page.goto(CRS + 'learn/');
+  await page.waitForURL((u) => /\/course\/$/.test(u.pathname));
   await ctx.close();
 });
 await step('workshop page: the twelve-section card shows the question for the section you tap, and lines up with the headline', async () => {

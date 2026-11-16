@@ -49,6 +49,7 @@ async function setupUnlock(onUnlocked) {
     const forget = $('[data-forget]', form);
     if (saved && await codeWorks(form, saved)) {
       active = saved;
+      if (form.dataset.learn) for (const a of $$('[data-course-home]')) a.setAttribute('href', form.dataset.learn);
       msg.textContent = `Unlocked${saved.name ? ` for ${saved.name}` : ''}.`;
       forget.hidden = false;
       $('input', form).hidden = true; $('label', form).hidden = true; $('[type=submit]', form).hidden = true;
@@ -64,7 +65,8 @@ async function setupUnlock(onUnlocked) {
       storage.set(CODE_KEY, $('input', form).value.trim());
       storage.set('iw-course-just', '1');
       msg.textContent = 'Code accepted. Opening your course…';
-      location.reload();
+      // from the course sales page, go straight to the learner's own page; on a lesson, stay and open the lesson
+      if (document.body.dataset.course === 'index' && form.dataset.learn) location.href = form.dataset.learn; else location.reload();
     });
     forget.addEventListener('click', () => { try { localStorage.removeItem(CODE_KEY); } catch { /* ignore */ } location.reload(); });
   }
@@ -247,15 +249,12 @@ async function indexPage() {
     else if (code && !li.classList.contains('is-free')) badge.textContent = 'Unlocked';
   }
   if (code) {
-    const next = rows.find((li) => !d[li.dataset.lesson]) || rows[0];
-    const link = $('a', next);
-    const just = storage.get('iw-course-just') === '1';
-    const banner = el('div', { class: 'unlock-banner', role: 'status', tabindex: '-1' },
-      el('div', {}, el('strong', {}, `You are in${code.name ? `, ${code.name}` : ''}. All ${rows.length} lessons are open.`),
-        el('span', {}, count ? ` ${count} of ${rows.length} finished on this device.` : ' Your progress is saved in this browser.')),
-      el('a', { class: 'btn btn-primary', href: link.getAttribute('href') }, count ? 'Continue' : 'Start lesson 1'));
+    const learn = $('[data-unlock]').dataset.learn;
+    const banner = el('div', { class: 'unlock-banner', role: 'status' },
+      el('div', {}, el('strong', {}, `You are in${code.name ? `, ${code.name}` : ''}.`),
+        el('span', {}, count ? ` ${count} of ${rows.length} lessons finished on this device.` : ' All lessons are open.')),
+      el('a', { class: 'btn btn-primary', href: learn }, 'Go to my course'));
     $('main').prepend(banner);
-    if (just) { storage.set('iw-course-just', ''); window.scrollTo(0, 0); banner.focus(); }
   }
   const prog = $('[data-progress]');
   if (prog && count) { prog.hidden = false; prog.textContent = `${count} of ${rows.length} lessons finished on this device.`; }
@@ -278,5 +277,71 @@ async function indexPage() {
   }
 }
 
+function dueByLesson() {
+  const r = readJSON(REVIEW_KEY, {});
+  const due = {};
+  for (const [k, v] of Object.entries(r)) if (v.due <= Date.now()) { const id = k.split(':')[0]; due[id] = (due[id] || 0) + 1; }
+  return due;
+}
+
+async function learnPage() {
+  const root = $('[data-learn-page]');
+  const code = parseCode(storage.get(CODE_KEY) || '');
+  let ok = false;
+  if (code) { try { await decryptLesson(root.dataset.probeUrl, root.dataset.probeId, code); ok = true; } catch { ok = false; } }
+  if (!ok) { location.replace(root.dataset.home); return; }
+  root.hidden = false;
+  if (code.name) {
+    $('[data-name]', root).textContent = `, ${code.name}`;
+    $('[data-licence]', root).textContent = `Licensed to ${code.name}. Please do not share this course.`;
+  }
+  const d = done();
+  const rows = $$('li.lesson', root);
+  const total = rows.length;
+  let count = 0, minutesLeft = 0, next = null;
+  for (const li of rows) {
+    const id = li.dataset.lesson, badge = $('[data-badge]', li);
+    if (d[id]) { count++; badge.textContent = 'Completed'; badge.className = 'badge badge-done'; li.classList.add('is-done'); }
+    else { minutesLeft += Number(li.dataset.min) || 0; if (!next) { next = li; badge.textContent = count ? 'Up next' : 'Start here'; badge.className = 'badge badge-next'; } else badge.textContent = 'Open'; }
+  }
+  for (const m of $$('[data-module]', root)) {
+    const lis = $$('li.lesson', m), n = lis.filter((li) => li.classList.contains('is-done')).length;
+    const h = $('header', m);
+    h.append(el('p', { class: 'm-prog' }, `${n} of ${lis.length} complete`));
+  }
+  const pct = Math.round((count / total) * 100);
+  $('[data-pct]', root).textContent = `${pct}%`;
+  $('[data-ring]', root).style.setProperty('--p', `${pct}`);
+  $('[data-done]', root).textContent = `${count} of ${total}`;
+  $('[data-left]', root).textContent = minutesLeft >= 60 ? `${(minutesLeft / 60).toFixed(1).replace(/\.0$/, '')} h` : `${minutesLeft} min`;
+  $('[data-fill]', root).style.width = `${pct}%`;
+  $('[data-pbar]', root).setAttribute('aria-valuenow', String(pct));
+  const link = $('[data-next-link]', root);
+  if (next) {
+    $('[data-next-title]', root).textContent = $('strong', next).textContent;
+    $('[data-next-meta]', root).textContent = `Lesson ${$('.ln', next).textContent} of ${total} · ${$('.lm', next).textContent}`;
+    link.setAttribute('href', $('a', next).getAttribute('href'));
+    link.textContent = count ? `Resume: lesson ${$('.ln', next).textContent}` : 'Start lesson 1';
+    if (count) $('[data-resume-k]', root).textContent = 'Continue where you left off';
+  } else {
+    $('[data-resume-k]', root).textContent = 'Course complete';
+    $('[data-next-title]', root).textContent = 'You have finished every lesson';
+    $('[data-next-meta]', root).textContent = 'Review anything again, or work through the recall cards.';
+    link.setAttribute('href', $('a', rows[0]).getAttribute('href')); link.textContent = 'Review from lesson 1';
+  }
+  const due = dueByLesson();
+  const ids = Object.keys(due).filter((id) => rows.some((li) => li.dataset.lesson === id));
+  $('[data-dueN]', root).textContent = String(ids.reduce((a, id) => a + due[id], 0));
+  if (ids.length) {
+    $('[data-due]', root).hidden = false;
+    const list = $('[data-due-list]', root);
+    for (const id of ids) {
+      const src = rows.find((x) => x.dataset.lesson === id);
+      list.append(el('li', {}, el('a', { href: $('a', src).getAttribute('href') }, `${$('strong', src).textContent}: ${due[id]} ${due[id] === 1 ? 'question' : 'questions'}`)));
+    }
+  }
+  $('[data-forget-learn]', root).addEventListener('click', () => { try { localStorage.removeItem(CODE_KEY); } catch { /* ignore */ } location.replace(root.dataset.home); });
+}
+
 const kind = document.body.dataset.course;
-if (kind === 'lesson') lessonPage(); else if (kind === 'index') indexPage();
+if (kind === 'lesson') lessonPage(); else if (kind === 'index') indexPage(); else if (kind === 'learn') learnPage();
