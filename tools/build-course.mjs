@@ -496,7 +496,7 @@ ${subnav(w, 'course/')}
         <ol class="outline">${outline}</ol>
         <p>Paste your access code to unlock it, or read how to get one.</p>
         ${unlockBlock({ url: `${w.path}course/data/${l.id}.json`, id: l.id, learn: `${w.path}course/learn/` })}
-        <div class="actions"><a class="btn btn-primary" href="${w.path}course/#get-t">How to get access</a></div>
+        <div class="actions"><a class="btn btn-primary" href="${w.path}course/#get-t">Get access</a></div>
       </div>
       <div class="stage-wrap" data-stage-wrap hidden>
         <div class="c-main">

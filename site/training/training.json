@@ -828,9 +828,24 @@
                 "title": "Support that can fade",
                 "text": "Guidance that helps beginners can get in the way of experts, a finding known as the expertise reversal effect. So the worked example is optional, and every lab step has an “Experienced?” version that asks more of you.",
                 "src": "kalyuga"
+              },
+              {
+                "title": "Testing yourself beats rereading",
+                "text": "A 2017 meta-analysis of 118 articles (15,427 participants) found practice testing beat restudying by g = 0.51, and beat doing nothing by g = 0.93. The largest effects came when the final test followed practice by one to six days. So every lesson ends with questions you answer before you see the answer, and missed cards return after a day.",
+                "src": "adesope"
+              },
+              {
+                "title": "Explaining your reasons",
+                "text": "A 2018 meta-analysis of 69 effect sizes found that prompting learners to explain to themselves improved learning, with a mean effect of g = 0.55. In the lab each decision and each AI suggestion you keep or reject carries a short reason in your own words, which is that kind of prompt.",
+                "src": "bisra"
+              },
+              {
+                "title": "Why lessons are short and resumable",
+                "text": "Across HarvardX and MITx courses, 15.4% of learners who intended to complete did so in 2017-18, and 3.1% of all registrants. Completion among those who paid for a verified track was 46%. The authors point to human support as what matters most. So lessons are short, the course remembers your place, and the first two are free to try. We have no completion data of our own yet and will not quote any until we do.",
+                "src": "reich"
               }
             ],
-            "honesty": "These studies involve school and university students, not working engineers, and effect sizes vary between settings. We treat them as design guidance, not as a promise of results.",
+            "honesty": "These studies involve school and university students, not working engineers, and effect sizes vary between settings. We treat them as design guidance, not as a promise of results. We have not tested this course against others, and we make no claim that any other course lacks these features.",
             "sources": [
               {
                 "id": "dunlosky",
@@ -851,6 +866,21 @@
                 "id": "kalyuga",
                 "label": "Kalyuga, Ayres, Chandler and Sweller (2003), The expertise reversal effect, Educational Psychologist 38(1)",
                 "url": "https://ro.uow.edu.au/edupapers/136"
+              },
+              {
+                "id": "adesope",
+                "label": "Adesope, Trevisan and Sundararajan (2017), Rethinking the use of tests: a meta-analysis of practice testing, Review of Educational Research 87(3)",
+                "url": "https://rex.libraries.wsu.edu/esploro/outputs/journalArticle/Rethinking-the-Use-of-Tests-A/99900601154801842"
+              },
+              {
+                "id": "bisra",
+                "label": "Bisra, Liu, Nesbit, Salimi and Winne (2018), Inducing self-explanation: a meta-analysis, Educational Psychology Review 30",
+                "url": "https://doi.org/10.1007/s10648-018-9434-x"
+              },
+              {
+                "id": "reich",
+                "label": "Reich and Ruipérez-Valiente (2019), The MOOC pivot, Science 363(6423)",
+                "url": "https://tsl.mit.edu/research/the-mooc-pivot/"
               }
             ]
           }

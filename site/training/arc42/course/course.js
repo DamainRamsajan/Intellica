@@ -3,6 +3,8 @@
 // Paid lessons are AES-256-GCM files. The access code carries the key; nothing about it is sent anywhere.
 // Everything is stored in this browser only (localStorage), and every read is wrapped in try/catch.
 import { $, $$, el, storage } from '/kit/dom.js';
+import { b64u, parseCode, decryptLesson } from '/training/access.js';
+export { parseCode, decryptLesson };
 
 export const CODE_KEY = 'iw-course-code';
 export const LAB_KEY = 'iw-lab-doc'; // the student's own arc42 (see lab.js)
@@ -11,28 +13,10 @@ const REVIEW_KEY = 'iw-course-review';
 const POS_KEY = 'iw-course-pos';
 const GAPS = [1, 3, 7, 21]; // days until a card returns, by how many times it was remembered in a row
 
-const b64u = (s) => Uint8Array.from(atob(s.replace(/-/g, '+').replace(/_/g, '/')), (c) => c.charCodeAt(0));
 const readJSON = (k, d) => { try { return JSON.parse(storage.get(k) || '') ?? d; } catch { return d; } };
 const writeJSON = (k, v) => storage.set(k, JSON.stringify(v));
 
 /* ---------- access code ---------- */
-
-export function parseCode(text) {
-  try {
-    const o = JSON.parse(new TextDecoder().decode(b64u(String(text).trim())));
-    if (o && o.v === 1 && typeof o.k === 'string' && o.k.length >= 40) return { name: String(o.b || ''), key: o.k };
-  } catch { /* fall through */ }
-  return null;
-}
-
-export async function decryptLesson(url, id, code) {
-  const res = await fetch(url);
-  if (!res.ok) throw new Error('missing');
-  const enc = await res.json();
-  const key = await crypto.subtle.importKey('raw', b64u(code.key), 'AES-GCM', false, ['decrypt']);
-  const plain = await crypto.subtle.decrypt({ name: 'AES-GCM', iv: b64u(enc.iv), additionalData: new TextEncoder().encode(id) }, key, b64u(enc.ct));
-  return JSON.parse(new TextDecoder().decode(plain));
-}
 
 async function codeWorks(form, code) {
   try { await decryptLesson(form.dataset.probe, form.dataset.probeId, code); return true; } catch { return false; }

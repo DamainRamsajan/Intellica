@@ -203,7 +203,7 @@ export async function labPage() {
     catch {
       panel.replaceChildren(el('p', { class: 'kicker-m' }, `Step ${idx.steps.indexOf(s) + 1} · ${s.minutes} min`), el('h2', {}, s.title),
         el('p', {}, 'The instructions for this step are part of the full course. You can still write in every section of your document.'),
-        el('div', { class: 'actions' }, el('a', { class: 'btn btn-primary', href: `${root.dataset.courseUrl}#get-t` }, 'How to get access'), el('a', { class: 'btn btn-ghost', href: root.dataset.courseUrl }, 'Paste my access code')));
+        el('div', { class: 'actions' }, el('a', { class: 'btn btn-primary', href: `${root.dataset.courseUrl}#get-t` }, 'Get access'), el('a', { class: 'btn btn-ghost', href: root.dataset.courseUrl }, 'Paste my access code')));
       return;
     }
     const st = doc.steps[s.id] = doc.steps[s.id] || { checks: [], done: false };

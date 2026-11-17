@@ -1,0 +1,251 @@
+{
+  "description": "How Intellica works with enterprise, finance, government, energy and small-business teams: AI readiness, architecture, assurance and verifiable systems.",
+  "sectors": [
+    {
+      "id": "enterprise",
+      "title": "Enterprise",
+      "kicker": "Industries · Enterprise",
+      "h1": "AI across a large organisation, without losing control of it.",
+      "lead": "Large organisations rarely lack AI pilots. They lack one picture of what is running, who owns it and whether it works. We help you build that picture and keep it true.",
+      "pressures": [
+        {
+          "t": "Pilots without owners",
+          "p": "Teams adopt tools and agents faster than governance can list them. An inventory with owners and risk tiers is the first control, and most estates do not have one."
+        },
+        {
+          "t": "Many teams, no shared design",
+          "p": "When several teams use coding agents, the architecture drifts. A single documented source of truth, and rules that fail in CI when code breaks them, keep it coherent."
+        },
+        {
+          "t": "Value nobody can show",
+          "p": "Spending on AI is easy to count and hard to tie to outcomes. Measure before and after, with method a finance team can inspect."
+        }
+      ],
+      "help": [
+        {
+          "t": "AI Readiness Review",
+          "p": "A scored view of strategy, data, technology, talent, governance and culture, with a ranked plan.",
+          "href": "/consulting/#readiness"
+        },
+        {
+          "t": "Architecture for AI-assisted delivery",
+          "p": "arc42 documentation, decision records and architecture tests your teams and their coding agents share.",
+          "href": "/consulting/#architecture"
+        },
+        {
+          "t": "Team enablement",
+          "p": "The arc42 workshop teaches your architects and engineers the method, live or online, with a hands-on lab.",
+          "href": "/training/"
+        }
+      ],
+      "systems": [
+        "omc",
+        "verichain"
+      ],
+      "assess": "org",
+      "frameworks": [
+        "NIST AI Risk Management Framework",
+        "ISO/IEC 42001 (AI management systems)",
+        "EU AI Act",
+        "arc42 and architecture decision records"
+      ]
+    },
+    {
+      "id": "finance",
+      "title": "Finance",
+      "kicker": "Industries · Finance",
+      "h1": "AI in regulated finance, with records you can defend.",
+      "lead": "Banks, insurers and finance teams must explain what a model or agent did, and show that their controls held. We build and review systems so that evidence exists before the question is asked.",
+      "pressures": [
+        {
+          "t": "Digital operational resilience",
+          "p": "The EU's DORA regulation sets requirements for ICT risk management, incident reporting and third-party risk for financial entities. AI services you depend on fall inside that scope."
+        },
+        {
+          "t": "Consequential automated decisions",
+          "p": "Under the EU AI Act, systems used to evaluate the creditworthiness of natural persons are classed as high-risk. That brings logging, human oversight and documentation duties."
+        },
+        {
+          "t": "A ledger that must close correctly",
+          "p": "Period close and reconciliation rules are exactly the kind of logic that benefits from formal specification and model checking, not just testing."
+        }
+      ],
+      "help": [
+        {
+          "t": "Assurance and governance",
+          "p": "An AI inventory, controls mapped to NIST AI RMF, ISO/IEC 42001 and EU AI Act obligations, and tamper-evident audit trails.",
+          "href": "/consulting/#assurance"
+        },
+        {
+          "t": "Post-quantum readiness",
+          "p": "An inventory of the cryptography across your estate, ranked by exposure, with a signed report anyone can verify offline.",
+          "href": "/consulting/#pqc"
+        },
+        {
+          "t": "AI value proof",
+          "p": "Measure what AI and automation are worth, with a method your controllers can check.",
+          "href": "/consulting/#value"
+        }
+      ],
+      "systems": [
+        "sovereign-erp",
+        "omc",
+        "vericrypt"
+      ],
+      "assess": "gov",
+      "frameworks": [
+        "DORA (EU 2022/2554)",
+        "EU AI Act: high-risk credit scoring",
+        "NIST AI Risk Management Framework",
+        "NIST post-quantum standards (FIPS 203, 204, 205)"
+      ]
+    },
+    {
+      "id": "government",
+      "title": "Government",
+      "kicker": "Industries · Government and public sector",
+      "h1": "Public-sector AI that citizens, auditors and courts can examine.",
+      "lead": "Public bodies answer to people who never chose the software. Decisions must be explainable, records must last, and the evidence must be checkable by someone who does not trust the vendor.",
+      "pressures": [
+        {
+          "t": "Decisions that affect people",
+          "p": "The EU AI Act treats AI used to assess eligibility for public benefits and services as high-risk, with obligations for oversight, logging and transparency."
+        },
+        {
+          "t": "Records that must outlive the supplier",
+          "p": "Audit trails and reports that verify offline, with open formats and published algorithms, mean evidence does not depend on any one vendor staying in business."
+        },
+        {
+          "t": "Long-lived data, changing cryptography",
+          "p": "Records kept for decades will outlast today's public-key cryptography. Knowing where it is used is the first step to a migration plan."
+        }
+      ],
+      "help": [
+        {
+          "t": "AI governance and assurance",
+          "p": "An inventory of AI in use, risk tiers, owners, and controls mapped to the NIST AI RMF, ISO/IEC 42001 and EU AI Act.",
+          "href": "/consulting/#assurance"
+        },
+        {
+          "t": "Post-quantum readiness",
+          "p": "Find the cryptography in your estate and rank it by exposure and data lifetime.",
+          "href": "/consulting/#pqc"
+        },
+        {
+          "t": "AI readiness review",
+          "p": "A scored, evidence-based view of where your organisation stands, and what to do first.",
+          "href": "/consulting/#readiness"
+        }
+      ],
+      "systems": [
+        "verichain",
+        "vericrypt"
+      ],
+      "assess": "gov",
+      "frameworks": [
+        "EU AI Act: public-service eligibility is high-risk",
+        "NIST AI Risk Management Framework",
+        "ISO/IEC 42001 (AI management systems)",
+        "NIST post-quantum standards (FIPS 203, 204, 205)"
+      ]
+    },
+    {
+      "id": "energy",
+      "title": "Energy",
+      "kicker": "Industries · Energy and utilities",
+      "h1": "Dependable AI for infrastructure that cannot be switched off.",
+      "lead": "Energy systems run for decades, fail in public and sit under tight regulation. AI belongs there only where its behaviour is bounded, logged and reviewable.",
+      "pressures": [
+        {
+          "t": "Critical infrastructure rules",
+          "p": "Energy is a sector of high criticality under the EU's NIS2 directive, which sets cybersecurity risk-management and reporting duties."
+        },
+        {
+          "t": "Assets that outlive their cryptography",
+          "p": "Grid and metering equipment is installed for many years. Cryptography chosen today may need replacing within its service life."
+        },
+        {
+          "t": "Agents near real operations",
+          "p": "Where software acts rather than advises, limits matter. Safety rules should be enforced by the system, with approval points for consequential actions."
+        }
+      ],
+      "help": [
+        {
+          "t": "Post-quantum readiness",
+          "p": "A cryptographic inventory and migration plan for long-lived assets, with a signed report anyone can verify offline.",
+          "href": "/consulting/#pqc"
+        },
+        {
+          "t": "AI and agent engineering",
+          "p": "Agent features built with evaluation sets, guardrails, approval points and traces.",
+          "href": "/consulting/#agents"
+        },
+        {
+          "t": "Assurance and governance",
+          "p": "Audit trails for consequential actions, and controls mapped to recognised frameworks.",
+          "href": "/consulting/#assurance"
+        }
+      ],
+      "systems": [
+        "vericrypt",
+        "agentseed",
+        "verichain"
+      ],
+      "assess": "eng",
+      "frameworks": [
+        "NIS2 Directive (energy is a high-criticality sector)",
+        "NIST post-quantum standards (FIPS 203, 204, 205)",
+        "NIST AI Risk Management Framework",
+        "EU AI Act"
+      ]
+    },
+    {
+      "id": "smb",
+      "title": "Small business",
+      "kicker": "Industries · Small and growing businesses",
+      "h1": "Use AI well from the start, without enterprise overhead.",
+      "lead": "A small team cannot afford a long programme. You can afford to start with the right habits: know what you use AI for, check its work, and write down how your system fits together.",
+      "pressures": [
+        {
+          "t": "Tools adopted one at a time",
+          "p": "Individuals sign up for AI tools with company data. A one-page list of what is used, by whom and with what data is a real control."
+        },
+        {
+          "t": "Output that looks right",
+          "p": "Fluent answers are easy to trust. A small set of examples you re-check regularly catches problems early and costs little."
+        },
+        {
+          "t": "Knowledge that lives in one head",
+          "p": "Short architecture notes make a system understandable to the next person, and to the coding assistant your team uses."
+        }
+      ],
+      "help": [
+        {
+          "t": "Free self-assessment",
+          "p": "Three short assessments that run in your browser. Nothing is sent anywhere. You get a score, a level and first steps.",
+          "href": "/consulting/#assess"
+        },
+        {
+          "t": "arc42 online workshop",
+          "p": "Learn to document your system in a form people and coding agents can both use, at your own pace.",
+          "href": "/training/"
+        },
+        {
+          "t": "A conversation",
+          "p": "Tell us what you are trying to do and we will say plainly whether we can help.",
+          "href": "#contact"
+        }
+      ],
+      "systems": [
+        "agentseed"
+      ],
+      "assess": "org",
+      "frameworks": [
+        "NIST AI Risk Management Framework (start small)",
+        "arc42 documentation template",
+        "EU AI Act: know what you use",
+        "Your own list of AI tools and data"
+      ]
+    }
+  ]
+}

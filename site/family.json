@@ -168,23 +168,23 @@
   "sectors": [
     {
       "title": "Enterprise",
-      "path": "/legacy/enterprise.html"
+      "path": "/industries/enterprise/"
     },
     {
       "title": "Finance",
-      "path": "/legacy/finance.html"
+      "path": "/industries/finance/"
     },
     {
       "title": "Government",
-      "path": "/legacy/government.html"
+      "path": "/industries/government/"
     },
     {
       "title": "Energy",
-      "path": "/legacy/energy.html"
+      "path": "/industries/energy/"
     },
     {
       "title": "Small business",
-      "path": "/legacy/smb.html"
+      "path": "/industries/smb/"
     }
   ],
   "links": [

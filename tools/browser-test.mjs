@@ -139,7 +139,7 @@ const AUDIT = () => {
 };
 await step('accessibility: landmarks, headings, names, contrast, light and dark, every page', async () => {
   const bad = [];
-  const sites = [['home', 8080, ['/', '/verify-site/', '/consulting/', '/training/', '/training/arc42/', '/training/arc42/guide/', '/training/arc42/register/', '/training/arc42/example/', '/training/arc42/course/', '/training/arc42/course/part-0-opening/', '/training/arc42/course/part-7-6-runtime/']], ...PRODUCTS.map(([id, port]) => [id, port, ['/', '/demo/', '/download/', '/docs/', '/verify/', '/support/', '/verify-site/']])];
+  const sites = [['home', 8080, ['/', '/verify-site/', '/consulting/', '/industries/government/', '/industries/smb/', '/training/', '/training/arc42/', '/training/arc42/guide/', '/training/arc42/register/', '/training/arc42/example/', '/training/arc42/course/', '/training/arc42/course/part-0-opening/', '/training/arc42/course/part-7-6-runtime/']], ...PRODUCTS.map(([id, port]) => [id, port, ['/', '/demo/', '/download/', '/docs/', '/verify/', '/support/', '/verify-site/']])];
   for (const scheme of ['light', 'dark']) {
     for (const [id, port, paths] of sites) for (const path of paths) {
       const p = await open(`${ORIGIN(port)}${path}`, { viewport: { width: 1280, height: 900 }, colorScheme: scheme });
@@ -244,7 +244,7 @@ await step('structured data: valid JSON-LD on home and on every product overview
 });
 await step('reflow: no horizontal scroll at 320px on any page (WCAG 1.4.10)', async () => {
   const bad = [];
-  const sites = [['home', 8080, ['/', '/verify-site/', '/consulting/', '/training/', '/training/arc42/', '/training/arc42/guide/', '/training/arc42/register/']], ...PRODUCTS.map(([id, port]) => [id, port, ['/', '/demo/', '/download/', '/docs/', '/verify/', '/support/']])];
+  const sites = [['home', 8080, ['/', '/verify-site/', '/consulting/', '/industries/government/', '/industries/smb/', '/training/', '/training/arc42/', '/training/arc42/guide/', '/training/arc42/register/']], ...PRODUCTS.map(([id, port]) => [id, port, ['/', '/demo/', '/download/', '/docs/', '/verify/', '/support/']])];
   for (const [id, port, paths] of sites) for (const path of paths) {
     const p = await open(`${ORIGIN(port)}${path}`, { viewport: { width: 320, height: 640 } });
     if (await p.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth)) bad.push(`${id}${path}`);
@@ -254,7 +254,7 @@ await step('reflow: no horizontal scroll at 320px on any page (WCAG 1.4.10)', as
 });
 await step('performance budget: CLS under 0.1, LCP under 2.5 s, under 150 KB per page plus at most 100 KB of cached fonts (local, uncached)', async () => {
   const problems = [];
-  const sites = [['home', 8080, ['/', '/consulting/', '/training/', '/training/arc42/', '/training/arc42/guide/', '/training/arc42/register/']], ...PRODUCTS.map(([id, port]) => [id, port, ['/', '/demo/', '/docs/', '/download/', '/verify/', '/support/']])];
+  const sites = [['home', 8080, ['/', '/consulting/', '/industries/government/', '/industries/smb/', '/training/', '/training/arc42/', '/training/arc42/guide/', '/training/arc42/register/']], ...PRODUCTS.map(([id, port]) => [id, port, ['/', '/demo/', '/docs/', '/download/', '/verify/', '/support/']])];
   for (const [id, port, paths] of sites) for (const path of paths) {
     const ctx = await browser.newContext({ viewport: { width: 412, height: 800 } });
     const page = await ctx.newPage();
@@ -324,7 +324,7 @@ await step('training: Event structured data is valid and matches the page', asyn
   assert.equal(ld.offers.priceCurrency, 'TTD');
   assert.ok(new Date(ld.offers.validThrough) < new Date(ld.startDate));
   const sitemap = await (await fetch(HOME + '/sitemap.xml')).text();
-  for (const u of ['/consulting/', '/training/', '/training/arc42/', '/training/arc42/guide/', '/training/arc42/register/']) assert.ok(sitemap.includes(`https://meeting-mind.com${u}<`), u);
+  for (const u of ['/consulting/', '/industries/government/', '/training/', '/training/arc42/', '/training/arc42/guide/', '/training/arc42/register/']) assert.ok(sitemap.includes(`https://meeting-mind.com${u}<`), u);
 });
 await step('training: guide ticks are remembered, copy button works', async () => {
   const ctx = await browser.newContext({ permissions: ['clipboard-read', 'clipboard-write'] });
@@ -549,6 +549,38 @@ await step('lab: finishing a lesson offers its lab step, and "My course" shows l
   assert.match(await page.locator('[data-lab-link]').innerText(), /Continue your lab/);
   await ctx.close();
 });
+await step('training: the online-course button says "Get access", and becomes "Open the course" once a working code is saved', async () => {
+  const ctx = await browser.newContext(); const page = await ctx.newPage();
+  await page.goto(HOME + '/training/');
+  const btn = page.locator('[data-access]');
+  assert.equal((await btn.innerText()).trim(), 'Get access');
+  assert.match(await btn.getAttribute('href'), /course\/#get-t$/);
+  await page.evaluate(() => localStorage.setItem('iw-course-code', 'eyJ2IjoxLCJiIjoiTm8iLCJrIjoieCJ9'));
+  await page.reload(); await page.waitForTimeout(600);
+  assert.equal((await btn.innerText()).trim(), 'Get access', 'a bad saved code must not unlock the button');
+  await page.evaluate((c) => localStorage.setItem('iw-course-code', c), mkCode('Access Buyer'));
+  await page.reload();
+  await page.waitForFunction(() => document.querySelector('[data-access]').textContent.trim() === 'Open the course');
+  assert.match(await btn.getAttribute('href'), /course\/learn\/$/);
+  await btn.click();
+  await page.waitForSelector('[data-learn-page]:not([hidden])');
+  await ctx.close();
+});
+await step('industries: the five sector pages exist, link to each other, and carry the sector message', async () => {
+  for (const id of ['enterprise', 'finance', 'government', 'energy', 'smb']) {
+    const p = await open(HOME + `/industries/${id}/`);
+    assert.ok(await p.locator('h1').innerText(), 'no heading');
+    assert.equal(await p.locator('.k-habits > div').count(), 3, id + ' needs three pressures');
+    assert.ok(await p.locator('.k-offer').count() >= 3, id + ' needs offers');
+    assert.equal(await p.locator('.k-fw li').count(), 4, id + ' needs frameworks');
+    assert.deepEqual(p.problems, []);
+  }
+  const h = await open(HOME + '/');
+  for (const t of ['Enterprise', 'Finance', 'Government', 'Energy', 'Small business']) {
+    const href = await h.locator('#sector-links a', { hasText: t }).getAttribute('href');
+    const r = await fetch(HOME + href); assert.equal(r.status, 200, t + ' link is dead');
+  }
+});
 await step('consulting: header, six offers, evidence with sources, and the example radar', async () => {
   const page = await open(`${HOME}/consulting/`);
   assert.equal(await page.locator('.bar-nav a[aria-current="page"]').innerText(), 'Consulting');
@@ -569,7 +601,7 @@ await step('consulting: each assessment runs end to end, scores in the browser, 
     await page.click(`[data-start="${id}"]`);
     for (let d = 0; d < dims; d++) {
       assert.ok(await page.locator('[data-next]').isDisabled(), 'Next waits for every answer');
-      for (let q = 0; q < per; q++) await page.check(`#q-${d}-${q}-3`, { force: true });
+      for (let q = 0; q < per; q++) { const r = page.locator(`#q-${d}-${q}-3`); for (let t = 0; t < 4 && !(await r.isChecked().catch(() => false)); t++) { await r.waitFor(); await r.dispatchEvent('click').catch(() => {}); await page.waitForTimeout(60); } assert.ok(await r.isChecked(), `answer ${d}.${q} did not register`); }
       await page.click('[data-next]');
     }
     await page.waitForSelector('.k-result');
@@ -595,7 +627,7 @@ await step('course page: the lab is shown, with a live check that passes when th
   const page = await open(CRS);
   await page.waitForSelector('[data-lab-demo]:not([hidden])');
   assert.equal(await page.locator('.lx-steps li').count(), 16);
-  assert.equal(await page.locator('.lx-r').count(), 4);
+  assert.equal(await page.locator('.lx-r').count(), 7);
   assert.equal(await page.locator('.lx-checks li.ok').count(), 2);
   await page.fill('#lx-demo-t', '| Q1 | #fast | A vendor taps Ready | The customer is notified | within 2 seconds |');
   assert.equal(await page.locator('.lx-checks li.ok').count(), 3);
@@ -606,7 +638,7 @@ await step('course page: the lab is shown, with a live check that passes when th
 await step('workshop page: the lab and the evidence behind it are shown', async () => {
   const page = await open(`${HOME}/training/arc42/`);
   assert.ok(await page.locator('#lab-after a[href$="/course/"]').count());
-  assert.equal(await page.locator('#research .lx-r').count(), 4);
+  assert.equal(await page.locator('#research .lx-r').count(), 7);
   await page.context().close();
 });
 await step('home: leads with AI engineering, links to consulting, and the header has the four entries', async () => {

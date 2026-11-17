@@ -1,7 +1,7 @@
 {
   "format": 1,
   "kit": "0.6.0",
-  "root": "f4421b6389dd6631d22cdc96be09a2882b3a8021a58063148a6fc5b2498ed9fb",
+  "root": "b86197569a98a77e1a51aca51a636829f2e1ed1312849c387cba16e2f0b20e82",
   "files": {
     "/.well-known/security.txt": "ba4d1acc9a1c666d3caa9c6f9906fb4e7a2ef3e28fa741328117983941153235",
     "/404.html": "29ec4c1e3b70a9da5e6905b8076845611f6b2bf3e66b2c78a03f7dc86937a0f0",
@@ -27,7 +27,7 @@
     "/docs/use/user-manual.md": "70382c0a95aba8d636128d6c1322aa4a761a5928b2064299b4c266f804deb4d1",
     "/download/downloads.json": "2f7ee752589b4fb410204fd22434954f3ad97b5f994c44d4762a33544d12e390",
     "/download/index.html": "4f7d3f88480114edda65461432b37bbbc358662725a3485ef51f29efce993879",
-    "/family.json": "7c4883425d7609a5582fa517ffbbd19c5fd2c301c4a2300c7860893cbb2bacbd",
+    "/family.json": "893e14891e27ea89a8649c5f4c95df69b9fbe97db61239cd34becd97fdb93bf2",
     "/index.html": "495819333b8187a6cc5cf56fec0197ef9d0e1bb5c0ce3d3acf52d021c01b4175",
     "/kit/MANIFEST.json": "8dd62a17e6ded5bb24b07d6bfd35785896f3fd457a82773a4fe9ed8cb4933058",
     "/kit/VERSION": "97a5d6e540a6120d09c39ddb667e0e8e2bac7fcc2ffef813b82e08fd60365bce",

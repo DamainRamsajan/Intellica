@@ -1,6 +1,9 @@
 // Progressive enhancement for /training/. The pages are complete HTML without this script;
 // it adds the early-bird countdown, saved checklists, copy buttons and the email form.
 import { $, $$, storage, copyText } from '/kit/dom.js';
+import { upgradeAccessButtons } from '/training/access.js';
+
+upgradeAccessButtons();
 
 /* early-bird text: stays true after the deadline without anyone editing the page */
 for (const node of $$('[data-eb]')) {

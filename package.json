@@ -9,9 +9,9 @@
     "dev:vericrypt": "node tools/serve.mjs products/vericrypt/site 8082",
     "dev:erp": "node tools/serve.mjs products/sovereign-erp/site 8083",
     "dev:omc": "node tools/serve.mjs products/omc/site 8084",
-    "check": "node tools/check.mjs --all",
+    "check": "node tools/check.mjs --all && node tools/check-links.mjs",
     "test": "node tools/test-markdown.mjs",
-    "sync": "node tools/build-training.mjs && node tools/build-consulting.mjs && node tools/build-course.mjs && node tools/sync-kit.mjs && node tools/prerender.mjs && node tools/manifest.mjs && node tools/assemble.mjs",
+    "sync": "node tools/build-training.mjs && node tools/build-consulting.mjs && node tools/build-industries.mjs && node tools/build-course.mjs && node tools/sync-kit.mjs && node tools/prerender.mjs && node tools/manifest.mjs && node tools/assemble.mjs",
     "scaffold": "node tools/new-product.mjs",
     "legacy": "node tools/import-legacy.mjs",
     "gate": "npm run test && npm run sync && npm run check",
@@ -31,7 +31,8 @@
     "fonts": "node tools/install-fonts.mjs",
     "assemble": "node tools/assemble.mjs",
     "deploy:where": "npx --yes wrangler@4 pages project list",
-    "consulting": "node tools/build-consulting.mjs"
+    "consulting": "node tools/build-consulting.mjs",
+    "industries": "node tools/build-industries.mjs"
   },
   "engines": {
     "node": ">=20"

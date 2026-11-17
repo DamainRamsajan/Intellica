@@ -15,6 +15,8 @@ import { researchHtml } from './lab-html.mjs';
 
 const SITE = path.resolve('site');
 const data = JSON.parse(fs.readFileSync(path.join(SITE, 'training', 'training.json'), 'utf8'));
+// the first lesson that is encrypted: decrypting it proves a saved access code works
+const probeId = (w) => w.course.modules.flatMap((m) => m.lessons).find((id) => !(w.course.free || []).includes(id));
 const family = JSON.parse(fs.readFileSync(path.join(SITE, 'family.json'), 'utf8'));
 const base = family.home.replace(/\/$/, '');
 
@@ -523,7 +525,7 @@ ${data.workshops.filter((w) => w.course && w.course.enabled).map((w) => `
         <h3><a href="${w.path}course/">${esc(w.title)}: the full course</a></h3>
         <p>${esc(w.course.lead)}</p>
         <dl class="mini"><div><dt>Format</dt><dd>${w.course.modules.reduce((a, m) => a + m.lessons.length, 0)} short lessons, slides with transcripts, recall questions, a worked example</dd></div><div><dt>Pace</dt><dd>Your own, on any device</dd></div><div><dt>Free</dt><dd>The first two lessons need no code</dd></div></dl>
-        <div class="actions"><a class="btn btn-primary" href="${w.path}course/">Look inside the course</a><a class="btn btn-ghost" href="${w.path}course/#get-t">How to get access</a></div>
+        <div class="actions"><a class="btn btn-primary" href="${w.path}course/">Look inside the course</a><a class="btn btn-ghost" href="${w.path}course/#get-t" data-access data-learn="${w.path}course/learn/" data-probe="${w.path}course/data/${probeId(w)}.json" data-probe-id="${probeId(w)}">Get access</a></div>
       </article>
     </section>`).join('')}
 

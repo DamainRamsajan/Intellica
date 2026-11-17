@@ -94,3 +94,7 @@
 .k-sources li { margin: 4px 0; }
 .k-sources li:target { color: var(--text-hi); }
 @media (max-width: 760px) { .k-res-grid { grid-template-columns: minmax(0, 1fr); } .k-app { padding: var(--s4); } }
+.k .k-hero.solo { grid-template-columns: minmax(0, 1fr); }
+.k-fw { list-style: none; margin: 0; padding: 0; display: grid; gap: 0; }
+.k-fw li { padding: var(--s3) 0; border-top: 1px solid var(--line); color: var(--text-hi); font-size: var(--text-sm); }
+.k-fw li:first-child { border-top: 0; }
