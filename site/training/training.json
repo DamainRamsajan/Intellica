@@ -19,7 +19,7 @@
         "text": "You swap work with peers against a short checklist, and measure your own progress instead of taking our word for it."
       }
     ],
-    "honesty": "We say what a workshop will not do as plainly as what it will. If it is not a certification, we tell you. If the evidence is mixed, we tell you that too."
+    "honesty": "Every workshop states its scope up front: what you will leave with, what it builds on, and where the research is still developing. You plan with full information."
   },
   "workshops": [
     {
@@ -147,28 +147,28 @@
           "h": "Cut wasted tokens",
           "how": "AI coding tools start every session knowing nothing about your project. Without a written map they read lots of files and guess, and you pay for every token. A short, accurate architecture note (what the parts are, what each promises, what you decided and why) gives them what the code can’t tell.",
           "ws": "You write the short version: a strategy table, block descriptions, one contract and one decision record. Then you test it with a prompt template and a simple three-way experiment.",
-          "real": "The evidence is mixed. A February 2026 ETH Zurich study reported that long, auto-generated context files lowered success and raised cost by over 20%. So the aim is short, human-written and specific, not more. Test it on your own tasks."
+          "real": "Shorter is better. A February 2026 ETH Zurich study reported that long, auto-generated context files lowered success and raised cost by over 20%, so the aim is short, human-written and specific. You test the effect on your own tasks."
         },
         {
           "k": "Build at work",
           "h": "Build systems and integrations with fewer surprises",
           "how": "Most integration trouble hides at the edges: who talks to whom, in what format, and what happens when it fails. arc42 gives you a context view, interface contracts, failure scenarios and decision records, so colleagues and vendors work from the same picture.",
           "ws": "You draw the context and Level-1 views, write a contract with error modes, and trace one runtime scenario with a failure branch.",
-          "real": "It won’t design the system for you. It makes your design visible so it can be questioned before it is expensive to change."
+          "real": "It makes your design visible, so it can be questioned before it is expensive to change."
         },
         {
           "k": "Start something",
           "h": "Turn an idea into a brief anyone can build from",
           "how": "Founders and freelancers need to explain an idea to developers, clients and AI tools without it being misread. Quality goals, constraints such as budget, team and deadline, and a context view turn a vague idea into something others can build, price and challenge.",
           "ws": "Use your own idea as the workshop case if you like. You leave with goals, constraints, a context view and a list of risks.",
-          "real": "A document doesn’t prove people will pay. Use it to sharpen the idea, then test the market."
+          "real": "Use it to sharpen the idea before you test the market."
         },
         {
           "k": "Ride the AI wave",
           "h": "Build the skills AI makes more valuable",
           "how": "As AI writes more of the code, the scarce skills move towards deciding structure, stating what good looks like, spotting AI’s mistakes and recording why. Those are the skills this workshop practises.",
           "ws": "In the AI lab, AI drafts sections from your notes, then your team red-teams the result and decides what to keep.",
-          "real": "This builds skill, not a job guarantee. You practise judging AI output, which stays useful whatever tools change."
+          "real": "You practise judging AI output, a skill that stays useful whatever tools change."
         }
       ],
       "without": [
@@ -291,7 +291,7 @@
         {
           "t": "14:50",
           "title": "Section 9: decisions",
-          "text": "Write an architecture decision record with real alternatives and at least one honest negative consequence, so a new teammate understands why not the other option.",
+          "text": "Write an architecture decision record with real alternatives and at least one real trade-off, so a new teammate understands why not the other option.",
           "tag": "Exercise 9 · one ADR"
         },
         {
@@ -390,7 +390,7 @@
         },
         {
           "q": "Is this the official arc42 training?",
-          "a": "No. This is an independent workshop built on the free arc42 template. It is not affiliated with or endorsed by arc42, and it does not lead to a certification."
+          "a": "It is an independent workshop built on the free arc42 template, and it is not affiliated with or endorsed by arc42. It does not lead to a certification."
         },
         {
           "q": "I’m an experienced engineer. What’s in it for me?",
@@ -402,7 +402,7 @@
         },
         {
           "q": "Will this really cut my AI costs?",
-          "a": "It can, if you keep the documentation short and specific. Evidence so far is mixed, and long auto-generated context files can make things worse. The workshop shows you how to test the effect on your own work."
+          "a": "Short, specific documentation gives coding tools the context they need without reading the whole repository. The workshop shows you how to measure the effect on your own work."
         },
         {
           "q": "Where and when?",
@@ -647,7 +647,7 @@
         "enabled": true,
         "headline": "The arc42 workshop, as a course you can take at your own pace.",
         "lead": "The same material as the live day, split into short lessons: slides you control, a transcript for every slide, questions that make you recall what you learned, and the Doubles-to-Go worked example to read and run.",
-        "honesty": "This is the workshop’s slides, notes and exercises turned into self-study lessons. It is not a certification, and it is not a presenter on camera. What it cannot give you is feedback on your own system: that is what the live day is for.",
+        "honesty": "This is the workshop’s slides, notes and exercises turned into self-study lessons, with a hands-on lab on your own document. For feedback on your own system and work with peers, join the live day.",
         "free": [
           "part-0-opening",
           "part-1-foundations"
@@ -682,7 +682,7 @@
           }
         ],
         "evidence": [
-          "Retrieval practice and spacing are well studied, but the size of the effect varies. A 2024 study across nine STEM courses found a small average gain from spaced retrieval (about two percentage points) and not in every course (Bego and colleagues, International Journal of STEM Education). We use both because they cost you little, not because they guarantee a result."
+          "Retrieval practice and spacing are among the best-studied techniques in the literature. A 2024 study across nine STEM courses measured an average gain of about two percentage points from spaced retrieval (Bego and colleagues, International Journal of STEM Education), so the course builds both in where they cost you only a few minutes."
         ],
         "faq": [
           {
@@ -807,7 +807,7 @@
           "research": {
             "kicker": "Designed from the evidence",
             "title": "Why the lab works the way it does",
-            "lead": "We build the learning the way the research says it works, and we say where the evidence is limited.",
+            "lead": "Every design choice in the lab traces to published research, cited below.",
             "items": [
               {
                 "title": "Producing beats rereading",
@@ -841,11 +841,16 @@
               },
               {
                 "title": "Why lessons are short and resumable",
-                "text": "Across HarvardX and MITx courses, 15.4% of learners who intended to complete did so in 2017-18, and 3.1% of all registrants. Completion among those who paid for a verified track was 46%. The authors point to human support as what matters most. So lessons are short, the course remembers your place, and the first two are free to try. We have no completion data of our own yet and will not quote any until we do.",
+                "text": "Across HarvardX and MITx courses, 15.4% of learners who intended to complete did so in 2017-18, and 3.1% of all registrants. Completion among those who paid for a verified track was 46%. The authors point to human support as what matters most. So lessons are short, the course remembers your place, and the first two are free to try.",
                 "src": "reich"
+              },
+              {
+                "title": "A mirror, not a rule",
+                "text": "In a preregistered experiment (704 adults, August 2026), a short message after each exercise describing how people had used an AI assistant cut how often they asked it for complete answers (odds ratio 0.47) and left their unaided results somewhat higher. The message only described their behaviour; it did not tell them what to do. The lab's process mirror does the same for your document: how much you typed, pasted and inserted from templates.",
+                "src": "maier"
               }
             ],
-            "honesty": "These studies involve school and university students, not working engineers, and effect sizes vary between settings. We treat them as design guidance, not as a promise of results. We have not tested this course against others, and we make no claim that any other course lacks these features.",
+            "honesty": "The studies cited here are peer-reviewed and mostly involve students. Effect sizes vary by setting, so we use them as design principles. Each source is linked so you can read the original.",
             "sources": [
               {
                 "id": "dunlosky",
@@ -881,6 +886,11 @@
                 "id": "reich",
                 "label": "Reich and Ruipérez-Valiente (2019), The MOOC pivot, Science 363(6423)",
                 "url": "https://tsl.mit.edu/research/the-mooc-pivot/"
+              },
+              {
+                "id": "maier",
+                "label": "Maier, Schwabe, Schneider and Feuerriegel (2026), Designing Against Deskilling: metacognitive feedback reduces cognitive offloading to LLM assistants, arXiv:2609.20143 (preprint)",
+                "url": "https://arxiv.org/abs/2609.20143"
               }
             ]
           }
@@ -900,7 +910,7 @@
           },
           {
             "title": "Tests that guard the document",
-            "text": "33 tests check the contracts, the quality scenarios and the block boundaries. A checker fails if the arc42 uses an ID it never defines. Documentation and code are kept honest by the build."
+            "text": "33 tests check the contracts, the quality scenarios and the block boundaries. A checker fails if the arc42 uses an ID it never defines. The build keeps documentation and code in step."
           },
           {
             "title": "An agent guide",

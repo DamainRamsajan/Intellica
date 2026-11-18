@@ -5,7 +5,7 @@
 import { $, el, loadJSON, loadText, copyText, safeHref, storage } from './dom.js';
 import { renderMarkdown, slugify } from './markdown.js';
 
-export const KIT_VERSION = '0.7.0';
+export const KIT_VERSION = '0.7.1';
 
 // All five systems live on one domain, each under its own folder (for example /verichain/).
 // assemble.mjs writes <meta name="site-base" content="/verichain"> into a system's pages; the home site has none.
@@ -192,7 +192,15 @@ function hydrateHome(site, family) {
           el('li', {}, el('a', { href: productUrl(p, t) }, TABS[t].label)))));
       card.style.setProperty('--card-accent', p.accent);
       return card;
-    }));
+    }).concat((family.links || []).filter((l) => l.id === 'training' && l.chips).map((t) => {
+      const card = el('article', { class: 'card product' },
+        el('p', { class: 'kicker-m' }, t.short),
+        el('h3', {}, el('a', { href: t.url }, t.name)),
+        el('p', {}, t.tagline),
+        el('ul', { class: 'chip-links' }, t.chips.map((c) => el('li', {}, el('a', { href: c.url }, c.label)))));
+      card.style.setProperty('--card-accent', t.accent);
+      return card;
+    })));
   }
 
   const sectors = $('#sector-links');

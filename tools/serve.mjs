@@ -54,6 +54,8 @@ async function resolveFile(pathname) {
 
 http.createServer(async (req, res) => {
   const url = new URL(req.url, 'http://localhost');
+  // stands in for the Pages Function when the board is not set up: an empty board, so the page shows its empty state
+  if (req.method === 'GET' && url.pathname === '/api/board') { res.writeHead(200, { 'Content-Type': 'application/json' }); res.end('{"learners":0,"top":[]}'); return; }
   const rules = await loadRules();
   const headers = { 'Cache-Control': 'no-store' };
   for (const rule of rules) if (matches(rule.pattern, url.pathname)) for (const [k, v] of rule.headers) headers[k] = v;

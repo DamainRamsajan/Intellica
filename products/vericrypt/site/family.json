@@ -191,7 +191,28 @@
     {
       "id": "training",
       "name": "Training",
-      "url": "https://meeting-mind.com/training/"
+      "url": "https://meeting-mind.com/training/",
+      "short": "Workshops and online course",
+      "tagline": "Learn the method hands-on. arc42 in a Day, live or online, with a lab where you write your own architecture document, one lesson at a time.",
+      "accent": "#4FB3FF",
+      "chips": [
+        {
+          "label": "Live workshop",
+          "url": "https://meeting-mind.com/training/arc42/"
+        },
+        {
+          "label": "Online course",
+          "url": "https://meeting-mind.com/training/arc42/course/"
+        },
+        {
+          "label": "Hands-on lab",
+          "url": "https://meeting-mind.com/training/arc42/course/lab/"
+        },
+        {
+          "label": "Free lessons",
+          "url": "https://meeting-mind.com/training/arc42/course/part-0-opening/"
+        }
+      ]
     }
   ],
   "whatsapp": "18687195236"

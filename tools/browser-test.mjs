@@ -37,7 +37,7 @@ async function open(url, opts = { viewport: { width: 1280, height: 900 } }) {
 await step('home renders roles and products, no console errors', async () => {
   const p = await open(HOME);
   assert.equal(await p.locator('#roles-grid .card').count(), 6);
-  assert.equal(await p.locator('#family-cards .card').count(), 5);
+  assert.equal(await p.locator('#family-cards .card').count(), 6, 'five systems and the training card');
   assert.deepEqual(p.problems, []);
 });
 await step('home has no horizontal scroll at 390px', async () => {
@@ -278,6 +278,7 @@ await step('performance budget: CLS under 0.1, LCP under 2.5 s, under 150 KB per
 
 // ---- training section ----
 import fs from 'node:fs';
+import crypto from 'node:crypto';
 const WS = '/training/arc42/';
 await step('training: home links to it, pages render with content and no console errors', async () => {
   let p = await open(HOME);
@@ -494,6 +495,23 @@ await step('lab: a free step works without a code, autosaves, survives a reload,
   assert.deepEqual(errs, []);
   await ctx.close();
 });
+await step('lab: the process mirror reports typed, pasted and template text, privately and without judging', async () => {
+  const ctx = await browser.newContext(); const page = await ctx.newPage();
+  await page.goto(CRS + 'lab/');
+  await page.waitForSelector('[data-lab-page]:not([hidden]) [data-text]');
+  assert.equal(await page.locator('[data-mirror]').isHidden(), true, 'hidden until there is enough text');
+  await page.fill('[data-text]', '');
+  await page.focus('[data-text]');
+  await page.keyboard.insertText('x'.repeat(250));
+  await page.evaluate(() => { const t = document.querySelector('[data-text]'); t.dispatchEvent(new InputEvent('beforeinput', { inputType: 'insertFromPaste' })); t.value += 'y'.repeat(250); t.dispatchEvent(new InputEvent('input', { inputType: 'insertFromPaste' })); });
+  await page.waitForSelector('[data-mirror]:not([hidden])');
+  const txt = await page.locator('[data-mirror-text]').innerText();
+  assert.match(txt, /Typed by you \d+% · pasted \d+%/);
+  const m = txt.match(/Typed by you (\d+)% · pasted (\d+)%/); assert.ok(Math.abs(m[1] - 50) <= 5 && Math.abs(m[2] - 50) <= 5, txt);
+  await page.reload(); await page.waitForSelector('[data-lab-page]:not([hidden]) [data-text]');
+  assert.equal(await page.locator('[data-mirror]').isVisible(), true, 'the tally survives a reload');
+  await ctx.close();
+});
 await step('lab: with a code the paid steps open with instructions, the example, the health check and the preview', async () => {
   const ctx = await browser.newContext(); const page = await ctx.newPage();
   await page.goto(CRS);
@@ -627,7 +645,7 @@ await step('course page: the lab is shown, with a live check that passes when th
   const page = await open(CRS);
   await page.waitForSelector('[data-lab-demo]:not([hidden])');
   assert.equal(await page.locator('.lx-steps li').count(), 16);
-  assert.equal(await page.locator('.lx-r').count(), 7);
+  assert.equal(await page.locator('.lx-r').count(), 8);
   assert.equal(await page.locator('.lx-checks li.ok').count(), 2);
   await page.fill('#lx-demo-t', '| Q1 | #fast | A vendor taps Ready | The customer is notified | within 2 seconds |');
   assert.equal(await page.locator('.lx-checks li.ok').count(), 3);
@@ -638,7 +656,7 @@ await step('course page: the lab is shown, with a live check that passes when th
 await step('workshop page: the lab and the evidence behind it are shown', async () => {
   const page = await open(`${HOME}/training/arc42/`);
   assert.ok(await page.locator('#lab-after a[href$="/course/"]').count());
-  assert.equal(await page.locator('#research .lx-r').count(), 7);
+  assert.equal(await page.locator('#research .lx-r').count(), 8);
   await page.context().close();
 });
 await step('home: leads with AI engineering, links to consulting, and the header has the four entries', async () => {
@@ -726,6 +744,90 @@ await step('course: finishing a lesson offers recall cards, and a missed card re
   assert.equal(await page.locator('[data-due]').isVisible(), true);
   assert.match(await page.locator('li.lesson[data-lesson="part-0-opening"] .badge').innerText(), /done/i);
   await ctx.close();
+});
+const QUIZ = JSON.parse(fs.readFileSync('training-private/arc42-quiz.json', 'utf8'));
+const finishLesson = async (page) => { await page.waitForSelector('[data-stage] .s'); const n = Number((await page.locator('[data-pos]').innerText()).split('/')[1]); for (let i = 0; i < n; i++) await page.click('[data-next]'); };
+await step('board: check questions score on the first try, return for review on schedule, and My course shows the score', async () => {
+  const ctx = await browser.newContext(); const page = await ctx.newPage();
+  await page.clock.install({ time: new Date('2026-12-10T12:00:00Z') });
+  await page.goto(CRS + 'part-0-opening/');
+  await finishLesson(page);
+  await page.waitForSelector('[data-quiz]:not([hidden]) fieldset.qz');
+  assert.equal(await page.locator('fieldset.qz').count(), 2);
+  const a = QUIZ['part-0-opening'][0].a;
+  await page.locator('fieldset.qz').first().locator(`input[value="${a}"]`).check();
+  assert.match(await page.locator('.qz-out').first().innerText(), /Correct\..*\+10 points/);
+  assert.equal(await page.locator('fieldset.qz').first().locator('input').first().isDisabled(), true, 'one answer per question');
+  await page.locator('fieldset.qz').nth(1).locator(`input[value="${(QUIZ['part-0-opening'][1].a + 1) % 4}"]`).check();
+  assert.match(await page.locator('.qz-out').nth(1).innerText(), /Not quite/);
+  assert.equal(await page.locator('.qz-o.is-right').count(), 2, 'the right answer is shown either way');
+  await page.evaluate((c) => localStorage.setItem('iw-course-code', c), mkCode('Board Buyer'));
+  await page.goto(CRS + 'learn/'); await page.waitForSelector('[data-board-card] .sb-parts');
+  const rows = await page.locator('.sb-parts li').allInnerTexts();
+  assert.match(rows[0], /Recall\s+3%/, 'one of 34 questions right first time');
+  assert.match(await page.locator('[data-board-card] .sb-hero').innerText(), /18\s+Points this week/i, '10 + 2 for the answers, 6 for the first day with a streak of 1');
+  assert.match(await page.locator('[data-board-card] .sb-hero').innerText(), /1\s+Day streak/i);
+  assert.match(await page.locator('[data-board-card] .sb-goal').innerText(), /first week/i);
+  assert.equal(await page.locator('[data-board-card] .sb-join').isVisible(), true, 'joining is offered, not forced');
+  await page.clock.setFixedTime(new Date('2026-12-11T12:30:00Z'));
+  await page.goto(CRS + 'part-0-opening/'); await page.waitForSelector('[data-quiz]:not([hidden])');
+  assert.match(await page.locator('[data-quiz] h2').innerText(), /Review/);
+  assert.equal(await page.locator('fieldset.qz').count(), 2, 'both questions are due after a day');
+  await page.locator('fieldset.qz').first().locator(`input[value="${a}"]`).check();
+  assert.match(await page.locator('.qz-out').first().innerText(), /Review recorded.*\+8 points/);
+  await ctx.close();
+});
+await step('board: joining shares only numbers and a proof; ranks, neighbours and the public board show', async () => {
+  const ctx = await browser.newContext(); const page = await ctx.newPage();
+  const seen = [];
+  const view = { handle: 'Ada', learners: 9, weekKey: '2026-12-07',
+    week: { rank: 3, pts: 18, toPass: 5, passing: 'Grace', around: [{ handle: 'Linus', pts: 30 }, { handle: 'Grace', pts: 22 }, { handle: 'Ada', pts: 18, you: true }, { handle: 'Ken', pts: 9 }] },
+    all: { rank: 4, pts: 18, toPass: 0, passing: null, around: [{ handle: 'Ada', pts: 18, you: true }] } };
+  await page.route('**/api/board**', async (route) => {
+    const req = route.request(); const u = new URL(req.url());
+    seen.push({ m: req.method(), p: u.pathname, auth: req.headers().authorization || '', body: req.postData() || '' });
+    const ok = (o) => route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(o) });
+    if (u.pathname.endsWith('/join')) return ok({ token: 'a'.repeat(32), handle: 'Ada' });
+    if (u.pathname.endsWith('/sync') || (u.pathname.endsWith('/me') && req.method() === 'GET')) return ok(view);
+    if (u.pathname.endsWith('/me')) return ok({ deleted: true });
+    return ok({ learners: 2, weekKey: '2026-12-07', week: [{ handle: 'Ada', pts: 71, streak: 4, overall: 50 }, { handle: 'Grace', pts: 40, streak: 2, overall: 30 }], all: [{ handle: 'Grace', pts: 400, streak: 2, overall: 30 }, { handle: 'Ada', pts: 300, streak: 4, overall: 50 }] });
+  });
+  await page.goto(CRS + 'part-0-opening/'); await finishLesson(page); await page.waitForSelector('fieldset.qz');
+  await page.locator('fieldset.qz').first().locator(`input[value="${QUIZ['part-0-opening'][0].a}"]`).check();
+  await page.evaluate((c) => localStorage.setItem('iw-course-code', c), mkCode('Board Buyer'));
+  await page.goto(CRS + 'learn/'); await page.waitForSelector('[data-board-card] .sb-join');
+  await page.fill('[data-handle]', 'Ada'); await page.click('.sb-join button[type=submit]');
+  await page.waitForSelector('[data-leave]');
+  const join = seen.find((x) => x.p.endsWith('/join'));
+  const proof = crypto.createHash('sha256').update('board-v1:' + courseKey.toString('base64url')).digest('base64url');
+  assert.deepEqual(JSON.parse(join.body), { handle: 'Ada', proof });
+  assert.ok(!join.body.includes(courseKey.toString('base64url')), 'the course key itself is never sent');
+  const sync = seen.filter((x) => x.p.endsWith('/sync')).pop();
+  assert.ok(sync, 'progress is shared once joined'); assert.equal(sync.auth, 'Bearer ' + 'a'.repeat(32));
+  const snap = JSON.parse(sync.body).snapshot;
+  assert.deepEqual(Object.keys(snap).sort(), ['best', 'bestStreak', 'build', 'consistency', 'overall', 'prev', 'recall', 'reviews', 'streak', 'total', 'week', 'weekKey'], 'only numbers are shared: no answers, no document');
+  assert.equal(snap.total, 16, 'the answer given before joining counts: 10 for the answer + 6 for the day');
+  const card = await page.locator('[data-board-card]').innerText();
+  assert.match(card, /Number 3 this week of 9\. Number 4 all time/);
+  assert.match(card, /5 points to pass Grace/);
+  assert.equal(await page.locator('.sb-around li').count(), 4); assert.equal(await page.locator('.sb-around li.is-you').count(), 1);
+  await page.click('[data-leave]'); await page.waitForSelector('.sb-join');
+  assert.ok(seen.some((x) => x.m === 'DELETE'), 'leaving deletes the record');
+  assert.equal(await page.evaluate(() => localStorage.getItem('iw-board-token')), null);
+  // public board on the workshop page: two boards
+  await page.goto(HOME + '/training/arc42/'); await page.waitForSelector('.lb-table');
+  assert.equal(await page.locator('.lb-table tbody tr').count(), 2);
+  assert.match(await page.locator('.lb-table tbody tr').first().innerText(), /Ada\s+71/);
+  await page.click('.lb-tab[data-kind="all"]');
+  assert.match(await page.locator('.lb-table tbody tr').first().innerText(), /Grace\s+400/);
+  assert.ok(await page.locator('.lb-how').count(), 'how points work is on the page');
+  await ctx.close();
+  const c2 = await browser.newContext(); const p2 = await c2.newPage();
+  await p2.goto(HOME + '/training/arc42/'); await p2.waitForSelector('.lb-empty');
+  assert.match(await p2.locator('.lb-empty').innerText(), /Nobody has points yet/);
+  const html = await (await fetch(HOME + '/training/arc42/')).text();
+  assert.ok(html.includes('id="leaderboard"') && html.includes('How points work'), 'the explanation is in the HTML itself');
+  await c2.close();
 });
 await step('course: lessons stay inside the screen at 320px', async () => {
   const p = await open(CRS + 'part-1-foundations/', { viewport: { width: 320, height: 700 } });

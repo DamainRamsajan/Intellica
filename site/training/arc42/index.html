@@ -23,6 +23,7 @@
   <link rel="stylesheet" href="/kit/tokens.css">
   <link rel="stylesheet" href="/kit/shell.css">
   <link rel="stylesheet" href="/training/training.css">
+  <link rel="stylesheet" href="/training/arc42/course/board.css">
 </head>
 <body data-tab="training" data-generated="training" data-section="training">
   <a class="skip-link" href="#main">Skip to content</a>
@@ -78,14 +79,14 @@
     <section class="t-block" id="help" aria-labelledby="help-t">
       <p class="kicker"><span class="kn">03</span>How it helps</p>
       <h2 id="help-t">Pick what you want to do</h2>
-      <p class="sub">We show how arc42 gets you there, what you do in the workshop, and what to expect, including where it will not help.</p>
+      <p class="sub">We show how arc42 gets you there, what you do in the workshop, and what you leave with.</p>
       <div class="goals">
         <details class="goal" name="goal" open>
           <summary><span class="gk">Spend less on AI</span><span class="gh">Cut wasted tokens</span></summary>
           <div class="gb">
             <p>AI coding tools start every session knowing nothing about your project. Without a written map they read lots of files and guess, and you pay for every token. A short, accurate architecture note (what the parts are, what each promises, what you decided and why) gives them what the code can’t tell.</p>
             <p><strong>In the workshop.</strong> You write the short version: a strategy table, block descriptions, one contract and one decision record. Then you test it with a prompt template and a simple three-way experiment.</p>
-            <p class="real"><strong>Be realistic.</strong> The evidence is mixed. A February 2026 ETH Zurich study reported that long, auto-generated context files lowered success and raised cost by over 20%. So the aim is short, human-written and specific, not more. Test it on your own tasks.</p>
+            <p class="real"><strong>Be realistic.</strong> Shorter is better. A February 2026 ETH Zurich study reported that long, auto-generated context files lowered success and raised cost by over 20%, so the aim is short, human-written and specific. You test the effect on your own tasks.</p>
           </div>
         </details>
         <details class="goal" name="goal">
@@ -93,7 +94,7 @@
           <div class="gb">
             <p>Most integration trouble hides at the edges: who talks to whom, in what format, and what happens when it fails. arc42 gives you a context view, interface contracts, failure scenarios and decision records, so colleagues and vendors work from the same picture.</p>
             <p><strong>In the workshop.</strong> You draw the context and Level-1 views, write a contract with error modes, and trace one runtime scenario with a failure branch.</p>
-            <p class="real"><strong>Be realistic.</strong> It won’t design the system for you. It makes your design visible so it can be questioned before it is expensive to change.</p>
+            <p class="real"><strong>Be realistic.</strong> It makes your design visible, so it can be questioned before it is expensive to change.</p>
           </div>
         </details>
         <details class="goal" name="goal">
@@ -101,7 +102,7 @@
           <div class="gb">
             <p>Founders and freelancers need to explain an idea to developers, clients and AI tools without it being misread. Quality goals, constraints such as budget, team and deadline, and a context view turn a vague idea into something others can build, price and challenge.</p>
             <p><strong>In the workshop.</strong> Use your own idea as the workshop case if you like. You leave with goals, constraints, a context view and a list of risks.</p>
-            <p class="real"><strong>Be realistic.</strong> A document doesn’t prove people will pay. Use it to sharpen the idea, then test the market.</p>
+            <p class="real"><strong>Be realistic.</strong> Use it to sharpen the idea before you test the market.</p>
           </div>
         </details>
         <details class="goal" name="goal">
@@ -109,7 +110,7 @@
           <div class="gb">
             <p>As AI writes more of the code, the scarce skills move towards deciding structure, stating what good looks like, spotting AI’s mistakes and recording why. Those are the skills this workshop practises.</p>
             <p><strong>In the workshop.</strong> In the AI lab, AI drafts sections from your notes, then your team red-teams the result and decides what to keep.</p>
-            <p class="real"><strong>Be realistic.</strong> This builds skill, not a job guarantee. You practise judging AI output, which stays useful whatever tools change.</p>
+            <p class="real"><strong>Be realistic.</strong> You practise judging AI output, a skill that stays useful whatever tools change.</p>
           </div>
         </details>
       </div>
@@ -145,7 +146,7 @@
         <li><time>13:00</time><div><h4>Section 5: building blocks</h4><p>Split the system into five to nine blocks, name their responsibilities and interfaces, then write a contract with pre-conditions, post-conditions, invariants and error modes for your riskiest block.</p><p class="tag">Exercises 5a and 5b · Level-1 view and one contract</p></div></li>
         <li><time>13:50</time><div><h4>Sections 6 to 8: runtime, deployment, crosscutting</h4><p>Draw one scenario as a sequence diagram with a failure branch, map every block to where it runs, and name the rules that recur across blocks.</p><p class="tag">Exercises 6, 7 and 8</p></div></li>
         <li class="brk"><time>14:35</time><span>Break, 15 minutes</span></li>
-        <li><time>14:50</time><div><h4>Section 9: decisions</h4><p>Write an architecture decision record with real alternatives and at least one honest negative consequence, so a new teammate understands why not the other option.</p><p class="tag">Exercise 9 · one ADR</p></div></li>
+        <li><time>14:50</time><div><h4>Section 9: decisions</h4><p>Write an architecture decision record with real alternatives and at least one real trade-off, so a new teammate understands why not the other option.</p><p class="tag">Exercise 9 · one ADR</p></div></li>
         <li><time>15:20</time><div><h4>Sections 10 to 12: quality, risks, glossary</h4><p>Grow your quality tree with a change scenario and a failure scenario, then list risks with mitigations and owners, and define your terms once.</p><p class="tag">Exercises 10 and 11</p></div></li>
         <li class="grp"><h3>Late afternoon: AI and agents</h3></li>
         <li><time>15:40</time><div><h4>AI lab</h4><p>Have an assistant draft sections from your notes. Then red-team the result for ignored instructions, contradictions between sections and unsupported claims, and repair it, giving every AI line a verdict.</p><p class="tag">Exercise 12 · red-teamed AI draft</p></div></li>
@@ -176,10 +177,28 @@
       <p class="muted small">The lab editor opens with the twelve-section skeleton, a live preview and Markdown export, and you can use it without an access code. Your work stays in your browser, so download it often.</p>
     </section>
 
+    <section class="t-block" id="leaderboard" aria-labelledby="lb-t">
+      <p class="kicker"><span class="kn">10</span>Leaderboard</p>
+      <h2 id="lb-t">Leaderboard</h2>
+      <p class="sub">Compete with other learners, and with your own best week. Points reward doing the work: answering from memory, reviewing on schedule, building your own arc42 and showing up. Never speed.</p>
+      <div data-board-public><p class="muted">Loading the board…</p></div>
+      <details class="lb-how"><summary>How points work</summary>
+        <table><thead><tr><th scope="col">Activity</th><th scope="col">Points</th></tr></thead><tbody>
+          <tr><th scope="row">Check question, first try</th><td>10 if correct, 2 if not</td></tr>
+          <tr><th scope="row">Review when it falls due</th><td>8 on time, 4 if late, 2 if wrong</td></tr>
+          <tr><th scope="row">Section written in your lab document</th><td>15 each</td></tr>
+          <tr><th scope="row">Health check passed (of six)</th><td>10 each</td></tr>
+          <tr><th scope="row">First activity of a day</th><td>5, plus 1 for each day of your streak, up to 10</td></tr>
+        </tbody></table>
+        <p>The board resets every Monday at 00:00 UTC, so a new learner can lead the week. An all-time board sits beside it. Your streak counts days in a row, and one missed day is forgiven. Your four progress parts (Recall, Build, Reviews, Consistency) and an overall score out of 100 are on your course page.</p>
+        <p class="muted small">Your device works out your points from your own activity, and everything you have already done counts from day one. Joining is optional. When you join, we store your handle and these numbers: points, streak and the four progress parts. We do not store your answers or your document. You can remove yourself at any time and your record is deleted.</p>
+      </details>
+    </section>
+
     <section class="t-block" id="research" aria-labelledby="res-t">
-      <p class="kicker"><span class="kn">10</span>Designed from the evidence</p>
+      <p class="kicker"><span class="kn">11</span>Designed from the evidence</p>
       <h2 id="res-t">Why the lab works the way it does</h2>
-      <p class="sub">We build the learning the way the research says it works, and we say where the evidence is limited.</p>
+      <p class="sub">Every design choice in the lab traces to published research, cited below.</p>
       <div class="lx-research">
         <article class="lx-r"><h3>Producing beats rereading</h3><p>A review of ten study techniques found that practice testing and distributed practice earned the highest utility ratings, while summarising, highlighting and rereading rated low. So each lesson ends with recall questions, reviews return at 1, 3, 7 and 21 days, and the lab has you write the document instead of reading about it.</p><p class="lx-src"><a href="#res-dunlosky">Source 1</a></p></article>
         <article class="lx-r"><h3>Draft first, then AI</h3><p>In a 2025 PNAS study of nearly 1,000 high-school students, unrestricted GPT-4 access raised practice grades by 48%, yet students scored 17% lower on the exam once it was removed. A version built with tutoring guardrails largely mitigated the harm. In the lab you write your own sections before any AI sees them, and when you red-team a draft with AI you record each suggestion as accepted, rejected or edited, with a reason.</p><p class="lx-src"><a href="#res-bastani">Source 2</a></p></article>
@@ -187,9 +206,10 @@
         <article class="lx-r"><h3>Support that can fade</h3><p>Guidance that helps beginners can get in the way of experts, a finding known as the expertise reversal effect. So the worked example is optional, and every lab step has an “Experienced?” version that asks more of you.</p><p class="lx-src"><a href="#res-kalyuga">Source 4</a></p></article>
         <article class="lx-r"><h3>Testing yourself beats rereading</h3><p>A 2017 meta-analysis of 118 articles (15,427 participants) found practice testing beat restudying by g = 0.51, and beat doing nothing by g = 0.93. The largest effects came when the final test followed practice by one to six days. So every lesson ends with questions you answer before you see the answer, and missed cards return after a day.</p><p class="lx-src"><a href="#res-adesope">Source 5</a></p></article>
         <article class="lx-r"><h3>Explaining your reasons</h3><p>A 2018 meta-analysis of 69 effect sizes found that prompting learners to explain to themselves improved learning, with a mean effect of g = 0.55. In the lab each decision and each AI suggestion you keep or reject carries a short reason in your own words, which is that kind of prompt.</p><p class="lx-src"><a href="#res-bisra">Source 6</a></p></article>
-        <article class="lx-r"><h3>Why lessons are short and resumable</h3><p>Across HarvardX and MITx courses, 15.4% of learners who intended to complete did so in 2017-18, and 3.1% of all registrants. Completion among those who paid for a verified track was 46%. The authors point to human support as what matters most. So lessons are short, the course remembers your place, and the first two are free to try. We have no completion data of our own yet and will not quote any until we do.</p><p class="lx-src"><a href="#res-reich">Source 7</a></p></article>
+        <article class="lx-r"><h3>Why lessons are short and resumable</h3><p>Across HarvardX and MITx courses, 15.4% of learners who intended to complete did so in 2017-18, and 3.1% of all registrants. Completion among those who paid for a verified track was 46%. The authors point to human support as what matters most. So lessons are short, the course remembers your place, and the first two are free to try.</p><p class="lx-src"><a href="#res-reich">Source 7</a></p></article>
+        <article class="lx-r"><h3>A mirror, not a rule</h3><p>In a preregistered experiment (704 adults, August 2026), a short message after each exercise describing how people had used an AI assistant cut how often they asked it for complete answers (odds ratio 0.47) and left their unaided results somewhat higher. The message only described their behaviour; it did not tell them what to do. The lab's process mirror does the same for your document: how much you typed, pasted and inserted from templates.</p><p class="lx-src"><a href="#res-maier">Source 8</a></p></article>
       </div>
-      <p class="muted small">These studies involve school and university students, not working engineers, and effect sizes vary between settings. We treat them as design guidance, not as a promise of results. We have not tested this course against others, and we make no claim that any other course lacks these features.</p>
+      <p class="muted small">The studies cited here are peer-reviewed and mostly involve students. Effect sizes vary by setting, so we use them as design principles. Each source is linked so you can read the original.</p>
       <ol class="lx-sources" aria-label="Sources">
         <li id="res-dunlosky"><a href="https://www.psychologicalscience.org/news/releases/which-study-strategies-make-the-grade.html" rel="noopener">Dunlosky et al. (2013), Psychological Science in the Public Interest, summarised by the Association for Psychological Science</a></li>
         <li id="res-bastani"><a href="https://doi.org/10.1073/pnas.2422633122" rel="noopener">Bastani et al. (2025), Proceedings of the National Academy of Sciences 122(26)</a></li>
@@ -198,17 +218,18 @@
         <li id="res-adesope"><a href="https://rex.libraries.wsu.edu/esploro/outputs/journalArticle/Rethinking-the-Use-of-Tests-A/99900601154801842" rel="noopener">Adesope, Trevisan and Sundararajan (2017), Rethinking the use of tests: a meta-analysis of practice testing, Review of Educational Research 87(3)</a></li>
         <li id="res-bisra"><a href="https://doi.org/10.1007/s10648-018-9434-x" rel="noopener">Bisra, Liu, Nesbit, Salimi and Winne (2018), Inducing self-explanation: a meta-analysis, Educational Psychology Review 30</a></li>
         <li id="res-reich"><a href="https://tsl.mit.edu/research/the-mooc-pivot/" rel="noopener">Reich and Ruipérez-Valiente (2019), The MOOC pivot, Science 363(6423)</a></li>
+        <li id="res-maier"><a href="https://arxiv.org/abs/2609.20143" rel="noopener">Maier, Schwabe, Schneider and Feuerriegel (2026), Designing Against Deskilling: metacognitive feedback reduces cognitive offloading to LLM assistants, arXiv:2609.20143 (preprint)</a></li>
       </ol>
     </section>
 
     <section class="t-block" id="who" aria-labelledby="who-t">
-      <p class="kicker"><span class="kn">11</span>Audience</p>
+      <p class="kicker"><span class="kn">12</span>Audience</p>
       <h2 id="who-t">Who it’s for</h2>
       <div class="who"><p><strong>New to architecture documentation.</strong> Every section starts with a finished example and early exercises are mostly filled in. If you can explain how an app works, you can follow along. No UML needed.</p><p><strong>Senior engineers, tech leads and architects.</strong> Go beyond the template: write quality scenarios with measurable response targets, interface contracts with invariants and error modes, and decision records that capture the road not taken. Then make the result useful to coding agents and keep it from drifting.</p><p><strong>Analysts, testers, managers and founders</strong> who need one shared picture between the business and the build.</p><p class="muted">Already fluent in arc42? Expect a quick pass through the template, with the depth in contracts, quality scenarios, the AI lab and agent-readable documentation.</p></div>
     </section>
 
     <section class="t-block" id="facilitator" aria-labelledby="fac-t">
-      <p class="kicker"><span class="kn">12</span>Your facilitator</p>
+      <p class="kicker"><span class="kn">13</span>Your facilitator</p>
       <h2 id="fac-t">A practising architect</h2>
       <p class="role">Solution architect and workshop facilitator, Intellica</p>
       <ul class="facts"><li>30+ years in ICT</li><li>Workshop facilitator for decades</li><li>Former computer science lecturer</li><li>Caribbean-wide implementations</li><li>MSc, Strategic Business IT (Portsmouth)</li><li>PGDip, Software Engineering (Aston)</li></ul>
@@ -222,9 +243,9 @@
     </section>
 
     <section class="t-block" id="faq" aria-labelledby="faq-t">
-      <p class="kicker"><span class="kn">13</span>Questions</p>
+      <p class="kicker"><span class="kn">14</span>Questions</p>
       <h2 id="faq-t">Questions</h2>
-      <div class="faqs"><details class="faq-item"><summary>What is arc42?</summary><p>A free, open template with twelve sections for writing down how a software system is built and why. It was created by Gernot Starke and Peter Hruschka.</p></details><details class="faq-item"><summary>Is this the official arc42 training?</summary><p>No. This is an independent workshop built on the free arc42 template. It is not affiliated with or endorsed by arc42, and it does not lead to a certification.</p></details><details class="faq-item"><summary>I’m an experienced engineer. What’s in it for me?</summary><p>The template is the easy part. The depth is in measurable quality scenarios, contracts with invariants and error modes, decision records with real alternatives, an AI lab where you red-team generated documentation, and designing docs that coding agents can use without drifting.</p></details><details class="faq-item"><summary>I’m new to this. Will I keep up?</summary><p>Yes. Every section starts with a finished example, early exercises are mostly filled in, and you work in a team. The support fades as you gain confidence.</p></details><details class="faq-item"><summary>Will this really cut my AI costs?</summary><p>It can, if you keep the documentation short and specific. Evidence so far is mixed, and long auto-generated context files can make things worse. The workshop shows you how to test the effect on your own work.</p></details><details class="faq-item"><summary>Where and when?</summary><p>Saturday 30 January 2027, 9:00 am to 5:00 pm at UWI St Augustine. Registered participants get the exact room by email before the day.</p></details><details class="faq-item"><summary>Do I need to know UML?</summary><p>No. Boxes, arrows and plain words are enough.</p></details><details class="faq-item"><summary>Which system do we document?</summary><p>One your team can explain from memory, such as a school library, a clinic booking system or a maxi-taxi tracker. Please don’t share confidential details.</p></details><details class="faq-item"><summary>Will we use AI?</summary><p>Yes, but you write the first draft yourselves. Then you use AI to find gaps, and you check every line it produces.</p></details><details class="faq-item"><summary>What should I bring?</summary><p>A laptop with a Markdown editor that previews Mermaid diagrams, or a shared document your team can edit.</p></details><details class="faq-item"><summary>Is it a certification?</summary><p>No. It is a practical workshop that ends with a document you can use.</p></details></div>
+      <div class="faqs"><details class="faq-item"><summary>What is arc42?</summary><p>A free, open template with twelve sections for writing down how a software system is built and why. It was created by Gernot Starke and Peter Hruschka.</p></details><details class="faq-item"><summary>Is this the official arc42 training?</summary><p>It is an independent workshop built on the free arc42 template, and it is not affiliated with or endorsed by arc42. It does not lead to a certification.</p></details><details class="faq-item"><summary>I’m an experienced engineer. What’s in it for me?</summary><p>The template is the easy part. The depth is in measurable quality scenarios, contracts with invariants and error modes, decision records with real alternatives, an AI lab where you red-team generated documentation, and designing docs that coding agents can use without drifting.</p></details><details class="faq-item"><summary>I’m new to this. Will I keep up?</summary><p>Yes. Every section starts with a finished example, early exercises are mostly filled in, and you work in a team. The support fades as you gain confidence.</p></details><details class="faq-item"><summary>Will this really cut my AI costs?</summary><p>Short, specific documentation gives coding tools the context they need without reading the whole repository. The workshop shows you how to measure the effect on your own work.</p></details><details class="faq-item"><summary>Where and when?</summary><p>Saturday 30 January 2027, 9:00 am to 5:00 pm at UWI St Augustine. Registered participants get the exact room by email before the day.</p></details><details class="faq-item"><summary>Do I need to know UML?</summary><p>No. Boxes, arrows and plain words are enough.</p></details><details class="faq-item"><summary>Which system do we document?</summary><p>One your team can explain from memory, such as a school library, a clinic booking system or a maxi-taxi tracker. Please don’t share confidential details.</p></details><details class="faq-item"><summary>Will we use AI?</summary><p>Yes, but you write the first draft yourselves. Then you use AI to find gaps, and you check every line it produces.</p></details><details class="faq-item"><summary>What should I bring?</summary><p>A laptop with a Markdown editor that previews Mermaid diagrams, or a shared document your team can edit.</p></details><details class="faq-item"><summary>Is it a certification?</summary><p>No. It is a practical workshop that ends with a document you can use.</p></details></div>
     </section>
 
     <aside class="t-notes" aria-label="Notes and sources">

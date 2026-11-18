@@ -42,7 +42,7 @@
   "verifyIt": "Run the demo, then verify its signed statements and hash chain with the standalone verifier and the public test vectors.",
   "demo": {
     "title": "Qualify a model migration",
-    "summary": "Watch a confidence bound tighten as paired cases arrive, and end with a signed verdict. The in-browser demo is planned; this page shows a labeled placeholder until it ships.",
+    "summary": "Watch a confidence bound tighten as paired cases arrive, and end with a signed verdict. The in-browser demo is in development; until it ships, this page shows a clearly labeled illustration.",
     "engine": "placeholder",
     "sample": "synthetic paired cases",
     "command": "python scripts/demo.py",

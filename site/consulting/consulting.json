@@ -78,7 +78,7 @@
     "title": "Check where you stand in five minutes",
     "lead": "Three short assessments. Each answer describes something observable, so you can pick what is true today instead of what you hope is true. Scores are worked out in your browser: nothing is sent or stored anywhere else unless you choose to share it.",
     "note": "In Cisco's first AI Readiness Index (2023), 14% of 8,161 organisations surveyed were fully ready across six pillars: strategy, infrastructure, data, talent, governance and culture. Self-assessments tend to run optimistic, so when two answers seem to fit, choose the lower one.",
-    "caveat": "A self-assessment is a starting point, not an audit or a validated instrument. It shows where to look. An evidence-based review confirms."
+    "caveat": "A self-assessment shows you where to look. An evidence-based review confirms what you find."
   },
   "systems": {
     "kicker": "Built on what we build",

@@ -10,6 +10,8 @@
 //   CLOUDFLARE_ACCOUNT_ID  your account id
 import { spawnSync } from 'node:child_process';
 import fs from 'node:fs';
+import crypto from 'node:crypto';
+import { loadKey } from './build-course.mjs';
 
 const WRANGLER = 'wrangler@4';
 const cfg = JSON.parse(fs.readFileSync('tools/deploy.config.json', 'utf8'));
@@ -33,7 +35,7 @@ if (!dry && (!process.env.CLOUDFLARE_API_TOKEN || !process.env.CLOUDFLARE_ACCOUN
 const run = (cmd, a, opts = {}) => {
   console.log(`\n$ ${cmd} ${a.join(' ')}`);
   if (dry) return { status: 0, stdout: '', stderr: '' };
-  return spawnSync(cmd, a, { encoding: 'utf8', stdio: opts.capture ? 'pipe' : 'inherit', env: process.env });
+  return spawnSync(cmd, a, { encoding: 'utf8', stdio: opts.capture ? 'pipe' : 'inherit', env: process.env, cwd: opts.cwd || process.cwd() });
 };
 
 if (!flags.includes('--no-gate')) {
@@ -53,7 +55,19 @@ for (const t of targets) {
   const out = `${made.stdout || ''}${made.stderr || ''}`;
   if (made.status !== 0 && !/already exists|8000002/i.test(out)) { console.error(out); console.error(`Could not create project ${project}.`); process.exit(1); }
   if (made.status === 0 && !dry) console.log(`created project ${project}`);
-  const dep = run('npx', ['--yes', WRANGLER, 'pages', 'deploy', dir, '--project-name', project, '--branch', branch, '--commit-dirty=true']);
+  // only the home project carries the leaderboard API (the functions/ folder); the other projects are deployed from an empty folder so they stay static
+  const cwd = t === 'home' ? process.cwd() : fs.mkdtempSync(`${process.env.TMPDIR || '/tmp'}/deploy-`);
+  const abs = fs.realpathSync(dir);
+  // the leaderboard's invisible gate: only browsers that hold a real access code can join. The value comes from the course key and is
+  // written into the uploaded Function only; the committed placeholder is restored right after.
+  const PROOF_FILE = 'worker/proof.js', placeholder = t === 'home' && !dry ? fs.readFileSync(PROOF_FILE, 'utf8') : null;
+  if (placeholder !== null) {
+    const key = loadKey({ create: false });
+    if (key) fs.writeFileSync(PROOF_FILE, `export const PROOF = '${crypto.createHash('sha256').update('board-v1:' + key.toString('base64url')).digest('base64url')}';\n`);
+    else console.log('No course key found: the leaderboard will stay closed to new members.');
+  }
+  const dep = run('npx', ['--yes', WRANGLER, 'pages', 'deploy', abs, '--project-name', project, '--branch', branch, '--commit-dirty=true'], { cwd });
+  if (placeholder !== null) fs.writeFileSync(PROOF_FILE, placeholder);
   if (dep.status !== 0) { console.error(`\nDeploy of ${t} failed.`); process.exit(1); }
   console.log(`\n${t}: uploaded to the Pages project "${project}".`);
   console.log('  Live at https://meeting-mind.com . Check https://meeting-mind.com/verify-site/ : it must say all files match.');

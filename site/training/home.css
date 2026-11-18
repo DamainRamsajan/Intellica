@@ -1,0 +1,9 @@
+/* Training block on the home page. */
+.t-home-grid { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); gap: var(--s6); align-items: center; }
+.t-home-grid .lead { margin: 0; }
+.t-home-card { display: grid; gap: var(--s1); padding: var(--s5); background: var(--card); border: 1px solid var(--line-hi); border-left: 4px solid var(--accent); border-radius: 4px; text-decoration: none; color: var(--text); }
+.t-home-card:hover { background: var(--card-hi); color: var(--text); }
+.t-home-card strong { font-size: var(--text-xl); color: var(--text-hi); line-height: 1.2; }
+.t-home-k { font-size: var(--text-xs); letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent-ink); }
+.t-home-go { margin-top: var(--s3); color: var(--accent-ink); font-weight: 600; }
+@media (max-width: 860px) { .t-home-grid { grid-template-columns: minmax(0, 1fr); } }

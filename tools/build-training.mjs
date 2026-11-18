@@ -11,7 +11,7 @@
 
 import fs from 'node:fs';
 import path from 'node:path';
-import { researchHtml } from './lab-html.mjs';
+import { researchHtml, boardHtml } from './lab-html.mjs';
 
 const SITE = path.resolve('site');
 const data = JSON.parse(fs.readFileSync(path.join(SITE, 'training', 'training.json'), 'utf8'));
@@ -57,6 +57,7 @@ ${ld ? `  <script type="application/ld+json">${JSON.stringify(ld).replace(/</g, 
   <link rel="stylesheet" href="/kit/tokens.css">
   <link rel="stylesheet" href="/kit/shell.css">
   <link rel="stylesheet" href="/training/training.css">
+  <link rel="stylesheet" href="/training/arc42/course/board.css">
 </head>
 <body data-tab="training" data-generated="training" data-section="${section}">
   <a class="skip-link" href="#main">Skip to content</a>
@@ -199,7 +200,7 @@ ${subnav(w, '')}
     <section class="t-block" id="help" aria-labelledby="help-t">
       ${kicker(++n, 'How it helps')}
       <h2 id="help-t">Pick what you want to do</h2>
-      <p class="sub">We show how arc42 gets you there, what you do in the workshop, and what to expect, including where it will not help.</p>
+      <p class="sub">We show how arc42 gets you there, what you do in the workshop, and what you leave with.</p>
       <div class="goals">${w.goals.map((g, i) => `
         <details class="goal" name="goal"${i === 0 ? ' open' : ''}>
           <summary><span class="gk">${esc(g.k)}</span><span class="gh">${esc(g.h)}</span></summary>
@@ -251,6 +252,10 @@ ${subnav(w, '')}
       <p class="sub">The online course turns the same material into short lessons, and after each one a lab step opens your own arc42 document in the browser. Finish the sections the day did not have time for, at your own pace, with a health check that reads your draft.</p>
       <div class="actions"><a class="btn btn-ghost" href="${w.path}course/">See the course and the lab</a><a class="btn btn-ghost" href="${w.path}course/lab/">Open the lab editor</a></div>
       <p class="muted small">The lab editor opens with the twelve-section skeleton, a live preview and Markdown export, and you can use it without an access code. Your work stays in your browser, so download it often.</p>
+    </section>
+
+    <section class="t-block" id="leaderboard" aria-labelledby="lb-t">
+      ${boardHtml(kicker(++n, 'Leaderboard'))}
     </section>
 
     <section class="t-block" id="research" aria-labelledby="res-t">
@@ -474,8 +479,8 @@ ${subnav(w, 'example/')}
     </section>
 
     <section class="t-block" aria-labelledby="ex-lim">
-      ${kicker(3, 'Honest limits')}
-      <h2 id="ex-lim">Where the code is deliberately simpler</h2>
+      ${kicker(3, 'Scope')}
+      <h2 id="ex-lim">Where the example is deliberately simple</h2>
       <ul class="facts">${x.limits.map((d) => `<li>${esc(d)}</li>`).join('')}</ul>
       <p class="muted">Each of these is a good question to ask of any real system.</p>
     </section>`;
@@ -553,7 +558,7 @@ function homeBlock() {
       <p class="eyebrow">Training</p>
       <h2 id="training-title">Learn the method, hands-on</h2>
       <div class="t-home-grid">
-        <p class="lead">Short, practical workshops that end with something you can use on Monday. Taught in person, with a real system, and honest about what they will not do.</p>
+        <p class="lead">Short, practical workshops that end with something you can use on Monday. Taught in person, on a real system, with a clear scope you can plan around.</p>
         <div class="t-home-cards">
         <a class="t-home-card" href="/training/">
           <span class="t-home-k">Next workshop</span>

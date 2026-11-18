@@ -17,7 +17,7 @@
   ],
   "demo": {
     "title": "Try the language",
-    "summary": "The in-browser compiler and VM are being built. Until then this page shows a labeled placeholder.",
+    "summary": "The in-browser compiler and VM are in development. Until they ship, this page shows a clearly labeled illustration.",
     "engine": "placeholder",
     "sample": "hello.seed",
     "command": "seed check hello.seed",

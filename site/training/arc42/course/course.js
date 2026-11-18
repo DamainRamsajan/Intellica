@@ -88,6 +88,8 @@ function initPlayer(root, data, code) {
   let i = 0, narrating = false, audio = null;
 
   $('[data-stage-wrap]', root).hidden = false;
+  // questions that have come due for this lesson are offered straight away, without replaying the slides
+  if (data.quiz && data.quiz.length) import('/training/arc42/course/board.js').then((m) => { m.markActive(); m.renderQuiz($('[data-quiz]', root), lesson, data.quiz, { dueOnly: true }); });
   if (code && code.name) $('[data-licence]', root).textContent = `Licensed to ${code.name}. Please do not share this course.`;
   const canSpeak = 'speechSynthesis' in window;
   if (!canSpeak && !data.audio.some(Boolean)) speak.hidden = true;
@@ -194,6 +196,8 @@ function initPlayer(root, data, code) {
       card.append(q, b, ans);
       box.append(card);
     }
+    const qb = $('[data-quiz]', root);
+    if (qb && data.quiz && data.quiz.length) import('/training/arc42/course/board.js').then((m) => m.renderQuiz(qb, lesson, data.quiz));
     rec.hidden = data.cards.length === 0;
     if (!rec.hidden) rec.scrollIntoView({ block: 'start' });
   }
@@ -320,6 +324,7 @@ async function indexPage() {
   const r = readJSON(REVIEW_KEY, {});
   const due = {};
   for (const [k, v] of Object.entries(r)) if (v.due <= Date.now()) { const id = k.split(':')[0]; due[id] = (due[id] || 0) + 1; }
+  try { const { dueByLesson: qd } = await import('/training/arc42/course/board.js'); for (const [id, n] of Object.entries(qd())) due[id] = (due[id] || 0) + n; } catch { /* board.js unavailable: card reviews still work */ }
   const list = $('[data-due-list]');
   const ids = Object.keys(due).filter((id) => rows.some((li) => li.dataset.lesson === id));
   if (list && ids.length) {
@@ -367,6 +372,11 @@ async function learnPage() {
     const h = $('header', m);
     h.append(el('p', { class: 'm-prog' }, `${n} of ${lis.length} complete`));
   }
+  const sb = $('[data-board-card]', root);
+  if (sb) import('/training/arc42/course/board.js').then((m) => m.scoreboardCard(sb, async () => {
+    const h = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(`board-v1:${code.key}`));
+    return btoa(String.fromCharCode(...new Uint8Array(h))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+  }));
   const pct = Math.round((count / total) * 100);
   $('[data-pct]', root).textContent = `${pct}%`;
   $('[data-ring]', root).style.setProperty('--p', `${pct}`);
@@ -389,6 +399,7 @@ async function learnPage() {
   }
   showLabCard(root);
   const due = dueByLesson();
+  try { const { dueByLesson: qd } = await import('/training/arc42/course/board.js'); for (const [id, n] of Object.entries(qd())) due[id] = (due[id] || 0) + n; } catch { /* card reviews still work */ }
   const ids = Object.keys(due).filter((id) => rows.some((li) => li.dataset.lesson === id));
   $('[data-dueN]', root).textContent = String(ids.reduce((a, id) => a + due[id], 0));
   if (ids.length) {

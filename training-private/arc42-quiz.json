@@ -1,0 +1,410 @@
+{
+ "part-0-opening": [
+  {
+   "q": "According to the Freeman et al. meta-analysis of 225 studies, active learning raised exam performance by about how much?",
+   "o": [
+    "0.47 standard deviations",
+    "4.7 standard deviations",
+    "47 percent of a grade",
+    "It made no measurable difference"
+   ],
+   "a": 0,
+   "why": "Freeman et al. (PNAS, 2014): about 0.47 standard deviations, in undergraduate STEM courses."
+  },
+  {
+   "q": "What is the rule for using AI in this workshop's first exercises?",
+   "o": [
+    "AI writes the first draft, you correct it",
+    "Human draft first, AI second, and you decide",
+    "Use AI only after the workshop",
+    "Never use AI at all"
+   ],
+   "a": 1,
+   "why": "Human draft first (Exercises 1 to 11). AI second. You decide: every AI line gets a human verdict."
+  }
+ ],
+ "part-1-foundations": [
+  {
+   "q": "In C4 terms, what is a container?",
+   "o": [
+    "A Docker image",
+    "A class inside a component",
+    "Something that runs, such as an application or a data store",
+    "A deployment server"
+   ],
+   "a": 2,
+   "why": "A container is a runtime thing you start. It is not necessarily Docker."
+  },
+  {
+   "q": "What did the 2026 ETH Zurich study find about auto-generated agent context files?",
+   "o": [
+    "They doubled success rates",
+    "They had no effect at all",
+    "They only helped on large repositories",
+    "They tended to lower success and raise cost by over 20%"
+   ],
+   "a": 3,
+   "why": "Auto-generated files tended to lower success and raised cost by over 20%. Write only what the code cannot tell, and keep it short."
+  }
+ ],
+ "part-2-1-goals": [
+  {
+   "q": "Which statement makes a quality goal testable?",
+   "o": [
+    "95% of order confirmations appear within 3 s at 300 orders per minute",
+    "The app should be fast",
+    "The app must be easy to use",
+    "The app follows best practices"
+   ],
+   "a": 0,
+   "why": "A scenario with a number can be verified. Adjectives like fast and secure cannot."
+  },
+  {
+   "q": "Why limit your top quality goals to three to five?",
+   "o": [
+    "The template only has five boxes",
+    "You cannot maximise everything, and focus drives the architecture",
+    "Stakeholders cannot read more",
+    "Quality goals are optional after five"
+   ],
+   "a": 1,
+   "why": "A very fast system and a very cheap one are built differently, so you choose."
+  }
+ ],
+ "part-3-2-constraints": [
+  {
+   "q": "A client says: You must host in our own datacentre. What is it, usually?",
+   "o": [
+    "A decision",
+    "A requirement",
+    "A constraint",
+    "A risk"
+   ],
+   "a": 2,
+   "why": "It is imposed from outside and limits your choices, so it belongs in section 2."
+  },
+  {
+   "q": "Which answers the three-question test as a constraint?",
+   "o": [
+    "Negotiable: yes. Imposed: no. Limits choices: no",
+    "Negotiable: yes. Imposed: yes. Limits choices: no",
+    "Negotiable: no. Imposed: no. Limits choices: yes",
+    "Negotiable: no. Imposed: yes. Limits choices: yes"
+   ],
+   "a": 3,
+   "why": "No, yes, yes: it is a constraint."
+  }
+ ],
+ "part-4-3-context": [
+  {
+   "q": "What belongs in the context diagram?",
+   "o": [
+    "The system as a black box, and everything that exchanges information with it",
+    "Every internal component",
+    "Only the database",
+    "Only the people who use the system"
+   ],
+   "a": 0,
+   "why": "Internal components are out of scope here and belong in section 5."
+  },
+  {
+   "q": "Which interface-table column do most teams skip, and which causes incidents?",
+   "o": [
+    "The protocol",
+    "What happens when it fails",
+    "The direction",
+    "The data exchanged"
+   ],
+   "a": 1,
+   "why": "Failure behaviour is the row most teams skip and the one that causes incidents."
+  }
+ ],
+ "part-5-4-strategy": [
+  {
+   "q": "What does section 4 (solution strategy) connect?",
+   "o": [
+    "Stakeholders to risks",
+    "Code to tests",
+    "Quality goals and constraints to building blocks",
+    "Deployment to glossary"
+   ],
+   "a": 2,
+   "why": "Quality goals and constraints lead to the strategy, which leads to building blocks."
+  },
+  {
+   "q": "Which strategy statement is specific rather than generic?",
+   "o": [
+    "Clean code",
+    "Best practices",
+    "Scalable cloud",
+    "Idempotency key on every write request"
+   ],
+   "a": 3,
+   "why": "If a neighbour can guess something specific from your table, it is specific enough."
+  }
+ ],
+ "part-6-5-building-blocks": [
+  {
+   "q": "What is an invariant?",
+   "o": [
+    "A statement that is always true",
+    "A condition that must be true before a call",
+    "An error returned to the caller",
+    "A diagram legend"
+   ],
+   "a": 0,
+   "why": "An invariant is always true. A pre-condition holds before a call and an error mode describes a failure."
+  },
+  {
+   "q": "How many building blocks should Level 1 roughly have?",
+   "o": [
+    "1 to 2",
+    "5 to 9",
+    "15 to 20",
+    "As many as there are classes"
+   ],
+   "a": 1,
+   "why": "Fewer than 4 may hide structure. More than 12 probably mixes levels."
+  }
+ ],
+ "part-7-6-runtime": [
+  {
+   "q": "What does the runtime view show?",
+   "o": [
+    "What exists",
+    "Where blocks are deployed",
+    "How building blocks interact over time in a scenario",
+    "Who the stakeholders are"
+   ],
+   "a": 2,
+   "why": "Structure shows what exists. Runtime shows how it behaves."
+  },
+  {
+   "q": "Which is a common mistake in section 6?",
+   "o": [
+    "A failure branch with a visible outcome",
+    "A caption saying what to notice",
+    "Names matching section 5",
+    "Participants that do not exist in section 5"
+   ],
+   "a": 3,
+   "why": "Participants must be section 5 blocks or neighbours."
+  }
+ ],
+ "part-8-7-deployment": [
+  {
+   "q": "What is the key table in the deployment view?",
+   "o": [
+    "A mapping from each building block to a node",
+    "Risk and owner",
+    "Goal and scenario",
+    "Term and definition"
+   ],
+   "a": 0,
+   "why": "Every block appears in the mapping table."
+  },
+  {
+   "q": "What does the deployment view's pipeline sketch show?",
+   "o": [
+    "The user journey",
+    "Build, test and deploy in four or five boxes",
+    "The glossary",
+    "The stakeholder list"
+   ],
+   "a": 1,
+   "why": "Sketch the pipeline (build, test, deploy) in 4 or 5 boxes."
+  }
+ ],
+ "part-9-8-crosscutting-concepts": [
+  {
+   "q": "When does something belong in section 8?",
+   "o": [
+    "When it affects exactly one block",
+    "When it is a technology brand",
+    "When it affects two or more blocks",
+    "When it is a legal rule only"
+   ],
+   "a": 2,
+   "why": "If only one block is affected, put it in section 5."
+  },
+  {
+   "q": "What does a well-written concept include?",
+   "o": [
+    "A tutorial on the pattern",
+    "Only a diagram",
+    "Only a code listing",
+    "Name, rule, where it applies, why and a link"
+   ],
+   "a": 3,
+   "why": "Name, rule, where it applies, why, link. Name the pattern, not a tutorial."
+  }
+ ],
+ "part-9b-see-it-run": [
+  {
+   "q": "In Demo 3, a webhook is lost. What happens to the order?",
+   "o": [
+    "It stays PendingPayment and later settles to Paid",
+    "It becomes Failed immediately",
+    "It is deleted",
+    "It is paid twice"
+   ],
+   "a": 0,
+   "why": "Unknown is not failed: the order stays pending until checked."
+  },
+  {
+   "q": "What does it mean that docs and code check each other?",
+   "o": [
+    "The code is generated from the diagrams",
+    "Tests fail if a named test does not exist",
+    "Nobody needs to review the documents",
+    "Diagrams run in production"
+   ],
+   "a": 1,
+   "why": "A test fails if a named test does not exist, and a checker fails if an ID is used but never defined."
+  }
+ ],
+ "part-10-9-decisions": [
+  {
+   "q": "What should you do when a decision is reversed?",
+   "o": [
+    "Edit the old ADR",
+    "Delete the old ADR",
+    "Mark the old ADR superseded and write a new one that links back",
+    "Do nothing"
+   ],
+   "a": 2,
+   "why": "Never edit history."
+  },
+  {
+   "q": "Which consequence list would you trust in an ADR?",
+   "o": [
+    "Simple and fast",
+    "No downsides",
+    "It is the industry standard",
+    "Survives outages; adds one component to operate"
+   ],
+   "a": 3,
+   "why": "A good ADR names a real cost."
+  }
+ ],
+ "part-11-10-quality-requirements": [
+  {
+   "q": "Which are the three kinds of scenario?",
+   "o": [
+    "Usage, change and failure",
+    "Fast, secure and cheap",
+    "Goal, risk and constraint",
+    "Context, runtime and deployment"
+   ],
+   "a": 0,
+   "why": "Usage, change and failure."
+  },
+  {
+   "q": "Which scenarios should you design for now?",
+   "o": [
+    "Low importance and low difficulty",
+    "High importance and high difficulty",
+    "Low importance and high difficulty",
+    "None until later"
+   ],
+   "a": 1,
+   "why": "High on both: design for it now. Low importance, high difficulty: question the requirement."
+  }
+ ],
+ "part-12-11-risks-and-12-glossary": [
+  {
+   "q": "What is the difference between a risk and technical debt?",
+   "o": [
+    "There is none",
+    "Debt is future and risk is past",
+    "A risk might go wrong; debt is a shortcut already taken that must be repaid",
+    "Risk is financial only"
+   ],
+   "a": 2,
+   "why": "Both belong in section 11 and both need an owner."
+  },
+  {
+   "q": "A risk with no owner is...",
+   "o": [
+    "A mitigation",
+    "An invariant",
+    "A constraint",
+    "A worry"
+   ],
+   "a": 3,
+   "why": "Every risk needs someone who watches it."
+  }
+ ],
+ "part-13-ai-lab": [
+  {
+   "q": "In the lab, what verdicts can each AI line receive?",
+   "o": [
+    "Accepted, rejected or edited, with a reason",
+    "Pass or fail",
+    "Only accepted",
+    "Only rejected"
+   ],
+   "a": 0,
+   "why": "Every AI line gets a verdict. The reasons are the learning."
+  },
+  {
+   "q": "Which are the three red-team lenses?",
+   "o": [
+    "Speed, cost and risk",
+    "Specification, misalignment and verification",
+    "Goals, constraints and context",
+    "Input, output and error"
+   ],
+   "a": 1,
+   "why": "Borrowed from research on multi-agent LLM failure modes (Cemri et al., NeurIPS 2025)."
+  }
+ ],
+ "part-14-agents-as-readers": [
+  {
+   "q": "What did the 2026 research suggest about agent context files?",
+   "o": [
+    "Longer is better",
+    "Generated is best",
+    "Short, specific and human-written",
+    "Do not write any"
+   ],
+   "a": 2,
+   "why": "The shared headline: short, specific and human-written."
+  },
+  {
+   "q": "Why pair every don't with a do instead?",
+   "o": [
+    "It is more polite",
+    "It shortens the file",
+    "Agents ignore don'ts",
+    "Warning-only guidance tends to underperform"
+   ],
+   "a": 3,
+   "why": "Give the agent an alternative to follow."
+  }
+ ],
+ "part-15-close": [
+  {
+   "q": "What links a goal to a test, per the golden thread?",
+   "o": [
+    "Goal, strategy, block, contract, test",
+    "Goal, risk, glossary, test",
+    "Context, runtime, test",
+    "Stakeholder, test"
+   ],
+   "a": 0,
+   "why": "Goal, strategy, block, contract, test."
+  },
+  {
+   "q": "Which section holds your numbered constraints?",
+   "o": [
+    "Section 1",
+    "Section 2",
+    "Section 9",
+    "Section 12"
+   ],
+   "a": 1,
+   "why": "Section 2, numbered so other sections and tools can cite them."
+  }
+ ]
+}

@@ -4,6 +4,7 @@ import { $, $$, storage, copyText } from '/kit/dom.js';
 import { upgradeAccessButtons } from '/training/access.js';
 
 upgradeAccessButtons();
+if (document.querySelector('[data-board-public]')) import('/training/arc42/course/board-public.js').then((m) => m.publicBoard(document.querySelector('[data-board-public]')));
 
 /* early-bird text: stays true after the deadline without anyone editing the page */
 for (const node of $$('[data-eb]')) {

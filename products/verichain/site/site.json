@@ -17,7 +17,7 @@
   ],
   "demo": {
     "title": "Verify an evidence pack",
-    "summary": "Check a signed evidence pack, then tamper with it and watch the checks fail. The in-browser verifier is planned; this page shows a labeled placeholder until it ships.",
+    "summary": "Check a signed evidence pack, then tamper with it and watch the checks fail. The in-browser verifier is in development; until it ships, this page shows a clearly labeled illustration.",
     "engine": "placeholder",
     "sample": "a demo evidence pack",
     "command": "vcv verify pack.json --trust trust.json --policy policy.json --require-seals",
@@ -51,7 +51,7 @@
       "text": "A hosted agent’s intent is written down before any action takes place, so a missing record is itself visible."
     },
     {
-      "title": "Honest assurance levels",
+      "title": "Clear assurance levels",
       "text": "Every record states its assurance (A0 to A3) and completeness (C0 to C3), and the verifier enforces the minimum you require."
     },
     {

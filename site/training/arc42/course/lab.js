@@ -4,9 +4,9 @@
 // Text from files and from the student is only ever inserted with textContent, never as HTML.
 import { $, $$, el, storage, copyText } from '/kit/dom.js';
 import { parseCode, decryptLesson, CODE_KEY, LAB_KEY } from '/training/arc42/course/course.js';
+import { healthChecks, MAIN } from '/training/arc42/course/health.js';
 
 const readJSON = (k, d) => { try { return JSON.parse(storage.get(k) || '') ?? d; } catch { return d; } };
-const MAIN = ['s1', 's2', 's3', 's4', 's5', 's6', 's7', 's8', 's9', 's10', 's11', 's12'];
 
 /* ---------- Markdown preview (small, safe, DOM-built) ---------- */
 
@@ -259,10 +259,34 @@ export async function labPage() {
     const sn = (secs[doc.sec].snippets || []).find((x) => x.label === b.dataset.snip);
     if (!sn) return;
     const at = ta.selectionEnd ?? ta.value.length;
+    lenBefore = ta.value.length;
     const before = ta.value.slice(0, at), after = ta.value.slice(at);
     ta.value = `${before}${before && !before.endsWith('\n\n') ? (before.endsWith('\n') ? '\n' : '\n\n') : ''}${sn.text}\n${after.startsWith('\n') || !after ? '' : '\n'}${after}`;
     ta.dispatchEvent(new Event('input')); ta.focus();
   });
+  /* Process mirror: how the text got here (typed, pasted, or inserted from a template). Informational only. */
+  const mirrorEl = $('[data-mirror]', root);
+  doc.mirror = Object.assign({ typed: 0, pasted: 0, template: 0 }, doc.mirror);
+  let lenBefore = 0;
+  ta.addEventListener('beforeinput', () => { lenBefore = ta.value.length; });
+  function drawMirror() {
+    const m = doc.mirror, tot = m.typed + m.pasted + m.template;
+    if (!mirrorEl) return;
+    mirrorEl.hidden = tot < 200;
+    if (mirrorEl.hidden) return;
+    const pc = (n) => Math.round((n / tot) * 100);
+    $('[data-mirror-text]', mirrorEl).textContent = `Typed by you ${pc(m.typed)}% · pasted ${pc(m.pasted)}% · inserted from templates ${pc(m.template)}%`;
+    const bar = $('[data-mirror-bar]', mirrorEl);
+    bar.replaceChildren(...[['typed', m.typed], ['pasted', m.pasted], ['template', m.template]].map(([c, n]) => el('i', { class: `mi-${c}`, style: `flex-grow:${n}` })));
+  }
+  function trackInput(e) {
+    const d = ta.value.length - lenBefore;
+    if (d <= 0) { lenBefore = ta.value.length; return; }
+    const t = e.inputType || '';
+    doc.mirror[/^insertFrom(Paste|Drop)/.test(t) ? 'pasted' : t ? 'typed' : 'template'] += d;
+    lenBefore = ta.value.length; drawMirror();
+  }
+  ta.addEventListener('input', trackInput);
   ta.addEventListener('input', () => {
     const k = doc.sec;
     if (ta.value.trim() === secs[k].template.trim()) delete doc.sections[k]; else doc.sections[k] = ta.value;
@@ -287,41 +311,16 @@ export async function labPage() {
 
   /* ----- health check ----- */
   const chkList = $('[data-check-list]', root), chkBadge = $('[data-check-badge]', root);
-  const ID = /\b(?:ADR-\d{4}|TD\d+|[CQR]\d+)\b/g;
-  function check() {
-    const out = [];
-    const t = arc42();
-    const miss = MAIN.filter((k) => !new RegExp(`^## ${k.slice(1)}\\. `, 'm').test(text(k)));
-    out.push({ ok: !miss.length, label: 'All 12 section headings are present', detail: miss.length ? `Missing: ${miss.map((k) => '§' + k.slice(1)).join(', ')}` : '' });
-    const todo = MAIN.filter((k) => !started(k));
-    out.push({ ok: !todo.length, label: 'Every section has been written', detail: todo.length ? `Still the template: ${todo.map((k) => '§' + k.slice(1)).join(', ')}` : '' });
-    const defined = new Set(), mentions = {};
-    for (const line of t.split('\n')) {
-      const m = line.match(/^\|\s*((?:ADR-\d{4}|TD\d+|[CQR]\d+))\s*\|/) || line.match(/^###\s+(ADR-\d{4}):/);
-      if (m) defined.add(m[1]);
-      for (const x of line.match(ID) || []) (mentions[x] = mentions[x] || []).push(line);
-    }
-    const loose = [...defined].filter((i) => !(mentions[i] || []).some((l) => !(new RegExp(`^\\|\\s*${i}\\s*\\||^###\\s+${i}`).test(l))));
-    const undef = Object.keys(mentions).filter((i) => !defined.has(i));
-    out.push({ ok: !loose.length && !undef.length, label: 'IDs (C1, Q1, ADR-0001, R1) are defined and used elsewhere', detail: [undef.length ? `Used but never defined: ${undef.join(', ')}` : '', loose.length ? `Defined but never referenced: ${loose.join(', ')}` : ''].filter(Boolean).join('. ') });
-    const noNum = [];
-    for (const line of text('s10').split('\n')) { const c = line.trim().replace(/^\||\|$/g, '').split('|').map((x) => x.trim()); if (/^Q\d+$/.test(c[0]) && c.length >= 5 && !/\d|\bzero\b/i.test(c[c.length - 1])) noNum.push(c[0]); }
-    out.push({ ok: !noNum.length, label: 'Every quality scenario has a number in its measure', detail: noNum.length ? `No number: ${noNum.join(', ')}` : '' });
-    const adrs = text('s9').split(/^(?=### ADR-)/m).filter((b) => /^### ADR-/.test(b));
-    const weak = adrs.filter((b) => !/options?:[^\n]*(;|\bor\b|\bvs\b)/i.test(b) || !/consequences?:[^\n]*\b(bad|negative|downside|cost|risk)/i.test(b)).map((b) => b.match(/ADR-\d{4}/)[0]);
-    out.push({ ok: adrs.length > 0 && !weak.length, label: 'Each decision lists two options and a bad consequence', detail: !adrs.length ? 'No decision written yet' : weak.length ? `Check: ${weak.join(', ')}` : '' });
-    const risky = /([\w.+-]+@[\w-]+\.[\w.]+)|(\b(password|passwd|secret|api[_ -]?key|token)\s*[:=]\s*\S+)|([A-Za-z0-9+/_-]{32,})/i.test(t.replace(/`[^`]*`/g, ''));
-    out.push({ ok: !risky, label: 'Nothing that looks confidential', detail: risky ? 'Found something that looks like an email address, a key or a password. Check before you share this document.' : '' });
-    return out;
-  }
+  const check = () => healthChecks({ text, started, arc42 });
   function runCheck() {
     const r = check(), bad = r.filter((x) => !x.ok);
     chkBadge.textContent = bad.length ? `${bad.length} to look at` : 'All clear';
     chkBadge.classList.toggle('badge-done', !bad.length);
+    import('/training/arc42/course/board.js').then((m) => m.recordBuild(MAIN.filter(started).length, r.filter((x) => x.ok).length, doc.sections));
     chkList.replaceChildren(...r.map((x) => el('li', { class: x.ok ? 'ok' : 'warn' }, el('span', { class: 'ck', 'aria-hidden': 'true' }, x.ok ? '✓' : '!'), el('span', {}, el('strong', {}, x.label), x.detail ? el('span', { class: 'muted' }, ` ${x.detail}`) : null), el('span', { class: 'sr' }, x.ok ? ' passed' : ' needs attention'))));
   }
 
-  function drawAll() { drawRail(); drawSecs(); drawView(); drawViewBtns(); runCheck(); showAgents(); }
+  function drawAll() { drawMirror(); drawRail(); drawSecs(); drawView(); drawViewBtns(); runCheck(); showAgents(); }
 
   /* ----- start: the step named in the link, else where the student left off, else the first unfinished one ----- */
   const want = new URLSearchParams(location.search).get('step');
@@ -329,5 +328,5 @@ export async function labPage() {
   const startId = idx.steps.some((s) => s.id === want) ? want : (idx.steps.some((s) => s.id === doc.current) ? doc.current : (firstOpen || idx.steps[0]).id);
   drawViewBtns();
   await openStep(startId, { focusSection: !!want || !doc.current || startId !== doc.current });
-  runCheck(); showAgents();
+  drawMirror(); runCheck(); showAgents();
 }

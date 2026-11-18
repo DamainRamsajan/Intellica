@@ -42,7 +42,7 @@
   "verifyIt": "Run vericrypt verify on a report with the signer's public key pinned. Then edit the report and verify again: verification fails.",
   "demo": {
     "title": "Verify a signed report",
-    "summary": "Check a report, then tamper with it and see verification fail. The in-browser verifier is planned; this page shows a labeled placeholder until it ships.",
+    "summary": "Check a report, then tamper with it and see verification fail. The in-browser verifier is in development; until it ships, this page shows a clearly labeled illustration.",
     "engine": "placeholder",
     "sample": "a sample report.json",
     "command": "vericrypt verify report.json --pubkey my-key.pub.json",

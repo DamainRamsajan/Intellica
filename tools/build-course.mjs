@@ -49,6 +49,11 @@ function encrypt(key, id, obj) {
   return { v: 1, id, iv: b64u(iv), ct: b64u(ct) };
 }
 
+/* ---------- check questions (answer key lives outside site/, so it is never published in the clear) ---------- */
+
+const QUIZ_FILE = 'training-private/arc42-quiz.json';
+const QUIZ = fs.existsSync(QUIZ_FILE) ? JSON.parse(fs.readFileSync(QUIZ_FILE, 'utf8')) : {};
+
 /* ---------- read the deck ---------- */
 
 function loadDeck(workshopDir) {
@@ -144,6 +149,7 @@ function buildLessons(deck, freeIds, skip = []) {
         exercise: slides.map((s) => s.e),
         titles: slides.map((s) => s.t),
         cards: pick,
+        quiz: QUIZ[id] || [],
       },
     };
   });
@@ -181,6 +187,7 @@ function page({ title, description, canonicalPath, body, bodyAttrs = '', extraHe
   <link rel="stylesheet" href="/kit/tokens.css">
   <link rel="stylesheet" href="/kit/shell.css">
   <link rel="stylesheet" href="/training/training.css">
+  <link rel="stylesheet" href="/training/arc42/course/board.css">
   <link rel="stylesheet" href="/training/arc42/course/course.css">
 </head>
 <body data-tab="training" data-generated="training" data-section="training"${bodyAttrs}>
@@ -438,6 +445,7 @@ function learnPage(w, c, lessons) {
           </div>
         </section>
         <aside class="l-side" aria-label="Review and resources">
+          <section class="l-card l-score" data-board-card aria-label="Your score"></section>
           ${LAB ? `<section class="l-card l-lab" data-lab-card data-lab-steps="${LAB.steps.map((x) => x.id).join(',')}" data-lab-titles="${esc(LAB.steps.map((x) => x.title).join('|'))}">
             <h2>Your lab</h2>
             <p class="muted small" data-lab-sum>Your own arc42, built step by step after each lesson. ${LAB.steps.length} steps. Saved on this device.</p>
@@ -524,6 +532,7 @@ ${subnav(w, 'course/')}
         <p class="sub">Close your eyes or look away, and say what you remember before you reveal each answer. Trying to remember is what makes it stick.</p>
         <div data-cards></div>
       </div>
+      <section class="recall quiz" data-quiz hidden></section>
       <noscript><p>The lesson player needs JavaScript. If you cannot use it, write to us and we will send the material another way.</p></noscript>
     </div>
 
@@ -635,6 +644,11 @@ ${subnav(w, 'course/')}
             <textarea class="lab-text" data-text spellcheck="false" aria-label="Section text (Markdown)"></textarea>
             <div class="lab-preview" data-preview hidden></div>
             <p class="muted small lab-count" data-count></p>
+            <div class="lab-mirror" data-mirror hidden>
+              <p class="small"><strong>Process mirror.</strong> <span data-mirror-text></span></p>
+              <div class="mi-bar" data-mirror-bar aria-hidden="true"></div>
+              <p class="muted small">A private view of how this document was written, kept on your device. It does not judge: pasted notes and reviewed suggestions are a normal part of the work.</p>
+            </div>
           </section>
 
           <details class="lab-check" data-check>
@@ -663,6 +677,7 @@ if (import.meta.url === `file://${process.argv[1]}`) {
     const dir = path.join(SITE, w.path.replace(/^\//, ''));
     const deck = loadDeck(dir);
     const lessons = buildLessons(deck, c.free || [], c.skip || []);
+    for (const k of Object.keys(QUIZ)) if (!lessons.some((l) => l.id === k)) throw new Error(`${QUIZ_FILE}: "${k}" is not a lesson`);
     // study order is the module order: number, link and sequence the lessons that way
     {
       const order = c.modules.flatMap((m) => m.lessons);
@@ -685,6 +700,8 @@ if (import.meta.url === `file://${process.argv[1]}`) {
       const idx = { sections: LAB.sections.map((x) => ({ key: x.key, title: x.title, short: x.short, extra: !!x.extra, template: join(x.template), snippets: (x.snippets || []).map((n) => ({ label: n.label, text: join(n.text) })) })),
         steps: LAB.steps.map((x) => ({ id: x.id, title: x.title, sections: x.sections, minutes: x.minutes, free: x.free, lessonNum: x.lessonNum, lessonTitle: x.lessonTitle, next: x.next })) };
       fs.writeFileSync(path.join(out, 'data', 'lab-index.json'), JSON.stringify(idx));
+      // public: only how many check questions the course has (the answers stay private)
+      fs.writeFileSync(path.join(out, 'data', 'board-index.json'), JSON.stringify({ total: Object.values(QUIZ).reduce((n, q) => n + q.length, 0) }));
       for (const st of LAB.steps) {
         const detail = { brief: st.brief, do: st.do, done: st.done, experienced: st.experienced || '', example: ex[st.sections[0]] || '', exampleKey: st.sections[0] };
         const fid = `lab-${st.id}`;

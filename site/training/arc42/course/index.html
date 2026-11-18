@@ -23,6 +23,7 @@
   <link rel="stylesheet" href="/kit/tokens.css">
   <link rel="stylesheet" href="/kit/shell.css">
   <link rel="stylesheet" href="/training/training.css">
+  <link rel="stylesheet" href="/training/arc42/course/board.css">
   <link rel="stylesheet" href="/training/arc42/course/course.css">
 </head>
 <body data-tab="training" data-generated="training" data-section="training" data-course="index">
@@ -45,7 +46,7 @@
           <a class="btn btn-primary" href="/training/arc42/course/part-0-opening/">Start the free lessons</a>
           <a class="btn btn-ghost" href="#get-t">Get the full course</a>
         </div>
-        <p class="fine">This is the workshop’s slides, notes and exercises turned into self-study lessons. It is not a certification, and it is not a presenter on camera. What it cannot give you is feedback on your own system: that is what the live day is for.</p>
+        <p class="fine">This is the workshop’s slides, notes and exercises turned into self-study lessons, with a hands-on lab on your own document. For feedback on your own system and work with peers, join the live day.</p>
       </div>
       <figure class="c-preview" aria-label="A slide from the course" data-preview hidden>
         <div class="cstage-frame" data-frame><div class="cstage" data-stage><section class="s on"><div class='pt'>Part 1 · Foundations</div><h2>Architecture is trade-offs</h2><table><tr><th>Decision</th><th>Gains</th><th>Costs</th></tr><tr><td>Cache data on the phone</td><td>Faster screens</td><td>Data may be stale</td></tr><tr><td>Queue payment confirmations</td><td>Survives outages</td><td>Slight delay, more parts</td></tr><tr><td>One big application</td><td>Simple to deploy</td><td>Harder to scale parts</td></tr></table><p class='k'>Every decision gains one quality and costs another.</p></section></div></div>
@@ -120,7 +121,7 @@
     <section class="t-block c-research" id="research" aria-labelledby="res-t">
       <p class="kicker"><span class="kn">02</span>Designed from the evidence</p>
       <h2 id="res-t">Why the lab works the way it does</h2>
-      <p class="sub">We build the learning the way the research says it works, and we say where the evidence is limited.</p>
+      <p class="sub">Every design choice in the lab traces to published research, cited below.</p>
       <div class="lx-research">
         <article class="lx-r"><h3>Producing beats rereading</h3><p>A review of ten study techniques found that practice testing and distributed practice earned the highest utility ratings, while summarising, highlighting and rereading rated low. So each lesson ends with recall questions, reviews return at 1, 3, 7 and 21 days, and the lab has you write the document instead of reading about it.</p><p class="lx-src"><a href="#res-dunlosky">Source 1</a></p></article>
         <article class="lx-r"><h3>Draft first, then AI</h3><p>In a 2025 PNAS study of nearly 1,000 high-school students, unrestricted GPT-4 access raised practice grades by 48%, yet students scored 17% lower on the exam once it was removed. A version built with tutoring guardrails largely mitigated the harm. In the lab you write your own sections before any AI sees them, and when you red-team a draft with AI you record each suggestion as accepted, rejected or edited, with a reason.</p><p class="lx-src"><a href="#res-bastani">Source 2</a></p></article>
@@ -128,9 +129,10 @@
         <article class="lx-r"><h3>Support that can fade</h3><p>Guidance that helps beginners can get in the way of experts, a finding known as the expertise reversal effect. So the worked example is optional, and every lab step has an “Experienced?” version that asks more of you.</p><p class="lx-src"><a href="#res-kalyuga">Source 4</a></p></article>
         <article class="lx-r"><h3>Testing yourself beats rereading</h3><p>A 2017 meta-analysis of 118 articles (15,427 participants) found practice testing beat restudying by g = 0.51, and beat doing nothing by g = 0.93. The largest effects came when the final test followed practice by one to six days. So every lesson ends with questions you answer before you see the answer, and missed cards return after a day.</p><p class="lx-src"><a href="#res-adesope">Source 5</a></p></article>
         <article class="lx-r"><h3>Explaining your reasons</h3><p>A 2018 meta-analysis of 69 effect sizes found that prompting learners to explain to themselves improved learning, with a mean effect of g = 0.55. In the lab each decision and each AI suggestion you keep or reject carries a short reason in your own words, which is that kind of prompt.</p><p class="lx-src"><a href="#res-bisra">Source 6</a></p></article>
-        <article class="lx-r"><h3>Why lessons are short and resumable</h3><p>Across HarvardX and MITx courses, 15.4% of learners who intended to complete did so in 2017-18, and 3.1% of all registrants. Completion among those who paid for a verified track was 46%. The authors point to human support as what matters most. So lessons are short, the course remembers your place, and the first two are free to try. We have no completion data of our own yet and will not quote any until we do.</p><p class="lx-src"><a href="#res-reich">Source 7</a></p></article>
+        <article class="lx-r"><h3>Why lessons are short and resumable</h3><p>Across HarvardX and MITx courses, 15.4% of learners who intended to complete did so in 2017-18, and 3.1% of all registrants. Completion among those who paid for a verified track was 46%. The authors point to human support as what matters most. So lessons are short, the course remembers your place, and the first two are free to try.</p><p class="lx-src"><a href="#res-reich">Source 7</a></p></article>
+        <article class="lx-r"><h3>A mirror, not a rule</h3><p>In a preregistered experiment (704 adults, August 2026), a short message after each exercise describing how people had used an AI assistant cut how often they asked it for complete answers (odds ratio 0.47) and left their unaided results somewhat higher. The message only described their behaviour; it did not tell them what to do. The lab's process mirror does the same for your document: how much you typed, pasted and inserted from templates.</p><p class="lx-src"><a href="#res-maier">Source 8</a></p></article>
       </div>
-      <p class="muted small">These studies involve school and university students, not working engineers, and effect sizes vary between settings. We treat them as design guidance, not as a promise of results. We have not tested this course against others, and we make no claim that any other course lacks these features.</p>
+      <p class="muted small">The studies cited here are peer-reviewed and mostly involve students. Effect sizes vary by setting, so we use them as design principles. Each source is linked so you can read the original.</p>
       <ol class="lx-sources" aria-label="Sources">
         <li id="res-dunlosky"><a href="https://www.psychologicalscience.org/news/releases/which-study-strategies-make-the-grade.html" rel="noopener">Dunlosky et al. (2013), Psychological Science in the Public Interest, summarised by the Association for Psychological Science</a></li>
         <li id="res-bastani"><a href="https://doi.org/10.1073/pnas.2422633122" rel="noopener">Bastani et al. (2025), Proceedings of the National Academy of Sciences 122(26)</a></li>
@@ -139,6 +141,7 @@
         <li id="res-adesope"><a href="https://rex.libraries.wsu.edu/esploro/outputs/journalArticle/Rethinking-the-Use-of-Tests-A/99900601154801842" rel="noopener">Adesope, Trevisan and Sundararajan (2017), Rethinking the use of tests: a meta-analysis of practice testing, Review of Educational Research 87(3)</a></li>
         <li id="res-bisra"><a href="https://doi.org/10.1007/s10648-018-9434-x" rel="noopener">Bisra, Liu, Nesbit, Salimi and Winne (2018), Inducing self-explanation: a meta-analysis, Educational Psychology Review 30</a></li>
         <li id="res-reich"><a href="https://tsl.mit.edu/research/the-mooc-pivot/" rel="noopener">Reich and Ruipérez-Valiente (2019), The MOOC pivot, Science 363(6423)</a></li>
+        <li id="res-maier"><a href="https://arxiv.org/abs/2609.20143" rel="noopener">Maier, Schwabe, Schneider and Feuerriegel (2026), Designing Against Deskilling: metacognitive feedback reduces cognitive offloading to LLM assistants, arXiv:2609.20143 (preprint)</a></li>
       </ol>
     </section>
 
@@ -152,7 +155,7 @@
         <div><h3>Pause and recall</h3><p>Each lesson ends by asking what you remember before it shows you. Reviews return at 1, 3, 7 and 21 days. Your progress is stored in this browser only.</p></div>
         <div><h3>Read, listen, or both</h3><p>Every slide has a transcript. A read-aloud voice is built in, and lessons with recorded narration play it.</p></div>
       </div>
-      <p class="muted small">Retrieval practice and spacing are well studied, but the size of the effect varies. A 2024 study across nine STEM courses found a small average gain from spaced retrieval (about two percentage points) and not in every course (Bego and colleagues, International Journal of STEM Education). We use both because they cost you little, not because they guarantee a result.</p>
+      <p class="muted small">Retrieval practice and spacing are among the best-studied techniques in the literature. A 2024 study across nine STEM courses measured an average gain of about two percentage points from spaced retrieval (Bego and colleagues, International Journal of STEM Education), so the course builds both in where they cost you only a few minutes.</p>
     </section>
 
     <section class="t-block" aria-labelledby="les-t">

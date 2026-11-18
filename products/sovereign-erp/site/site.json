@@ -17,7 +17,7 @@
   ],
   "demo": {
     "title": "Close a period",
-    "summary": "Drive the Period Controller and see the invariants refuse illegal moves. The in-browser demo is planned; this page shows a labeled placeholder until it ships.",
+    "summary": "Drive the Period Controller and see the invariants refuse illegal moves. The in-browser demo is in development; until it ships, this page shows a clearly labeled illustration.",
     "engine": "placeholder",
     "sample": "a small ledger and period calendar",
     "command": "cargo test --workspace",

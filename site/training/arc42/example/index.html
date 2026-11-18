@@ -22,6 +22,7 @@
   <link rel="stylesheet" href="/kit/tokens.css">
   <link rel="stylesheet" href="/kit/shell.css">
   <link rel="stylesheet" href="/training/training.css">
+  <link rel="stylesheet" href="/training/arc42/course/board.css">
 </head>
 <body data-tab="training" data-generated="training" data-section="training">
   <a class="skip-link" href="#main">Skip to content</a>
@@ -44,7 +45,7 @@
     <section class="t-block" aria-labelledby="ex-in">
       <p class="kicker"><span class="kn">01</span>What is in it</p>
       <h2 id="ex-in">Four parts that fit together</h2>
-      <div class="cols c4"><div><h3>The arc42 document</h3><p>All twelve sections: goals, constraints, context, strategy, building blocks with three contracts, runtime scenarios with failure branches, deployment, crosscutting concepts, six decisions, eleven quality scenarios, eight risks and three items of technical debt. Every one has a stable ID.</p></div><div><h3>The working app</h3><p>One small Node service with no dependencies, plus plain web pages for customers and vendors. The payment provider and SMS gateway are faked inside it, so everything runs offline on your laptop.</p></div><div><h3>Tests that guard the document</h3><p>33 tests check the contracts, the quality scenarios and the block boundaries. A checker fails if the arc42 uses an ID it never defines. Documentation and code are kept honest by the build.</p></div><div><h3>An agent guide</h3><p>A short AGENTS.md tells a coding agent where to start, which rules never bend and which commands to run. It is the “agents as readers” idea, made concrete.</p></div></div>
+      <div class="cols c4"><div><h3>The arc42 document</h3><p>All twelve sections: goals, constraints, context, strategy, building blocks with three contracts, runtime scenarios with failure branches, deployment, crosscutting concepts, six decisions, eleven quality scenarios, eight risks and three items of technical debt. Every one has a stable ID.</p></div><div><h3>The working app</h3><p>One small Node service with no dependencies, plus plain web pages for customers and vendors. The payment provider and SMS gateway are faked inside it, so everything runs offline on your laptop.</p></div><div><h3>Tests that guard the document</h3><p>33 tests check the contracts, the quality scenarios and the block boundaries. A checker fails if the arc42 uses an ID it never defines. The build keeps documentation and code in step.</p></div><div><h3>An agent guide</h3><p>A short AGENTS.md tells a coding agent where to start, which rules never bend and which commands to run. It is the “agents as readers” idea, made concrete.</p></div></div>
     </section>
 
     <section class="t-block" aria-labelledby="ex-run">
@@ -61,8 +62,8 @@ npm run docs:check # the arc42 checks its own consistency (needs python3)</code>
     </section>
 
     <section class="t-block" aria-labelledby="ex-lim">
-      <p class="kicker"><span class="kn">03</span>Honest limits</p>
-      <h2 id="ex-lim">Where the code is deliberately simpler</h2>
+      <p class="kicker"><span class="kn">03</span>Scope</p>
+      <h2 id="ex-lim">Where the example is deliberately simple</h2>
       <ul class="facts"><li>It is a teaching example, not production software. Sign-in uses fixed demo tokens.</li><li>The arc42 describes two app instances, but the queue worker is not yet safe to run twice. That is recorded as risk R8, found while building the app.</li><li>Data retention is left for the business owner to confirm; no deletion job exists.</li></ul>
       <p class="muted">Each of these is a good question to ask of any real system.</p>
     </section>
