@@ -27,6 +27,7 @@ async function open(url, opts = { viewport: { width: 1280, height: 900 } }) {
   const ctx = await browser.newContext(opts);
   const page = await ctx.newPage();
   page.problems = [];
+  await ctx.route('**/api/pay/region', (r) => r.fulfill({ status: 200, contentType: 'application/json', body: '{"tt":false}' }));
   page.on('console', (m) => { if (m.type() === 'error') page.problems.push(m.text()); });
   page.on('pageerror', (e) => page.problems.push(e.message));
   await page.goto(url);
@@ -389,6 +390,43 @@ await step('course: index lists the lessons, two free, and loads without errors 
   assert.deepEqual(p.problems, []);
   await p.context().close();
 });
+await step('course: buying by bank deposit (Trinidad visitor): price, popup, receipt upload, unlock; foreign visitor sees US price', async () => {
+  const png = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==', 'base64');
+  const ctx = await browser.newContext({ viewport: { width: 390, height: 800 } });
+  const page = await ctx.newPage(); page.problems = [];
+  page.on('console', (m) => { if (m.type() === 'error') page.problems.push(m.text()); });
+  page.on('pageerror', (e) => page.problems.push(e.message));
+  let got = null;
+  await ctx.route('**/api/pay/region', (r) => r.fulfill({ contentType: 'application/json', body: '{"tt":true}' }));
+  await ctx.route('**/api/pay/order', (r) => r.fulfill({ contentType: 'application/json', body: JSON.stringify({ id: 'a'.repeat(32), ref: 'IC-TEST23', amount: 899, bank: { name: 'Royal Bank (Trinidad and Tobago) Limited', branch: 'St Augustine Shopping Centre, St Augustine', account: '110000005001825' } }) }));
+  await ctx.route('**/api/pay/receipt**', (r) => { got = r.request().postDataBuffer(); r.fulfill({ contentType: 'application/json', body: '{"status":"paid"}' }); });
+  await ctx.route('**/api/pay/claim**', (r) => r.fulfill({ contentType: 'application/json', body: JSON.stringify({ status: 'paid', code: 'CODE123', name: 'Ada Lovelace', course: 'arc42' }) }));
+  await page.goto(CRS); await page.waitForSelector('html[data-ready="true"]');
+  await page.waitForSelector('[data-pay-open]:visible');
+  assert.match(await page.locator('[data-price]').innerText(), /^TT\$899$/);
+  await page.click('[data-pay-open]');
+  await page.fill('#buy-name', 'Ada Lovelace'); await page.fill('#buy-email', 'ada@example.com');
+  await page.click('[data-pay-form] button[type=submit]');
+  const dlg = await page.locator('dialog.pay').innerText();
+  assert.match(dlg, /110000005001825/); assert.match(dlg, /Royal Bank \(Trinidad and Tobago\) Limited/); assert.match(dlg, /IC-TEST23/); assert.match(dlg, /TT\$899/);
+  await page.click('[data-to-3]');
+  assert.equal(await page.locator('input[capture]').count(), 1, 'a camera option exists');
+  await page.locator('input[data-file]').nth(1).setInputFiles({ name: 'r.png', mimeType: 'image/png', buffer: png });
+  await page.waitForSelector('[data-done-link]:visible');
+  assert.ok(got && got.length > 100 && got[0] === 0xff && got[1] === 0xd8, 'a JPEG was uploaded');
+  assert.match(await page.locator('[data-done-title]').innerText(), /confirmed/i);
+  await page.goto(CRS + 'welcome/?o=' + 'a'.repeat(32));
+  await page.waitForSelector('[data-welcome-done]:not([hidden])');
+  assert.equal(await page.locator('#w-code').inputValue(), 'CODE123');
+  assert.equal(await page.evaluate(() => localStorage.getItem('iw-course-code')), 'CODE123');
+  assert.deepEqual(page.problems, []);
+  await ctx.close();
+  const f = await open(CRS);
+  assert.match(await f.locator('[data-price]').innerText(), /US\$129/);
+  assert.equal(await f.locator('[data-tt]').isVisible(), false);
+  assert.match(await f.locator('[data-price-note]').innerText(), /WhatsApp/);
+  await f.context().close();
+});
 await step('course: a free lesson plays without a code (next, back, slide changes)', async () => {
   const p = await open(CRS + 'part-1-foundations/');
   await p.waitForSelector('[data-stage] .s');
@@ -598,6 +636,81 @@ await step('industries: the five sector pages exist, link to each other, and car
     const href = await h.locator('#sector-links a', { hasText: t }).getAttribute('href');
     const r = await fetch(HOME + href); assert.equal(r.status, 200, t + ' link is dead');
   }
+});
+await step('training: five architecture levels and seven agentic-era courses, each with its own page, lab and certificate section', async () => {
+  const cat = JSON.parse(fs.readFileSync('site/training/catalog.json', 'utf8'));
+  const idx = await open(`${HOME}/training/`);
+  assert.equal(await idx.locator('#architecture .cat-card').count(), 5, 'five architecture levels');
+  assert.equal(await idx.locator('#series .cat-card').count(), 7, 'seven agentic-era courses');
+  assert.match(await idx.locator('#architecture .cat-card').first().innerText(), /open now[\s\S]*arc42 in a Day/i);
+  assert.equal(await idx.locator('#architecture .cat-card .cat-status.is-live').count(), 1, 'only arc42 is open');
+  assert.ok(await idx.locator('#certificate').count(), 'certificate explained on the index');
+  assert.deepEqual(idx.problems, []);
+  for (const c of [...cat.ladder.levels, ...cat.series.courses]) {
+    const p = await open(HOME + c.path);
+    assert.match(await p.locator('h1').innerText(), new RegExp(c.title.split(' ')[0]));
+    if (cat.series.courses.includes(c)) assert.match(c.title, /Agentic Era|Agentic/, c.id + ' title reflects the agentic era');
+    assert.equal(await p.locator('.syl-m').count(), c.modules.length, c.id + ' syllabus');
+    assert.equal(await p.locator('.lab-steps li').count(), c.lab.steps.length, c.id + ' lab steps');
+    assert.ok(await p.locator('#certificate .cert-criteria li').count() === 3, c.id + ' certificate criteria');
+    assert.match(await p.locator('.btn-primary').first().getAttribute('href'), /^https:\/\/wa\.me\/\d+\?text=/, 'Contact sales opens WhatsApp');
+    assert.ok(!/\d{7,}/.test(await p.locator('main').innerText()), c.id + ' shows no phone number');
+    assert.ok(!/\$\d|TT\$|USD/.test(await p.locator("main").innerText()), c.id + " states no price");
+    assert.deepEqual(p.problems, []);
+  }
+  const lvl = await open(`${HOME}/training/agentic-architecture/`);
+  assert.equal(await lvl.locator('.lvl-path li').count(), 5); assert.match(await lvl.locator('.lvl-path .is-here').innerText(), /Agentic AI Systems/);
+  const arc = await open(`${HOME}${WS}`);
+  assert.match(await arc.locator('.lvl-path .is-here').innerText(), /arc42 in a Day/); assert.ok(await arc.locator('#certificate').count(), 'arc42 page has the certificate section');
+});
+await step('certificate: claim card follows the criteria, issues once, and the certificate page verifies, shares and adds to LinkedIn', async () => {
+  const w = JSON.parse(fs.readFileSync('site/training/training.json', 'utf8')).workshops[0];
+  const ids = w.course.modules.flatMap((m) => m.lessons);
+  const ctx = await browser.newContext(); const page = await ctx.newPage();
+  const issued = [];
+  const rec = { lessons: ids.length, lessonsTotal: ids.length, sections: 12, sectionsTotal: 12, checks: 6, checksTotal: 6, mastered: 30, questions: 34 };
+  await page.route('**/api/cert/**', async (route) => {
+    const req = route.request(); const u = new URL(req.url());
+    if (req.method() === 'POST') { issued.push(JSON.parse(req.postData())); return route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ id: 'IC-ABCDEFGHJKLM', issued: Date.UTC(2026, 10, 18) }) }); }
+    if (u.pathname.endsWith('IC-ABCDEFGHJKLM')) return route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ id: 'IC-ABCDEFGHJKLM', course: 'arc42', name: 'Ada Lovelace', issued: Date.UTC(2026, 10, 18), record: rec }) });
+    return route.fulfill({ status: 404, contentType: 'application/json', body: JSON.stringify({ error: 'No certificate has this ID.' }) });
+  });
+  await page.route('**/api/board**', (r) => r.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ learners: 0, week: [], all: [] }) }));
+  await page.goto(CRS); // same origin, so storage can be seeded
+  await page.evaluate(([code]) => localStorage.setItem('iw-course-code', code), [mkCode('Ada Lovelace')]);
+  await page.goto(CRS + 'learn/'); await page.waitForSelector('[data-cert-card] .cc-list');
+  assert.match(await page.locator('[data-cert-card]').innerText(), /0 of 19/);
+  assert.equal(await page.locator('[data-cert-card] form').count(), 0, 'nothing to claim yet');
+  const qs = {}; for (let i = 0; i < 34; i++) qs['p:' + i] = { firstOk: i < 30 ? 1 : 0, box: 0, due: Date.now() + 864e5, ontime: 0, late: 0 };
+  await page.evaluate(([ids, qs]) => {
+    localStorage.setItem('iw-course-progress', JSON.stringify(Object.fromEntries(ids.map((i) => [i, Date.now()]))));
+    localStorage.setItem('iw-board-local', JSON.stringify({ build: { sections: 12, checks: 6 }, qs, days: [] }));
+  }, [ids, qs]);
+  await page.goto(CRS + 'learn/'); await page.waitForSelector('[data-cert-card] form');
+  assert.equal(await page.locator('[data-cert-card] input').inputValue(), 'Ada Lovelace', 'name comes from the access code');
+  await page.click('[data-cert-card] button[type=submit]'); await page.waitForSelector('[data-cert-card] .cc-done a, [data-cert-card] a.btn-primary');
+  assert.equal(issued.length, 1); assert.equal(issued[0].course, 'arc42'); assert.equal(issued[0].name, 'Ada Lovelace');
+  assert.deepEqual(issued[0].record, { lessons: ids.length, sections: 12, checks: 6, mastered: 30 });
+  assert.match(issued[0].proof, /^[A-Za-z0-9_-]{43}$/, 'proof is a hash, never the key');
+  assert.ok(!JSON.stringify(issued[0]).includes(courseKey.toString('base64url')), 'the course key is never sent');
+  await page.reload(); await page.waitForSelector('[data-cert-card] a.btn-primary');
+  assert.equal(await page.locator('[data-cert-card] form').count(), 0, 'issued once; the card remembers it');
+  assert.equal(await page.locator('[data-cert-card] a.btn-primary').getAttribute('href'), '/training/certificate/?id=IC-ABCDEFGHJKLM');
+  assert.equal(issued.length, 1);
+  // the certificate page
+  await page.goto(HOME + '/training/certificate/?id=IC-ABCDEFGHJKLM'); await page.waitForSelector('.cert-card');
+  const card = await page.locator('.cert-card').innerText();
+  assert.match(card, /Ada Lovelace/); assert.match(card, /IC-ABCDEFGHJKLM/); assert.match(card, /18 November 2026/); assert.match(card, new RegExp(w.title));
+  const add = new URL(await page.locator('a', { hasText: 'Add to LinkedIn profile' }).getAttribute('href'));
+  assert.equal(add.hostname, 'www.linkedin.com'); assert.equal(add.searchParams.get('startTask'), 'CERTIFICATION_NAME');
+  assert.equal(add.searchParams.get('name'), w.title); assert.equal(add.searchParams.get('organizationName'), 'Intellica');
+  assert.equal(add.searchParams.get('issueYear'), '2026'); assert.equal(add.searchParams.get('issueMonth'), '11');
+  assert.equal(add.searchParams.get('certId'), 'IC-ABCDEFGHJKLM'); assert.equal(add.searchParams.get('certUrl'), HOME + '/training/certificate/?id=IC-ABCDEFGHJKLM');
+  for (const t of ['Share on LinkedIn', 'Share on X', 'Share on Facebook']) assert.ok(await page.locator('a', { hasText: t }).count(), t);
+  assert.ok(await page.locator('button', { hasText: 'Save as PDF' }).count());
+  await page.goto(HOME + '/training/certificate/?id=IC-ZZZZZZZZZZZZ'); await page.waitForSelector('[role=status]');
+  assert.match(await page.locator('[data-cert-body]').innerText(), /No certificate has the ID/);
+  await ctx.close();
 });
 await step('consulting: header, six offers, evidence with sources, and the example radar', async () => {
   const page = await open(`${HOME}/consulting/`);

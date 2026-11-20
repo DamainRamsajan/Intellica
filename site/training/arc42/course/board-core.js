@@ -79,3 +79,13 @@ export function answerPoints(kind, ok, onTime) {
   if (kind === 'review') return ok ? (onTime ? POINTS.review : POINTS.reviewLate) : POINTS.reviewWrong;
   return 0;
 }
+
+/* Questions the learner has got right: first try, or in a later review (a correct review moves a question up a box). */
+export const mastered = (qs) => Object.values(qs || {}).filter((q) => q && (q.firstOk || q.box >= 1)).length;
+/* The certificate rule: finish every lesson and the lab, and master at least 70% of the check questions. */
+export const PASS_RATE = 0.7;
+export function certProgress({ lessons, lessonsTotal, sections, sectionsTotal, checks, checksTotal, mastered: m, questions }) {
+  const need = Math.ceil(PASS_RATE * questions);
+  const met = { lessons: lessonsTotal > 0 && lessons >= lessonsTotal, lab: sections >= sectionsTotal && checks >= checksTotal, questions: questions > 0 && m >= need };
+  return { met, need, earned: met.lessons && met.lab && met.questions };
+}

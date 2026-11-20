@@ -216,19 +216,86 @@ function subnav(w, active) {
 
 function enrolBlock(w, c, priceLabel) {
   const wa = `https://wa.me/${w.whatsapp}?text=${encodeURIComponent(`Hello, I\u2019d like access to the ${w.title} online course${c.price ? ` (${c.price.label})` : ''}.`)}`;
-  const shown = c.price && c.price.regular ? `<s class="was" aria-label="Regular price ${esc(c.price.regular)}">${esc(c.price.regular)}</s> ${priceLabel}` : priceLabel;
   return `<aside class="enrol" aria-label="Price and how to buy">
         <p class="eyebrow">Full course</p>
-        <p class="c-price">${shown}</p>
-        <p class="muted small">${c.price && c.price.note ? esc(c.price.note) + ' ' : ''}${c.price ? 'Lifetime access to this edition.' : 'Confirmed when you enquire. No payment is taken on this site.'}</p>
-        <ol class="steps">
-          <li><div><strong>Message sales on WhatsApp.</strong> We reply with how to pay${c.methods && c.methods.length ? ` (${esc(c.methods.join(', '))})` : ''}.</div></li>
-          <li><div><strong>Pay.</strong> No account and no card form on this site: payment is arranged with you directly.</div></li>
-          <li><div><strong>Receive your access code</strong>, normally within one working day of payment.</div></li>
-          <li><div><strong>Paste it below</strong> to unlock every lesson on this device. It is kept in this browser only.</div></li>
-        </ol>
-        <div class="actions"><a class="btn btn-primary contact-btn" href="${esc(wa)}" rel="noopener">Buy on WhatsApp</a></div>
-      </aside>`;
+        <p class="c-price" data-price data-usd="${esc(priceLabel)}" data-ttd="${c.price && c.price.ttd ? esc(c.price.ttd) : ''}">${priceLabel}</p>
+        <p class="muted small" data-price-note>${c.price && c.price.note ? esc(c.price.note) + ' ' : ''}${c.price ? 'Lifetime access to this edition.' : 'Confirmed when you enquire. No payment is taken on this site.'}</p>
+        ${c.price && c.price.ttd ? `<div class="actions" data-tt hidden><button class="btn btn-primary" type="button" data-pay-open="${esc(w.id)}">Buy this course</button></div>` : ''}
+        <div class="actions"><a class="btn btn-ghost contact-btn" href="${esc(wa)}" rel="noopener">${c.price ? 'Questions or another way to pay? WhatsApp' : 'Buy on WhatsApp'}</a></div>
+      </aside>
+      ${c.price && c.price.ttd ? payDialog() : ''}`;
+}
+
+function payDialog() {
+  return `<dialog class="pay" data-pay aria-labelledby="pay-title">
+    <form method="dialog" class="pay-x"><button class="btn btn-ghost" aria-label="Close">Close</button></form>
+    <section data-step="1">
+      <h2 id="pay-title">Buy by bank deposit</h2>
+      <p class="muted">Three steps: your details, pay at the bank or online banking, then send us your receipt. Your course unlocks as soon as the receipt checks out.</p>
+      <form data-pay-form novalidate>
+        <label for="buy-name">Your name<input id="buy-name" name="name" autocomplete="name" required maxlength="60" placeholder="As it should appear on your certificate"></label>
+        <label for="buy-email">Email<input id="buy-email" name="email" type="email" autocomplete="email" required placeholder="you@example.com"></label>
+        <div class="actions"><button class="btn btn-primary" type="submit">Continue</button></div>
+      </form>
+    </section>
+    <section data-step="2" hidden>
+      <h2>Step 2: pay</h2>
+      <p>Deposit <strong data-amount></strong> to:</p>
+      <dl class="bank">
+        <div><dt>Bank</dt><dd data-bank></dd></div>
+        <div><dt>Branch</dt><dd data-branch></dd></div>
+        <div><dt>Account number</dt><dd><span data-account></span> <button class="btn btn-ghost" type="button" data-copy-account>Copy</button></dd></div>
+        <div><dt>Reference</dt><dd><strong data-ref></strong> <button class="btn btn-ghost" type="button" data-copy-ref>Copy</button></dd></div>
+      </dl>
+      <p class="muted small">Type the reference in the transfer description if your bank lets you. Pay the full amount. Keep the receipt or confirmation screen: you need it next.</p>
+      <div class="actions"><button class="btn btn-primary" type="button" data-to-3>I have paid</button></div>
+    </section>
+    <section data-step="3" hidden>
+      <h2>Step 3: send your receipt</h2>
+      <p>Take a clear photo of the receipt or the confirmation screen. Make sure the amount, account number, date and transaction number are readable.</p>
+      <div class="actions">
+        <label class="btn btn-primary file">Scan with camera<input type="file" accept="image/*" capture="environment" data-file></label>
+        <label class="btn btn-ghost file">Upload a photo or screenshot<input type="file" accept="image/*" data-file></label>
+      </div>
+      <p class="muted small" role="status" data-pay-msg></p>
+    </section>
+    <section data-step="4" hidden>
+      <h2 data-done-title>Receipt received</h2>
+      <p data-done-text></p>
+      <div class="actions"><a class="btn btn-primary" data-done-link href="#">Continue</a></div>
+    </section>
+  </dialog>`;
+}
+
+
+function adminPage(w) {
+  const body = `
+    <nav class="subnav" aria-label="Owner"><p class="crumb"><a href="/training/">Training</a><span aria-hidden="true"> / </span>Orders</p></nav>
+    <section class="t-block" data-admin>
+      <h1>Orders to check</h1>
+      <form data-admin-key class="buy"><label for="ak">Owner key<input id="ak" type="password" autocomplete="off" required></label><div class="actions"><button class="btn btn-primary" type="submit">Open</button></div></form>
+      <p class="muted" data-admin-msg></p>
+      <div data-admin-list></div>
+    </section>`;
+  return page({ title: 'Orders | Intellica Training', description: 'Owner page.', canonicalPath: w.path + 'course/admin/', body, bodyAttrs: ' data-course="admin"', extraHead: '<meta name="robots" content="noindex">' });
+}
+
+function welcomePage(w, c) {
+  const body = `
+    <nav class="subnav" aria-label="${esc(w.title)}">
+      <p class="crumb"><a href="/training/">Training</a><span aria-hidden="true"> / </span><a href="${w.path}course/">${esc(w.title)} online course</a><span aria-hidden="true"> / </span>Welcome</p>
+    </nav>
+    <section class="t-block welcome" data-welcome data-home="${w.path}course/" data-learn="${w.path}course/learn/">
+      <h1 data-welcome-title>Confirming your payment\u2026</h1>
+      <p class="sub" data-welcome-msg>One moment.</p>
+      <p data-welcome-wait hidden>Your receipt is with us. We confirm each one against the bank, usually within a few hours. <strong>Keep this page\u2019s address</strong>: come back to it and your code appears here the moment we confirm.</p>
+      <div data-welcome-done hidden>
+        <p>Your access code is saved in this browser and your course is open. <strong>Keep this page\u2019s address</strong> (bookmark it): it shows your code again on any device, any time.</p>
+        <label for="w-code">Your access code<textarea id="w-code" readonly rows="3" spellcheck="false"></textarea></label>
+        <div class="actions"><a class="btn btn-primary" href="${w.path}course/learn/">Open my course</a><button class="btn btn-ghost" type="button" data-copy>Copy my code</button></div>
+      </div>
+    </section>`;
+  return page({ title: `Welcome | ${w.title} | Intellica Training`, description: 'Your access code.', canonicalPath: w.path + 'course/welcome/', body, bodyAttrs: ' data-course="welcome"', extraHead: '<meta name="robots" content="noindex">' });
 }
 
 function unlockBlock(probe) {
@@ -452,6 +519,7 @@ function learnPage(w, c, lessons) {
             <div class="cbar" aria-hidden="true"><i data-lab-fill></i></div>
             <a class="btn btn-primary" data-lab-link href="${w.path}course/lab/">Open your lab</a>
           </section>` : ''}
+          <section class="l-card l-cert" data-cert-card data-course="${w.id}" data-title="${esc(w.title)}" aria-label="Your certificate"></section>
           <section class="l-card" data-due hidden>
             <h2>Review today</h2>
             <p class="muted small">Questions you missed or are due again. A few minutes now saves hours later.</p>
@@ -710,6 +778,8 @@ if (import.meta.url === `file://${process.argv[1]}`) {
       fs.mkdirSync(path.join(out, 'lab'), { recursive: true });
       fs.writeFileSync(path.join(out, 'lab', 'index.html'), labPage(w, c, lessons));
     }
+    if (c.price) { fs.mkdirSync(path.join(out, 'welcome'), { recursive: true }); fs.writeFileSync(path.join(out, 'welcome', 'index.html'), welcomePage(w, c)); }
+    if (c.price) { fs.mkdirSync(path.join(out, 'admin'), { recursive: true }); fs.writeFileSync(path.join(out, 'admin', 'index.html'), adminPage(w)); }
     fs.mkdirSync(path.join(out, 'learn'), { recursive: true });
     fs.writeFileSync(path.join(out, 'learn', 'index.html'), learnPage(w, c, lessons));
     for (const l of lessons) {

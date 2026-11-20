@@ -2,7 +2,7 @@
 // Everything is worked out on this device from the learner's own activity: points, streak and four progress parts.
 // Joining the public board is optional. When joined, the device shares those numbers under the learner's handle.
 import { $, el, storage } from '/kit/dom.js';
-import { answer, answerPoints, score, nextStep, day, isDue, weekKey, streakOf, POINTS, DAY } from '/training/arc42/course/board-core.js';
+import { mastered, answer, answerPoints, score, nextStep, day, isDue, weekKey, streakOf, POINTS, DAY } from '/training/arc42/course/board-core.js';
 
 const LOCAL_KEY = 'iw-board-local', TOKEN_KEY = 'iw-board-token', INDEX_URL = '/training/arc42/course/data/board-index.json';
 const API = '/api/board';
@@ -192,4 +192,10 @@ export async function scoreboardCard(root, proofFn) {
     return form;
   }
   await draw();
+}
+
+/* Raw numbers the certificate rule needs, from this device. */
+export async function certInputs() {
+  const s = read(), b = s.build || { sections: 0, checks: 0 };
+  return { sections: b.sections, checks: b.checks, mastered: mastered(s.qs), questions: await quizTotal() };
 }

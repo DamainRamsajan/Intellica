@@ -66,8 +66,20 @@ for (const t of targets) {
     if (key) fs.writeFileSync(PROOF_FILE, `export const PROOF = '${crypto.createHash('sha256').update('board-v1:' + key.toString('base64url')).digest('base64url')}';\n`);
     else console.log('No course key found: the leaderboard will stay closed to new members.');
   }
+  // online buying: the course key + an owner key go into the uploaded Function only (git-ignored .pay.json holds the owner key)
+  const SEC_FILE = 'worker/secrets.js', secPlaceholder = t === 'home' && !dry ? fs.readFileSync(SEC_FILE, 'utf8') : null;
+  if (secPlaceholder !== null) {
+    const key = loadKey({ create: false });
+    if (key) {
+      let cfg = fs.existsSync('.pay.json') ? JSON.parse(fs.readFileSync('.pay.json', 'utf8')) : {};
+      if (!cfg.adminKey) { cfg.adminKey = crypto.randomBytes(18).toString('base64url'); fs.writeFileSync('.pay.json', JSON.stringify(cfg, null, 2) + '\n'); console.log(`Owner key for the review page (saved in .pay.json): ${cfg.adminKey}`); }
+      fs.writeFileSync(SEC_FILE, `export const SECRETS = ${JSON.stringify({ courseKey: key.toString('base64url'), adminKey: cfg.adminKey })};\n`);
+      console.log('Online buying: ON (bank deposit + receipt check).');
+    } else console.log('Online buying: off (no course key found). The course page will say "buy on WhatsApp".');
+  }
   const dep = run('npx', ['--yes', WRANGLER, 'pages', 'deploy', abs, '--project-name', project, '--branch', branch, '--commit-dirty=true'], { cwd });
   if (placeholder !== null) fs.writeFileSync(PROOF_FILE, placeholder);
+  if (secPlaceholder !== null) fs.writeFileSync(SEC_FILE, secPlaceholder);
   if (dep.status !== 0) { console.error(`\nDeploy of ${t} failed.`); process.exit(1); }
   console.log(`\n${t}: uploaded to the Pages project "${project}".`);
   console.log('  Live at https://meeting-mind.com . Check https://meeting-mind.com/verify-site/ : it must say all files match.');

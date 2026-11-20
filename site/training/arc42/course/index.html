@@ -59,7 +59,7 @@
             <li>Recall cards and spaced review</li>
             <li>The Doubles-to-Go worked example</li>
           </ul>
-          <p class="c-incl-price"><s>TT$399</s> <b>TT$299</b> <span>lifetime access</span></p>
+          <p class="c-incl-price"><b>US$129</b> <span>lifetime access</span></p>
         </div>
       </figure>
     </section>
@@ -291,16 +291,49 @@
         </div>
         <aside class="enrol" aria-label="Price and how to buy">
         <p class="eyebrow">Full course</p>
-        <p class="c-price"><s class="was" aria-label="Regular price TT$399">TT$399</s> TT$299</p>
-        <p class="muted small">Launch price, 25% off the regular TT$399. Lifetime access to this edition.</p>
-        <ol class="steps">
-          <li><div><strong>Message sales on WhatsApp.</strong> We reply with how to pay.</div></li>
-          <li><div><strong>Pay.</strong> No account and no card form on this site: payment is arranged with you directly.</div></li>
-          <li><div><strong>Receive your access code</strong>, normally within one working day of payment.</div></li>
-          <li><div><strong>Paste it below</strong> to unlock every lesson on this device. It is kept in this browser only.</div></li>
-        </ol>
-        <div class="actions"><a class="btn btn-primary contact-btn" href="https://wa.me/18687195236?text=Hello%2C%20I%E2%80%99d%20like%20access%20to%20the%20arc42%20in%20a%20Day%20online%20course%20(TT%24299)." rel="noopener">Buy on WhatsApp</a></div>
+        <p class="c-price" data-price data-usd="US$129" data-ttd="899">US$129</p>
+        <p class="muted small" data-price-note>One payment. Visitors in Trinidad and Tobago pay TT$899 by bank deposit. Lifetime access to this edition.</p>
+        <div class="actions" data-tt hidden><button class="btn btn-primary" type="button" data-pay-open="arc42">Buy this course</button></div>
+        <div class="actions"><a class="btn btn-ghost contact-btn" href="https://wa.me/18687195236?text=Hello%2C%20I%E2%80%99d%20like%20access%20to%20the%20arc42%20in%20a%20Day%20online%20course%20(US%24129)." rel="noopener">Questions or another way to pay? WhatsApp</a></div>
       </aside>
+      <dialog class="pay" data-pay aria-labelledby="pay-title">
+    <form method="dialog" class="pay-x"><button class="btn btn-ghost" aria-label="Close">Close</button></form>
+    <section data-step="1">
+      <h2 id="pay-title">Buy by bank deposit</h2>
+      <p class="muted">Three steps: your details, pay at the bank or online banking, then send us your receipt. Your course unlocks as soon as the receipt checks out.</p>
+      <form data-pay-form novalidate>
+        <label for="buy-name">Your name<input id="buy-name" name="name" autocomplete="name" required maxlength="60" placeholder="As it should appear on your certificate"></label>
+        <label for="buy-email">Email<input id="buy-email" name="email" type="email" autocomplete="email" required placeholder="you@example.com"></label>
+        <div class="actions"><button class="btn btn-primary" type="submit">Continue</button></div>
+      </form>
+    </section>
+    <section data-step="2" hidden>
+      <h2>Step 2: pay</h2>
+      <p>Deposit <strong data-amount></strong> to:</p>
+      <dl class="bank">
+        <div><dt>Bank</dt><dd data-bank></dd></div>
+        <div><dt>Branch</dt><dd data-branch></dd></div>
+        <div><dt>Account number</dt><dd><span data-account></span> <button class="btn btn-ghost" type="button" data-copy-account>Copy</button></dd></div>
+        <div><dt>Reference</dt><dd><strong data-ref></strong> <button class="btn btn-ghost" type="button" data-copy-ref>Copy</button></dd></div>
+      </dl>
+      <p class="muted small">Type the reference in the transfer description if your bank lets you. Pay the full amount. Keep the receipt or confirmation screen: you need it next.</p>
+      <div class="actions"><button class="btn btn-primary" type="button" data-to-3>I have paid</button></div>
+    </section>
+    <section data-step="3" hidden>
+      <h2>Step 3: send your receipt</h2>
+      <p>Take a clear photo of the receipt or the confirmation screen. Make sure the amount, account number, date and transaction number are readable.</p>
+      <div class="actions">
+        <label class="btn btn-primary file">Scan with camera<input type="file" accept="image/*" capture="environment" data-file></label>
+        <label class="btn btn-ghost file">Upload a photo or screenshot<input type="file" accept="image/*" data-file></label>
+      </div>
+      <p class="muted small" role="status" data-pay-msg></p>
+    </section>
+    <section data-step="4" hidden>
+      <h2 data-done-title>Receipt received</h2>
+      <p data-done-text></p>
+      <div class="actions"><a class="btn btn-primary" data-done-link href="#">Continue</a></div>
+    </section>
+  </dialog>
       </div>
     </section>
 

@@ -372,6 +372,12 @@ async function learnPage() {
     const h = $('header', m);
     h.append(el('p', { class: 'm-prog' }, `${n} of ${lis.length} complete`));
   }
+  const proofOf = async () => {
+    const h = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(`board-v1:${code.key}`));
+    return btoa(String.fromCharCode(...new Uint8Array(h))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+  };
+  const cc = $('[data-cert-card]', root);
+  if (cc) import('/training/arc42/course/cert.js').then((m) => m.certificateCard(cc, { course: cc.dataset.course, title: cc.dataset.title, lessons: count, lessonsTotal: total, name: code.name, proof: proofOf }));
   const sb = $('[data-board-card]', root);
   if (sb) import('/training/arc42/course/board.js').then((m) => m.scoreboardCard(sb, async () => {
     const h = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(`board-v1:${code.key}`));
@@ -414,5 +420,7 @@ async function learnPage() {
 }
 
 const kind = document.body.dataset.course;
-if (kind === 'lesson') lessonPage(); else if (kind === 'index') { indexPage(); labDemo(); } else if (kind === 'learn') learnPage();
+if (kind === 'lesson') lessonPage(); else if (kind === 'index') { indexPage(); labDemo(); if (document.querySelector('[data-price]')) import('/training/arc42/course/pay.js').then((m) => m.buy()); } else if (kind === 'learn') learnPage();
+else if (kind === 'welcome') import('/training/arc42/course/pay.js').then((m) => m.welcome());
+else if (kind === 'admin') import('/training/arc42/course/pay.js').then((m) => m.admin());
 else if (kind === 'lab') import('/training/arc42/course/lab.js').then((m) => m.labPage());

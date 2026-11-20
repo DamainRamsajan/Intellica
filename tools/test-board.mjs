@@ -1,6 +1,6 @@
 // Unit tests for the scoring rules used by the browser. Run: node tools/test-board.mjs
 import assert from 'node:assert/strict';
-import { answer, answerPoints, score, day, DAY, GAPS, WINDOW, weekKey, streakOf, POINTS } from '../site/training/arc42/course/board-core.js';
+import { answer, answerPoints, score, day, DAY, GAPS, WINDOW, weekKey, streakOf, POINTS, mastered, certProgress } from '../site/training/arc42/course/board-core.js';
 import { healthChecks } from '../site/training/arc42/course/health.js';
 
 const t0 = Date.UTC(2026, 10, 1, 12);
@@ -51,4 +51,12 @@ assert.equal(score({ total: 1, qs: {}, days: [day(t0 - 40 * DAY)], build: null, 
 const tpl = (k) => `## ${k.slice(1)}. Title\n_template_`;
 const res = healthChecks({ text: tpl, started: () => false, arc42: () => Array.from({ length: 12 }, (_, i) => tpl('s' + (i + 1))).join('\n') });
 assert.equal(res.length, 6); assert.equal(res[0].ok, true); assert.equal(res[1].ok, false);
+// certificate rule
+assert.equal(mastered({ a: { firstOk: 1, box: 0 }, b: { firstOk: 0, box: 0 }, c: { firstOk: 0, box: 1 } }), 2, 'first try, or right in a later review');
+const base = { lessons: 19, lessonsTotal: 19, sections: 12, sectionsTotal: 12, checks: 6, checksTotal: 6, mastered: 24, questions: 34 };
+assert.equal(certProgress(base).earned, true); assert.equal(certProgress(base).need, 24, '70% of 34 rounds up to 24');
+assert.equal(certProgress({ ...base, mastered: 23 }).earned, false);
+assert.equal(certProgress({ ...base, lessons: 18 }).earned, false);
+assert.equal(certProgress({ ...base, checks: 5 }).earned, false);
+assert.equal(certProgress({ ...base, questions: 0, mastered: 0 }).earned, false, 'no questions loaded: not earned');
 console.log('board core: all checks passed');

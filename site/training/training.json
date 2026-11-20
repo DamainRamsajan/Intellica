@@ -3,8 +3,8 @@
   "note": "Source of truth for /training/. Pages are generated from this file by tools/build-training.mjs (npm run sync). Edit here, never in the generated HTML.",
   "index": {
     "title": "Training",
-    "headline": "Hands-on workshops for people who build and document systems.",
-    "lead": "Short, practical days that end with something you can use on Monday: a document, a method, a checklist. Taught in person, with a real system, with room to try things and get them wrong.",
+    "headline": "Hands-on training, built from current research.",
+    "lead": "Software architecture in five levels, and seven courses for the agentic era. Each is lessons, a lab you build step by step, and a certificate you can verify. Courses are built from current research, with sources you can open, and revised when the evidence changes.",
     "principles": [
       {
         "title": "See it done",
@@ -19,7 +19,7 @@
         "text": "You swap work with peers against a short checklist, and measure your own progress instead of taking our word for it."
       }
     ],
-    "honesty": "Every workshop states its scope up front: what you will leave with, what it builds on, and where the research is still developing. You plan with full information."
+    "honesty": "Every course states its scope up front: what you will leave with, what it builds on, and where the research is still developing. You plan with full information."
   },
   "workshops": [
     {
@@ -653,9 +653,9 @@
           "part-1-foundations"
         ],
         "price": {
-          "label": "TT$299",
-          "regular": "TT$399",
-          "note": "Launch price, 25% off the regular TT$399."
+          "label": "US$129",
+          "ttd": 899,
+          "note": "One payment. Visitors in Trinidad and Tobago pay TT$899 by bank deposit."
         },
         "priceNote": "Lifetime access to this edition. Includes every lesson and the worked-example material.",
         "methods": [],

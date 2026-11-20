@@ -249,9 +249,3 @@ body[data-section] main.tr {
 .lx-sources li { margin: 4px 0; }
 .lx-sources li:target { color: var(--text-hi); }
 @media (max-width: 860px) { .lx-show { grid-template-columns: minmax(0, 1fr); } .lx-demo { position: static; } }
-
-/* fonts:start (written by tools/install-fonts.mjs) */
-body[data-section] main.tr { --serif: "IBM Plex Sans", system-ui, sans-serif; }
-.tr h1, .tr h2 { font-weight: 600; letter-spacing: -0.02em; }
-.twelve .num { font-style: normal; }
-/* fonts:end */
