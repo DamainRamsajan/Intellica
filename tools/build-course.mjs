@@ -52,7 +52,7 @@ function encrypt(key, id, obj) {
 /* ---------- check questions (answer key lives outside site/, so it is never published in the clear) ---------- */
 
 const QUIZ_FILE = 'training-private/arc42-quiz.json';
-const QUIZ = fs.existsSync(QUIZ_FILE) ? JSON.parse(fs.readFileSync(QUIZ_FILE, 'utf8')) : {};
+let QUIZ = fs.existsSync(QUIZ_FILE) ? JSON.parse(fs.readFileSync(QUIZ_FILE, 'utf8')) : {};
 
 /* ---------- read the deck ---------- */
 
@@ -158,6 +158,8 @@ function buildLessons(deck, freeIds, skip = []) {
 /* ---------- pages ---------- */
 
 let base = '';
+let ENG = '/training/arc42/course'; // where this course's player files live
+let COPY = { noun: 'arc42', own: 'your own arc42', doc: 'Your arc42', file: 'arc42.md', extra: 'The Doubles-to-Go arc42 and working app, with its tests', labFor: 'Write your own arc42 documentation' };
 let LAB = null; // the hands-on lab (site/training/<id>/lab.json), loaded per workshop in the run block
 
 function page({ title, description, canonicalPath, body, bodyAttrs = '', extraHead = '' }) {
@@ -187,8 +189,8 @@ function page({ title, description, canonicalPath, body, bodyAttrs = '', extraHe
   <link rel="stylesheet" href="/kit/tokens.css">
   <link rel="stylesheet" href="/kit/shell.css">
   <link rel="stylesheet" href="/training/training.css">
-  <link rel="stylesheet" href="/training/arc42/course/board.css">
-  <link rel="stylesheet" href="/training/arc42/course/course.css">
+  <link rel="stylesheet" href="${ENG}/board.css">
+  <link rel="stylesheet" href="${ENG}/course.css">
 </head>
 <body data-tab="training" data-generated="training" data-section="training"${bodyAttrs}>
   <a class="skip-link" href="#main">Skip to content</a>
@@ -200,14 +202,14 @@ ${body}
 
   <div id="shell-footer"></div>
   <script type="module" src="/kit/shell.js"></script>
-  <script type="module" src="/training/arc42/course/course.js"></script>
+  <script type="module" src="${ENG}/course.js"></script>
 </body>
 </html>
 `;
 }
 
 function subnav(w, active) {
-  const items = [['', 'Workshop'], ['course/', 'Online course'], ['guide/', 'Student guide'], ['register/', 'Register']];
+  const items = w.facilitator === null ? [['', 'Course overview'], ['course/', 'Online course']] : [['', 'Workshop'], ['course/', 'Online course'], ['guide/', 'Student guide'], ['register/', 'Register']];
   return `    <nav class="subnav" aria-label="${esc(w.title)}">
       <p class="crumb"><a href="/training/">Training</a><span aria-hidden="true"> / </span>${esc(w.title)}</p>
       <ul>${items.map(([p, l]) => `<li><a href="${w.path}${p}"${p === active ? ' aria-current="page"' : ''}>${l}</a></li>`).join('')}</ul>
@@ -357,9 +359,9 @@ ${subnav(w, 'course/')}
           <ul>
             <li>${lessons.length} lessons, the first two free</li>
             <li>A transcript for every slide</li>
-            ${LAB ? `<li>${LAB.steps.length} hands-on lab steps: write your own arc42</li>` : ''}
+            ${LAB ? `<li>${LAB.steps.length} hands-on lab steps: write ${COPY.own}</li>` : ''}
             <li>Recall cards and spaced review</li>
-            <li>The Doubles-to-Go worked example</li>
+            <li>${w.facilitator === null ? 'A worked case, field guide and model solution for every lesson' : 'The Doubles-to-Go worked example'}</li>
           </ul>
           <p class="c-incl-price">${c.price ? `${c.price.regular ? `<s>${esc(c.price.regular)}</s> ` : ''}<b>${esc(c.price.label)}</b> <span>lifetime access</span>` : '<span>Price on enquiry</span>'}</p>
         </div>
@@ -371,7 +373,7 @@ ${subnav(w, 'course/')}
       <div><b>${hours} hours</b><span>of study</span></div>
       <div><b>${slideCount}</b><span>slides with transcripts</span></div>
       <div><b>${exercises}</b><span>timed exercises</span></div>
-      ${LAB ? `<div><b>${LAB.steps.length}</b><span>lab steps on your own arc42</span></div>` : ''}
+      ${LAB ? `<div><b>${LAB.steps.length}</b><span>lab steps on ${COPY.own}</span></div>` : ''}
       <div><b>1</b><span>worked example you can run</span></div>
     </div>
 
@@ -437,9 +439,9 @@ ${c.method.map((m) => `        <div><h3>${esc(m.title)}</h3><p>${esc(m.text)}</p
           <ul class="facts">
             <li>All ${lessons.length} lessons, in the player, on any device</li>
             <li>A transcript and read-aloud for every slide</li>
-            ${LAB ? `<li>A hands-on lab: ${LAB.steps.length} steps that build your own arc42 in the browser, ready to download</li>` : ''}
+            ${LAB ? `<li>A hands-on lab: ${LAB.steps.length} steps that build ${COPY.own} in the browser, ready to download</li>` : ''}
             <li>Recall questions and spaced review</li>
-            <li>The Doubles-to-Go arc42 and working app, with its tests</li>
+            <li>${COPY.extra}</li>
             <li>Lifetime access to this edition</li>
           </ul>
           ${unlockBlock(probe)}
@@ -448,13 +450,13 @@ ${c.method.map((m) => `        <div><h3>${esc(m.title)}</h3><p>${esc(m.text)}</p
       </div>
     </section>
 
-    <section class="t-block" aria-labelledby="by-t">
+${w.facilitator ? `    <section class="t-block" aria-labelledby="by-t">
       <p class="kicker"><span class="kn">05</span>Your instructor</p>
       <h2 id="by-t">${esc(w.facilitator.name)}</h2>
       <p class="sub">${esc(w.facilitator.role)}</p>
       <p>${esc(w.facilitator.bio)}</p>
       <ul class="chips">${w.facilitator.facts.map((f) => `<li>${esc(f)}</li>`).join('')}</ul>
-    </section>
+    </section>` : ''}
 
     <section class="t-block" aria-labelledby="faq-t">
       <p class="kicker"><span class="kn">06</span>Questions</p>
@@ -512,14 +514,14 @@ function learnPage(w, c, lessons) {
           </div>
         </section>
         <aside class="l-side" aria-label="Review and resources">
-          <section class="l-card l-score" data-board-card aria-label="Your score"></section>
+          ${c.noBoard ? '' : '<section class="l-card l-score" data-board-card aria-label="Your score"></section>'}
           ${LAB ? `<section class="l-card l-lab" data-lab-card data-lab-steps="${LAB.steps.map((x) => x.id).join(',')}" data-lab-titles="${esc(LAB.steps.map((x) => x.title).join('|'))}">
             <h2>Your lab</h2>
-            <p class="muted small" data-lab-sum>Your own arc42, built step by step after each lesson. ${LAB.steps.length} steps. Saved on this device.</p>
+            <p class="muted small" data-lab-sum>${COPY.doc.replace('Your','Your own')}, built step by step after each lesson. ${LAB.steps.length} steps. Saved on this device.</p>
             <div class="cbar" aria-hidden="true"><i data-lab-fill></i></div>
             <a class="btn btn-primary" data-lab-link href="${w.path}course/lab/">Open your lab</a>
           </section>` : ''}
-          <section class="l-card l-cert" data-cert-card data-course="${w.id}" data-title="${esc(w.title)}" aria-label="Your certificate"></section>
+          ${c.noBoard ? '' : `<section class="l-card l-cert" data-cert-card data-course="${w.id}" data-title="${esc(w.title)}" aria-label="Your certificate"></section>`}
           <section class="l-card" data-due hidden>
             <h2>Review today</h2>
             <p class="muted small">Questions you missed or are due again. A few minutes now saves hours later.</p>
@@ -528,9 +530,9 @@ function learnPage(w, c, lessons) {
           <section class="l-card">
             <h2>Resources</h2>
             <ul class="l-links">
-              <li><a href="${w.path}example/">Worked example: Doubles-to-Go</a></li>
+              ${w.facilitator === null ? `<li><a href="${w.path}">Course overview</a></li><li><a href="${w.path}course/lab/">Your assurance pack</a></li>` : `<li><a href="${w.path}example/">Worked example: Doubles-to-Go</a></li>
               <li><a href="${w.path}guide/">Student guide</a></li>
-              <li><a href="${w.path}example/doubles-to-go.zip" download>Download the example (zip)</a></li>
+              <li><a href="${w.path}example/doubles-to-go.zip" download>Download the example (zip)</a></li>`}
             </ul>
           </section>
           <section class="l-card">
@@ -601,6 +603,7 @@ ${subnav(w, 'course/')}
         <div data-cards></div>
       </div>
       <section class="recall quiz" data-quiz hidden></section>
+      <section class="reading" data-reading hidden aria-label="Field guide and worked case"></section>
       <noscript><p>The lesson player needs JavaScript. If you cannot use it, write to us and we will send the material another way.</p></noscript>
     </div>
 
@@ -661,7 +664,7 @@ function labCta(w, l) {
   return `<aside class="lab-cta" data-lab-cta data-step="${st.id}" hidden aria-labelledby="lab-cta-t">
       <p class="kicker-m">Hands-on lab · ${st.minutes} min</p>
       <h2 id="lab-cta-t">${esc(st.title)}</h2>
-      <p class="muted" data-lab-meta>Apply this lesson to your own arc42. It opens where you left off, and saves on this device as you type.</p>
+      <p class="muted" data-lab-meta>Apply this lesson to ${COPY.own}. It opens where you left off, and saves on this device as you type.</p>
       <div class="actions"><a class="btn btn-primary" href="${w.path}course/lab/?step=${st.id}">Open this lab step</a></div>
     </aside>`;
 }
@@ -674,12 +677,12 @@ ${subnav(w, 'course/')}
       <header class="lab-top">
         <div class="lab-title">
           <p class="eyebrow">Hands-on lab</p>
-          <h1>Your arc42</h1>
+          <h1>${COPY.doc}</h1>
         </div>
-        <label class="lab-sys">System name<input data-sys type="text" autocomplete="off" spellcheck="false" maxlength="80" placeholder="e.g. Doubles-to-Go"></label>
+        <label class="lab-sys">System name<input data-sys type="text" autocomplete="off" spellcheck="false" maxlength="80" placeholder="${w.facilitator === null ? 'e.g. Claims-Assistant agent' : 'e.g. Doubles-to-Go'}"></label>
         <div class="lab-tools" role="group" aria-label="Document actions">
           <span class="lab-status muted small" role="status" data-status>Saved on this device</span>
-          <button class="btn btn-ghost" type="button" data-download>Download arc42.md</button>
+          <button class="btn btn-ghost" type="button" data-download>Download ${COPY.file}</button>
           <button class="btn btn-ghost" type="button" data-download-agents hidden>Download AGENTS.md</button>
           <button class="btn btn-ghost" type="button" data-import>Import .md</button>
           <button class="btn btn-ghost" type="button" data-reset>Start over</button>
@@ -728,74 +731,99 @@ ${subnav(w, 'course/')}
       </div>
     </div>
     <noscript><p class="lead">The lab needs JavaScript. It runs entirely in your browser.</p></noscript>`;
-  return page({ title: `Lab: your arc42 | ${w.title} online`, description: `Write your own arc42 documentation inside the ${w.title} course, one lesson at a time.`, canonicalPath: `${w.path}course/lab/`, body, bodyAttrs: ' data-course="lab"', extraHead: '<meta name="robots" content="noindex">' });
+  return page({ title: `Lab: ${COPY.own} | ${w.title} online`, description: `${COPY.labFor} inside the ${w.title} course, one lesson at a time.`, canonicalPath: `${w.path}course/lab/`, body, bodyAttrs: ' data-course="lab"', extraHead: '<meta name="robots" content="noindex">' });
 }
 
 /* ---------- run ---------- */
+
+/* ---------- run ---------- */
+
+export function deriveKey(master, courseId) {
+  return crypto.createHmac('sha256', master).update(`course:${courseId}`).digest();
+}
+
+/* Builds one course: lessons, lab, pages and encrypted data. arc42 and the cybersecurity course both go through here. */
+function buildOne({ w, c, deck, quiz, lab, key, engine = null, reading = null }) {
+  const dir = path.join(SITE, w.path.replace(/^\//, ''));
+  QUIZ = quiz;
+  const lessons = buildLessons(deck, c.free || [], c.skip || []);
+  for (const k of Object.keys(QUIZ)) if (!lessons.some((l) => l.id === k)) throw new Error(`quiz: "${k}" is not a lesson`);
+  {
+    const order = c.modules.flatMap((m) => m.lessons);
+    const rank = (l) => { const i = order.indexOf(l.id); return i < 0 ? 999 + lessons.indexOf(l) : i; };
+    lessons.sort((a, b) => rank(a) - rank(b));
+    lessons.forEach((l, i) => { l.num = i + 1; });
+  }
+  for (const f of c.free || []) if (!lessons.some((l) => l.id === f)) throw new Error(`course.free names an unknown lesson: ${f}`);
+  for (const m of c.modules) for (const id of m.lessons) if (!lessons.some((l) => l.id === id)) throw new Error(`module "${m.title}" names an unknown lesson: ${id}`);
+  LAB = lab ? lab(lessons) : null;
+  if (process.argv.includes('--print-lessons')) { for (const l of lessons) console.log(l.id.padEnd(34), String(l.titles.length).padStart(3), 'slides', l.free ? 'FREE' : '    ', l.title); return lessons.length; }
+  const out = path.join(dir, 'course');
+  ENG = `${w.path}course`.replace(/\/$/, '');
+  fs.rmSync(path.join(out, 'data'), { recursive: true, force: true });
+  for (const e of fs.existsSync(out) ? fs.readdirSync(out, { withFileTypes: true }) : []) if (e.isDirectory() && e.name !== 'audio') fs.rmSync(path.join(out, e.name), { recursive: true, force: true });
+  fs.mkdirSync(path.join(out, 'data'), { recursive: true });
+  if (engine) engine(out);
+  fs.writeFileSync(path.join(out, 'course.css'), `/* Generated by tools/build-course.mjs: the deck's own look, scoped to .cstage, plus the course layout. */\n${scopedCss(deck.css)}\n${fs.readFileSync(path.join(SITE, 'training', 'course-layout.css'), 'utf8')}`);
+  fs.writeFileSync(path.join(out, 'index.html'), indexPage(w, c, lessons));
+  if (LAB) {
+    const join = (a) => (Array.isArray(a) ? a.join('\n') : a);
+    const idx = { sections: LAB.sections.map((x) => ({ key: x.key, title: x.title, short: x.short, extra: !!x.extra, template: join(x.template), snippets: (x.snippets || []).map((n) => ({ label: n.label, text: join(n.text) })) })),
+      steps: LAB.steps.map((x) => ({ id: x.id, title: x.title, sections: x.sections, minutes: x.minutes, free: x.free, lessonNum: x.lessonNum, lessonTitle: x.lessonTitle, next: x.next })) };
+    fs.writeFileSync(path.join(out, 'data', 'lab-index.json'), JSON.stringify(idx));
+    fs.writeFileSync(path.join(out, 'data', 'board-index.json'), JSON.stringify({ total: Object.values(QUIZ).reduce((n, q) => n + q.length, 0) }));
+    for (const st of LAB.steps) {
+      const detail = { brief: st.brief, do: st.do, done: st.done, experienced: st.experienced || '', example: st.example !== undefined ? st.example : (EXAMPLES[st.sections[0]] || ''), exampleKey: st.sections[0] };
+      const fid = `lab-${st.id}`;
+      fs.writeFileSync(path.join(out, 'data', `${fid}.json`), JSON.stringify(st.free ? detail : encrypt(key, fid, detail)));
+    }
+    fs.mkdirSync(path.join(out, 'lab'), { recursive: true });
+    fs.writeFileSync(path.join(out, 'lab', 'index.html'), labPage(w, c, lessons));
+  }
+  if (c.price) { fs.mkdirSync(path.join(out, 'welcome'), { recursive: true }); fs.writeFileSync(path.join(out, 'welcome', 'index.html'), welcomePage(w, c)); }
+  if (c.price) { fs.mkdirSync(path.join(out, 'admin'), { recursive: true }); fs.writeFileSync(path.join(out, 'admin', 'index.html'), adminPage(w)); }
+  fs.mkdirSync(path.join(out, 'learn'), { recursive: true });
+  fs.writeFileSync(path.join(out, 'learn', 'index.html'), learnPage(w, c, lessons));
+  for (const l of lessons) {
+    if (reading && reading[l.id]) l.payload.reading = reading[l.id];
+    const adir = path.join(out, 'audio', l.id);
+    l.payload.audio = l.payload.slides.map((_, k) => {
+      const n = String(k + 1).padStart(2, '0');
+      const f = ['mp3', 'm4a', 'webm', 'ogg'].map((x) => `${n}.${x}`).find((x) => fs.existsSync(path.join(adir, x)));
+      return f ? `${w.path}course/audio/${l.id}/${f}` : '';
+    });
+    fs.mkdirSync(path.join(out, l.id), { recursive: true });
+    fs.writeFileSync(path.join(out, l.id, 'index.html'), lessonPage(w, c, l, lessons, key));
+    fs.writeFileSync(path.join(out, 'data', `${l.id}.json`), JSON.stringify(l.free ? l.payload : encrypt(key, l.id, l.payload)));
+  }
+  console.log(`built course ${w.id}: ${lessons.length} lessons (${lessons.filter((l) => l.free).length} free, ${lessons.filter((l) => !l.free).length} encrypted)`);
+  return lessons.length;
+}
+
+let EXAMPLES = {};
 
 if (import.meta.url === `file://${process.argv[1]}`) {
   const data = JSON.parse(fs.readFileSync(path.join(SITE, 'training', 'training.json'), 'utf8'));
   const family = JSON.parse(fs.readFileSync(path.join(SITE, 'family.json'), 'utf8'));
   base = family.home.replace(/\/$/, '');
-  const key = loadKey();
-  let total = 0;
+  const master = loadKey();
+  const arcQuiz = QUIZ;
   for (const w of data.workshops) {
     const c = w.course;
     if (!c || !c.enabled) continue;
     const dir = path.join(SITE, w.path.replace(/^\//, ''));
-    const deck = loadDeck(dir);
-    const lessons = buildLessons(deck, c.free || [], c.skip || []);
-    for (const k of Object.keys(QUIZ)) if (!lessons.some((l) => l.id === k)) throw new Error(`${QUIZ_FILE}: "${k}" is not a lesson`);
-    // study order is the module order: number, link and sequence the lessons that way
-    {
-      const order = c.modules.flatMap((m) => m.lessons);
-      const rank = (l) => { const i = order.indexOf(l.id); return i < 0 ? 999 + lessons.indexOf(l) : i; };
-      lessons.sort((a, b) => rank(a) - rank(b));
-      lessons.forEach((l, i) => { l.num = i + 1; });
-    }
-    LAB = loadLab(dir, lessons);
-    for (const f of c.free || []) if (!lessons.some((l) => l.id === f)) throw new Error(`course.free names an unknown lesson: ${f}`);
-    if (process.argv.includes('--print-lessons')) { for (const l of lessons) console.log(l.id.padEnd(34), String(l.titles.length).padStart(3), 'slides', l.free ? 'FREE' : '    ', l.title); continue; }
-    const out = path.join(dir, 'course');
-    fs.rmSync(path.join(out, 'data'), { recursive: true, force: true });
-    for (const e of fs.existsSync(out) ? fs.readdirSync(out, { withFileTypes: true }) : []) if (e.isDirectory() && e.name !== 'audio') fs.rmSync(path.join(out, e.name), { recursive: true, force: true });
-    fs.mkdirSync(path.join(out, 'data'), { recursive: true });
-    fs.writeFileSync(path.join(out, 'course.css'), `/* Generated by tools/build-course.mjs: the deck's own look, scoped to .cstage, plus the course layout. */\n${scopedCss(deck.css)}\n${fs.readFileSync(path.join(SITE, 'training', 'course-layout.css'), 'utf8')}`);
-    fs.writeFileSync(path.join(out, 'index.html'), indexPage(w, c, lessons));
-    if (LAB) {
-      const ex = exampleSections(dir);
-      const join = (a) => (Array.isArray(a) ? a.join('\n') : a);
-      const idx = { sections: LAB.sections.map((x) => ({ key: x.key, title: x.title, short: x.short, extra: !!x.extra, template: join(x.template), snippets: (x.snippets || []).map((n) => ({ label: n.label, text: join(n.text) })) })),
-        steps: LAB.steps.map((x) => ({ id: x.id, title: x.title, sections: x.sections, minutes: x.minutes, free: x.free, lessonNum: x.lessonNum, lessonTitle: x.lessonTitle, next: x.next })) };
-      fs.writeFileSync(path.join(out, 'data', 'lab-index.json'), JSON.stringify(idx));
-      // public: only how many check questions the course has (the answers stay private)
-      fs.writeFileSync(path.join(out, 'data', 'board-index.json'), JSON.stringify({ total: Object.values(QUIZ).reduce((n, q) => n + q.length, 0) }));
-      for (const st of LAB.steps) {
-        const detail = { brief: st.brief, do: st.do, done: st.done, experienced: st.experienced || '', example: ex[st.sections[0]] || '', exampleKey: st.sections[0] };
-        const fid = `lab-${st.id}`;
-        fs.writeFileSync(path.join(out, 'data', `${fid}.json`), JSON.stringify(st.free ? detail : encrypt(key, fid, detail)));
-      }
-      fs.mkdirSync(path.join(out, 'lab'), { recursive: true });
-      fs.writeFileSync(path.join(out, 'lab', 'index.html'), labPage(w, c, lessons));
-    }
-    if (c.price) { fs.mkdirSync(path.join(out, 'welcome'), { recursive: true }); fs.writeFileSync(path.join(out, 'welcome', 'index.html'), welcomePage(w, c)); }
-    if (c.price) { fs.mkdirSync(path.join(out, 'admin'), { recursive: true }); fs.writeFileSync(path.join(out, 'admin', 'index.html'), adminPage(w)); }
-    fs.mkdirSync(path.join(out, 'learn'), { recursive: true });
-    fs.writeFileSync(path.join(out, 'learn', 'index.html'), learnPage(w, c, lessons));
-    for (const l of lessons) {
-      // optional recorded narration: course/audio/<lesson>/<nn>.mp3 (nn = slide number within the lesson, 01...)
-      const adir = path.join(out, 'audio', l.id);
-      l.payload.audio = l.payload.slides.map((_, k) => {
-        const n = String(k + 1).padStart(2, '0');
-        const f = ['mp3', 'm4a', 'webm', 'ogg'].map((x) => `${n}.${x}`).find((x) => fs.existsSync(path.join(adir, x)));
-        return f ? `${w.path}course/audio/${l.id}/${f}` : '';
-      });
-      fs.mkdirSync(path.join(out, l.id), { recursive: true });
-      fs.writeFileSync(path.join(out, l.id, 'index.html'), lessonPage(w, c, l, lessons, key));
-      fs.writeFileSync(path.join(out, 'data', `${l.id}.json`), JSON.stringify(l.free ? l.payload : encrypt(key, l.id, l.payload)));
-    }
-    total += lessons.length;
-    console.log(`built course ${w.id}: ${lessons.length} lessons (${lessons.filter((l) => l.free).length} free, ${lessons.filter((l) => !l.free).length} encrypted)`);
+    ENG = '/training/arc42/course';
+    COPY = { noun: 'arc42', own: 'your own arc42', doc: 'Your arc42', file: 'arc42.md', extra: 'The Doubles-to-Go arc42 and working app, with its tests', labFor: 'Write your own arc42 documentation' };
+    EXAMPLES = exampleSections(dir);
+    buildOne({ w, c, deck: loadDeck(dir), quiz: arcQuiz, lab: (lessons) => loadLab(dir, lessons), key: master });
+  }
+  // the cybersecurity course: built from training-private/cybersecurity-source.json (see tools/import-cyber.mjs)
+  const cy = await import('./cyber-course.mjs');
+  const built = cy.load(SITE);
+  if (built) {
+    EXAMPLES = {};
+    COPY = cy.COPY;
+    buildOne({ w: built.w, c: built.c, deck: built.deck, quiz: built.quiz, lab: built.lab, key: deriveKey(master, 'cybersecurity'), engine: (out) => cy.writeEngine(out, built.w, SITE), reading: built.reading });
   }
 }
 

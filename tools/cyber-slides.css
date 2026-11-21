@@ -1,0 +1,13 @@
+:root{--display:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;--body:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;--bg:#0b1721;--panel:#12212e;--ink:#eaf1f5;--mut:#9db1c0;--teal:#3fc4b6;--sun:#f2b631;--line:#24384a}
+.s{position:absolute;inset:0;padding:56px 72px;display:none;flex-direction:column;justify-content:flex-start;gap:18px}
+.s.on{display:flex}
+h2{font-family:var(--display);font-size:46px;font-weight:800;line-height:1.1;margin:0 0 4px;color:var(--sun);letter-spacing:-.02em}
+.objective{font-size:22px;color:var(--mut);margin:0}
+.objective strong{color:var(--teal);font-weight:600}
+.teaching-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:6px}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:16px 20px}
+.panel h3{font-size:18px;letter-spacing:.08em;text-transform:uppercase;color:var(--teal);margin:0 0 8px;font-weight:700}
+.panel p{font-size:23px;line-height:1.4;margin:0}
+.challenge{margin-top:auto;border-left:4px solid var(--sun);padding:12px 20px;background:rgba(242,177,49,.08);border-radius:0 6px 6px 0}
+.challenge-label{font-size:16px;font-weight:800;letter-spacing:.14em;color:var(--sun);margin-bottom:6px}
+.challenge p{font-size:25px;margin:0;line-height:1.4}

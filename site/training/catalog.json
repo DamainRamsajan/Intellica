@@ -471,7 +471,7 @@
               "Security foundations for the agentic era",
               "Anatomy of agentic systems",
               "Threat modelling autonomous systems",
-              "The agentic threat landscape and attack patterns"
+              "Agentic threat landscape and attack patterns"
             ]
           },
           {
@@ -530,7 +530,68 @@
           "intro": "One project, built in steps after each lesson. Each step has instructions, a finished example, a health check, and saves on your device."
         },
         "path": "/training/cybersecurity/",
-        "track": "build"
+        "track": "build",
+        "course": {
+          "enabled": true,
+          "headline": "Secure the agents you run, as a course you take at your own pace.",
+          "lead": "Twenty short lessons on securing AI systems that plan, remember, delegate, call tools and run code. Each lesson has slides you control, a worked case, three recall questions and a lab. Across the twenty labs you build one assurance pack for an agent system of your own.",
+          "honesty": "This is self-study: slides, a field guide, a worked case and a lab for every lesson, marked against a rubric you apply yourself. It does not replace a security review of your own systems, and it is not an accredited qualification.",
+          "free": [
+            1,
+            5
+          ],
+          "method": [
+            {
+              "title": "Short lessons you control",
+              "text": "Twelve slides a lesson, each with a transcript. Move at your own pace and go back whenever you like."
+            },
+            {
+              "title": "One growing assurance pack",
+              "text": "After every lesson a lab asks you to produce real security work for your own agent system: threat model, identity design, containment plan, detection rules, incident runbook. The twenty answers join into one pack you download at the end."
+            },
+            {
+              "title": "A worked case and a field guide",
+              "text": "Every lesson has a case to read and practical guidance to apply, so the ideas are tied to decisions you will actually make."
+            },
+            {
+              "title": "Mark your own work",
+              "text": "Each lab has a model solution and a four-criterion rubric. Score yourself 0, 1 or 2 on each, then close the gaps."
+            },
+            {
+              "title": "Pause and recall",
+              "text": "Three questions at the end of each lesson, with the reason for each answer. Your progress is stored in this browser only."
+            }
+          ],
+          "evidence": [
+            "Retrieval practice and spacing are among the best-studied learning techniques, so each lesson ends by asking what you remember before it shows you."
+          ],
+          "faq": [
+            {
+              "q": "Who is this for?",
+              "a": "Engineers, architects, security and risk people who run or are about to run AI agents that use tools, data and credentials."
+            },
+            {
+              "q": "How do I get access?",
+              "a": "Message sales on WhatsApp. We reply with how to pay and send your access code when payment is confirmed."
+            },
+            {
+              "q": "Can I share my code?",
+              "a": "Please do not. The code is personal and your name appears on every lesson."
+            },
+            {
+              "q": "Will it be updated?",
+              "a": "Yes. The field moves quickly. We amend the course as standards and incidents change, and you keep every update."
+            },
+            {
+              "q": "What about refunds?",
+              "a": "Refund terms are confirmed in writing when you enquire, before you pay."
+            }
+          ],
+          "preview": {
+            "lesson": 1,
+            "slide": 3
+          }
+        }
       },
       {
         "id": "data-analytics",

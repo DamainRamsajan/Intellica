@@ -76,6 +76,14 @@ function rate(lesson, i, ok) {
 
 /* ---------- the player ---------- */
 
+/* Field guide, worked case and rubric (courses that have them). Built from data with el(), never from HTML. */
+function renderReading(box, items) {
+  if (!box || !items || !items.length) return;
+  const table = (it) => el('div', { class: 'md-table' }, el('table', {}, el('thead', {}, el('tr', {}, it.head.map((c) => el('th', {}, c)))), el('tbody', {}, it.rows.map((r) => el('tr', {}, r.map((c) => el('td', {}, c)))))));
+  box.replaceChildren(...items.flatMap((it) => [el('h2', {}, it.h), ...(it.ps || []).map((p) => el('p', {}, p)), it.rows ? table(it) : null]));
+  box.hidden = false;
+}
+
 function initPlayer(root, data, code) {
   showLabCta();
   const stage = $('[data-stage]', root), frame = $('[data-frame]', root);
@@ -85,6 +93,7 @@ function initPlayer(root, data, code) {
   const outline = $('[data-outline]', root), bar = $('[data-bar]', root), fill = $('[data-fill]', root);
   const lesson = root.dataset.lesson;
   const n = data.slides.length;
+  renderReading($('[data-reading]', root.parentElement || root), data.reading);
   let i = 0, narrating = false, audio = null;
 
   $('[data-stage-wrap]', root).hidden = false;

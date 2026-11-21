@@ -357,3 +357,6 @@
 .ord { padding: var(--s3); border: 1px solid var(--line); border-radius: 6px; margin: var(--s2) 0; }
 .ord[data-status="review"] { border-color: var(--warn, #f2b631); }
 .rcpt { display: block; max-width: 100%; margin-top: var(--s2); border-radius: 6px; }
+.reading { margin-top: var(--s6); max-width: 46rem; }
+.reading h2 { font-size: 1.3rem; margin: var(--s5) 0 var(--s2); }
+.reading p { line-height: 1.65; margin: 0 0 var(--s3); }

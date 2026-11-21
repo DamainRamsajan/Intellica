@@ -38,6 +38,14 @@ New: `/training/arc42/course/lab/`. 16 lab steps, one per lesson, from the works
 
 # Checkpoints
 
+## cp28: Cybersecurity for the Agentic Era, stage 1 (your 20 lessons)
+- Course built from your uploaded file via `tools/import-cyber.mjs` → `training-private/cybersecurity-source.json`, then `tools/cyber-course.mjs`.
+- 20 lessons x 12 slides, field guide, worked case, rubric, 3 recall questions (60), lessons 1 and 5 free, 18 encrypted with a per-course key (`deriveKey`).
+- Lab: one growing assurance pack, 20 sections, task list and model solution per lesson, health check in `tools/cyber-health.js`.
+- Same player as arc42 (copied at build with its own `iwc-` storage). arc42 unchanged apart from the shared reading panel.
+- Codes: `npm run course:code -- --cybersecurity "Buyer name"`.
+- Not yet: price and payment, leaderboard/certificate, frontier lessons (stage 2).
+
 ## Checkpoint 16 (current): after a code is entered the buyer lands on a new "My course" page (welcome, next lesson, progress ring, curriculum with status, review, resources); lessons numbered in study order. Earlier: cp15 header fix.
 
 ## Checkpoint 14: v14 — one domain: every system lives under meeting-mind.com/<system>/ and one deploy (`npm run deploy -- home`) uploads `dist/` (built by tools/assemble.mjs).  (kit files are now revalidated on every load, so a deploy shows at once)

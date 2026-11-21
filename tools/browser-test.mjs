@@ -657,7 +657,7 @@ await step('training: five architecture levels and seven agentic-era courses, ea
     assert.equal(await p.locator('.syl-m').count(), c.modules.length, c.id + ' syllabus');
     assert.equal(await p.locator('.lab-steps li').count(), c.lab.steps.length, c.id + ' lab steps');
     assert.ok(await p.locator('#certificate .cert-criteria li').count() === 3, c.id + ' certificate criteria');
-    assert.match(await p.locator('.btn-primary').first().getAttribute('href'), /^https:\/\/wa\.me\/\d+\?text=/, 'Contact sales opens WhatsApp');
+    assert.match(await p.locator('a[href^="https://wa.me/"]').first().getAttribute('href'), /^https:\/\/wa\.me\/\d+\?text=/, 'Contact sales opens WhatsApp');
     assert.ok(!/\d{7,}/.test(await p.locator('main').innerText()), c.id + ' shows no phone number');
     assert.ok(!/\$\d|TT\$|USD/.test(await p.locator("main").innerText()), c.id + " states no price");
     assert.deepEqual(p.problems, []);
@@ -966,6 +966,66 @@ await step('worked example: page, zip and arc42 are served and the zip matches t
   assert.ok((await z.arrayBuffer()).byteLength > 20000);
   assert.match(await (await fetch(HOME + WS + 'example/arc42.md')).text(), /^# Doubles-to-Go/);
   await p.context().close();
+});
+
+/* ---------- cybersecurity course ---------- */
+const CY = HOME + '/training/cybersecurity/course/';
+const { deriveKey } = await import('./build-course.mjs');
+const cyCode = (name) => mkCode(name, deriveKey(courseKey, 'cybersecurity'));
+await step('cybersecurity: course page lists 20 lessons, two free, and the catalogue page offers the free lessons', async () => {
+  const p = await open(CY);
+  assert.equal(await p.locator('a[href*="/training/cybersecurity/course/"][href$="/"]').count() > 20, true);
+  assert.deepEqual(p.problems, []);
+  const cat = await open(`${HOME}/training/cybersecurity/`);
+  assert.equal(await cat.locator('a', { hasText: 'Start the free lessons' }).count(), 1);
+  assert.ok(!/arc42|Doubles/i.test(await p.locator('main').innerText()), 'arc42 wording leaked into the cybersecurity course');
+  await p.context().close(); await cat.context().close();
+});
+await step('cybersecurity: a free lesson plays 12 slides, shows its field guide, worked case and rubric, and asks three questions', async () => {
+  const p = await open(CY + 'security-foundations-for-the-agentic-era/');
+  await p.waitForSelector('[data-stage] .s');
+  assert.match(await p.locator('[data-pos]').innerText(), /^1 \/ 12$/);
+  await p.click('[data-next]');
+  assert.match(await p.locator('[data-pos]').innerText(), /^2 \/ 12$/);
+  await p.waitForSelector('[data-reading]:not([hidden]) h2');
+  const t = await p.locator('[data-reading]').innerText();
+  assert.match(t, /Field guide/); assert.match(t, /Worked case/); assert.match(t, /Competent/);
+  assert.deepEqual(p.problems, []);
+  await p.context().close();
+});
+await step('cybersecurity: a paid lesson is locked and encrypted; its own code (not the arc42 code) opens it', async () => {
+  const id = 'tool-api-and-mcp-security';
+  const p = await open(CY + id + '/');
+  await p.waitForSelector('[data-locked]:not([hidden])');
+  const enc = await (await fetch(CY + 'data/' + id + '.json')).json();
+  assert.deepEqual(Object.keys(enc).sort(), ['ct', 'id', 'iv', 'v']);
+  await p.context().close();
+  const ctx = await browser.newContext({ viewport: { width: 1280, height: 900 } });
+  await ctx.addInitScript((c) => localStorage.setItem('iwc-course-code', c), cyCode('Cyber Buyer'));
+  const q = await ctx.newPage(); const errs = []; q.on('pageerror', (e) => errs.push(e.message));
+  await q.goto(CY + id + '/'); await q.waitForSelector('[data-stage] .s', { timeout: 8000 });
+  assert.match(await q.locator('[data-pos]').innerText(), /^1 \/ 12$/);
+  assert.deepEqual(errs, []);
+  const ctx2 = await browser.newContext(); await ctx2.addInitScript((c) => localStorage.setItem('iwc-course-code', c), mkCode('Wrong'));
+  const w = await ctx2.newPage(); await w.goto(CY + id + '/'); await w.waitForSelector('[data-locked]:not([hidden])');
+  await ctx.close(); await ctx2.close();
+});
+await step('cybersecurity: the lab is one assurance pack with 20 sections, a model solution per lesson, and a pack download', async () => {
+  const ctx = await browser.newContext({ viewport: { width: 1280, height: 900 } });
+  await ctx.addInitScript((c) => localStorage.setItem('iwc-course-code', c), cyCode('Cyber Buyer'));
+  const page = await ctx.newPage(); const errs = []; page.on('pageerror', (e) => errs.push(e.message));
+  await page.goto(CY + 'lab/');
+  await page.waitForSelector('[data-lab-page]:not([hidden]) [data-step-panel] h2');
+  await page.fill('[data-sys]', 'Claims Agent');
+  await page.locator('[data-sec="s1"]').click();
+  assert.match(await page.inputValue('[data-text]'), /## 1\. Security Foundations for the Agentic Era/);
+  assert.match(await page.locator('[data-step-panel]').innerText(), /Task 1|Required|evidence/i);
+  const [dl] = await Promise.all([page.waitForEvent('download'), page.click('[data-download]')]);
+  assert.equal(dl.suggestedFilename(), 'claims-agent-assurance-pack.md');
+  const md = (await import('node:fs')).readFileSync(await dl.path(), 'utf8');
+  for (let n = 1; n <= 20; n++) assert.ok(new RegExp(`^## ${n}\\. `, 'm').test(md), `section ${n} is in the export`);
+  assert.deepEqual(errs, []);
+  await ctx.close();
 });
 
 await browser.close();
