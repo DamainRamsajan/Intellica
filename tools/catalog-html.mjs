@@ -12,38 +12,48 @@ export function allLevels(catalog, arc) {
 }
 
 export function levelPath(levels, current) {
-  return `<ol class="lvl-path" aria-label="The five levels">${levels.map((l) => `<li${l.n === current ? ' aria-current="step" class="is-here"' : ''}><a href="${l.path}"><b>${l.n}</b><span>${esc(l.short)}</span>${l.live ? '<i>Open now</i>' : '<i>Opening soon</i>'}</a></li>`).join('')}</ol>`;
+  return `<ol class="lvl-path" aria-label="The five levels">${levels.map((l) => `<li${l.n === current ? ' aria-current="step" class="is-here"' : ''}><a href="${l.path}"><b>${l.n}</b><span>${esc(l.short)}</span>${l.live ? '<i>Live workshop</i>' : ''}</a></li>`).join('')}</ol>`;
 }
 
 const card = (c, tag) => `
         <article class="cat-card">
-          <p class="cat-tag">${esc(tag)}<span class="cat-status${c.live ? ' is-live' : ''}">${c.live ? 'Open now' : 'Opening soon'}</span></p>
+          <p class="cat-tag">${esc(tag)}${c.live ? '<span class="cat-status is-live">Live workshop too</span>' : ''}</p>
           <h3><a href="${c.path}">${esc(c.title)}</a></h3>
           <p>${esc(c.lead)}</p>
-          <a class="cat-go" href="${c.path}">${c.live ? 'See the course' : 'See the syllabus'} <span aria-hidden="true">→</span></a>
+          <a class="cat-go" href="${c.path}">See the course <span aria-hidden="true">\u2192</span></a>${c.live ? `
+          <a class="cat-go" href="${c.path}course/#get-t" data-access data-learn="${c.path}course/learn/" data-probe="${c.path}course/data/part-2-1-goals.json" data-probe-id="part-2-1-goals">Get access</a>` : ''}
         </article>`;
 
+/* The whole catalogue as one list of tracks. Every course is a permanent online course; live workshops are a separate, dated thing. */
 export function catalogSections(catalog, arc, startN) {
   const levels = allLevels(catalog, arc);
   const sr = catalog.series;
+  const track = (id, title, lead, items, tag) => `
+      <div class="track" id="track-${id}">
+        <h3>${esc(title)}</h3>
+        <p class="sub">${esc(lead)}</p>
+        <div class="cat-grid">${items.map((l) => card(l, tag(l))).join('')}
+        </div>
+      </div>`;
   return `
-    <section class="t-block" id="architecture" aria-labelledby="arch-t">
-      ${kicker(startN, 'Software architecture')}
-      <h2 id="arch-t">${esc(catalog.ladder.title)}</h2>
-      <p class="sub">${esc(catalog.ladder.lead)}</p>
-      <div class="cat-grid">${levels.map((l) => card(l, `Level ${l.n} of 5`)).join('')}
-      </div>
-    </section>
+    <section class="t-block" id="courses" aria-labelledby="crs-t">
+      ${kicker(startN, 'Courses')}
+      <h2 id="crs-t">Every course, online, yours to keep</h2>
+      <p class="sub">${esc(catalog.coursesLead)}</p>
+      ${track('architecture', catalog.ladder.title, catalog.ladder.lead, levels, (l) => `Level ${l.n} of 5`)}
+      ${catalog.tracks.map((t) => track(t.id, t.title, t.lead, sr.courses.filter((c) => c.track === t.id), () => 'Online course')).join('')}
+    </section>`;
+}
 
-    <section class="t-block" id="series" aria-labelledby="ser-t">
-      ${kicker(startN + 1, 'The agentic era')}
-      <h2 id="ser-t">${esc(sr.title)}</h2>
-      <p class="sub">${esc(sr.lead)}</p>
-      <div class="cat-grid">${sr.courses.map((c) => card(c, 'Course')).join('')}
-      </div>
-    </section>
-
-    ${certificateBlock(catalog, startN + 2)}`;
+export function featuredBlock(catalog) {
+  const f = catalog.featured, c = catalog.series.courses.find((x) => x.id === f.id);
+  return `<section class="t-block feat" aria-labelledby="feat-t">
+      <p class="eyebrow">${esc(f.kicker)}</p>
+      <h2 id="feat-t"><a href="${c.path}">${esc(f.title)}</a></h2>
+      <p class="feat-line">${esc(f.line)}</p>
+      <ul class="facts-list">${f.points.map((x) => `<li>${esc(x)}</li>`).join('')}</ul>
+      <div class="actions"><a class="btn btn-primary" href="${c.path}">See the course</a><a class="btn btn-ghost" href="#courses">All courses</a></div>
+    </section>`;
 }
 
 export function certificateBlock(catalog, n, { id = 'certificate' } = {}) {
@@ -64,8 +74,8 @@ export function coursePage(c, { catalog, levels, kindLabel, series }) {
   const lessons = lessonCount(c);
   const interest = wa(`Hello, I would like to hear when "${c.title}" opens.`);
   const nav = levels
-    ? `<p class="crumb"><a href="/training/">Training</a><span aria-hidden="true"> / </span><a href="/training/#architecture">Software architecture</a><span aria-hidden="true"> / </span>Level ${c.n}</p>`
-    : `<p class="crumb"><a href="/training/">Training</a><span aria-hidden="true"> / </span><a href="/training/#series">The agentic era</a><span aria-hidden="true"> / </span>${esc(c.short)}</p>`;
+    ? `<p class="crumb"><a href="/training/">Training</a><span aria-hidden="true"> / </span><a href="/training/#track-architecture">Software architecture</a><span aria-hidden="true"> / </span>Level ${c.n}</p>`
+    : `<p class="crumb"><a href="/training/">Training</a><span aria-hidden="true"> / </span><a href="/training/#track-${c.track || 'build'}">${c.track === 'run' ? 'Run and grow a business' : 'Build and secure agentic systems'}</a><span aria-hidden="true"> / </span>${esc(c.short)}</p>`;
   let n = 0;
   return `
     <nav class="subnav" aria-label="${esc(c.title)}">
@@ -74,11 +84,11 @@ export function coursePage(c, { catalog, levels, kindLabel, series }) {
 
     <section class="t-hero t-hero-single" aria-labelledby="c-title">
       <div class="t-hero-copy">
-        <p class="cat-tag"><span>${esc(kindLabel)}</span><span class="cat-status">Opening soon</span></p>
+        <p class="cat-tag"><span>${esc(kindLabel)}</span></p>
         <h1 id="c-title">${esc(c.title)}</h1>
         <p class="lead">${esc(c.lead)}</p>
         <div class="actions"><a class="btn btn-primary" href="${esc(interest)}" rel="noopener">Contact sales</a><a class="btn btn-ghost" href="#syllabus">See the syllabus</a></div>
-        <p class="fine">Opening soon. Message us and we will tell you when the first lessons are ready.</p>
+        <p class="fine">Enrol by message. We confirm what is ready today, send every module as it is released, and you keep every update to this edition.</p>
       </div>
     </section>
 ${levels ? `

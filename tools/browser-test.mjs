@@ -407,6 +407,7 @@ await step('course: buying by bank deposit (Trinidad visitor): price, popup, rec
   await page.click('[data-pay-open]');
   await page.fill('#buy-name', 'Ada Lovelace'); await page.fill('#buy-email', 'ada@example.com');
   await page.click('[data-pay-form] button[type=submit]');
+  await page.waitForSelector('[data-step="2"]:not([hidden])');
   const dlg = await page.locator('dialog.pay').innerText();
   assert.match(dlg, /110000005001825/); assert.match(dlg, /Royal Bank \(Trinidad and Tobago\) Limited/); assert.match(dlg, /IC-TEST23/); assert.match(dlg, /TT\$899/);
   await page.click('[data-to-3]');
@@ -640,10 +641,13 @@ await step('industries: the five sector pages exist, link to each other, and car
 await step('training: five architecture levels and seven agentic-era courses, each with its own page, lab and certificate section', async () => {
   const cat = JSON.parse(fs.readFileSync('site/training/catalog.json', 'utf8'));
   const idx = await open(`${HOME}/training/`);
-  assert.equal(await idx.locator('#architecture .cat-card').count(), 5, 'five architecture levels');
-  assert.equal(await idx.locator('#series .cat-card').count(), 7, 'seven agentic-era courses');
-  assert.match(await idx.locator('#architecture .cat-card').first().innerText(), /open now[\s\S]*arc42 in a Day/i);
-  assert.equal(await idx.locator('#architecture .cat-card .cat-status.is-live').count(), 1, 'only arc42 is open');
+  assert.equal(await idx.locator('#track-architecture .cat-card').count(), 5, 'five architecture levels');
+  assert.equal(await idx.locator('#track-build .cat-card, #track-run .cat-card').count(), 7, 'seven agentic-era courses');
+  assert.match(await idx.locator('#track-architecture .cat-card').first().innerText(), /arc42 in a Day/i);
+  assert.equal(await idx.locator('.cat-status').count(), 1, 'only the arc42 card mentions a live workshop');
+  assert.ok(!/opening soon|open now/i.test(await idx.locator('main').innerText()), 'no soon/open split: every course is presented as one catalogue');
+  assert.ok(await idx.locator('#courses').count() && await idx.locator('#live').count(), 'courses and live workshops are separate sections');
+  assert.ok((await idx.locator('main').innerHTML()).indexOf('id="courses"') < (await idx.locator('main').innerHTML()).indexOf('id="live"'), 'courses come first');
   assert.ok(await idx.locator('#certificate').count(), 'certificate explained on the index');
   assert.deepEqual(idx.problems, []);
   for (const c of [...cat.ladder.levels, ...cat.series.courses]) {

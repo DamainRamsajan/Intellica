@@ -13,7 +13,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { researchHtml, boardHtml } from './lab-html.mjs';
 import { page, esc, kicker, cols, base } from './training-shell.mjs';
-import { catalogSections, certificateBlock, allLevels, levelPath } from './catalog-html.mjs';
+import { featuredBlock, catalogSections, certificateBlock, allLevels, levelPath } from './catalog-html.mjs';
 
 const SITE = path.resolve('site');
 const catalog = JSON.parse(fs.readFileSync(path.join(SITE, 'training', 'catalog.json'), 'utf8'));
@@ -460,7 +460,7 @@ function indexPage() {
   const ix = data.index;
   const cards = data.workshops.map((w) => `
         <article class="ws-card">
-          <p class="eyebrow">Next workshop</p>
+          <p class="eyebrow">Next live workshop</p>
           <h3><a href="${w.path}">${esc(w.title)}</a></h3>
           <p>${esc(w.lead)}</p>
           <dl class="mini"><div><dt>When</dt><dd>${esc(w.dateLong)}, ${esc(w.time)}</dd></div><div><dt>Where</dt><dd>${esc(w.venue)}</dd></div><div><dt>Price</dt><dd>${esc(w.price.label)} <span class="eb" data-eb data-until="${w.price.earlyUntil}" data-label="${esc(w.price.label)}" data-until-label="${esc(w.price.earlyUntilLabel)}" data-after="${esc(w.price.standardNote)}">early bird until ${esc(w.price.earlyUntilLabel)}</span></dd></div></dl>
@@ -475,33 +475,40 @@ function indexPage() {
       </div>
     </section>
 
-    <section class="t-block" aria-labelledby="ws-t">
-      ${kicker(1, 'Workshops')}
-      <h2 id="ws-t">Open for registration</h2>
+    <section class="t-hero-actions" aria-label="Where to start"><div class="actions"><a class="btn btn-primary" href="#courses">Browse the courses</a><a class="btn btn-ghost" href="#live">Next live workshop</a></div></section>
+
+    <section class="t-strip" aria-label="What every course includes"><dl>
+      <div><dt>Hands-on lab</dt><dd>in every course</dd></div>
+      <div><dt>Verifiable certificate</dt><dd>to share on LinkedIn</dd></div>
+      <div><dt>Always current</dt><dd>amended as the research moves</dd></div>
+      <div><dt>Yours to keep</dt><dd>every update to your edition</dd></div>
+    </dl></section>
+
+${featuredBlock(catalog)}
+
+${catalogSections(catalog, data.workshops[0], 1)}
+
+    <section class="t-block" id="live" aria-labelledby="ws-t">
+      ${kicker(2, 'Live workshops')}
+      <h2 id="ws-t">Learn it live, with us in the room</h2>
+      <p class="sub">The courses are always there. Workshops are the dated part, and the dates change: small rooms, one real system, a printed workbook and time to ask. Each one sits on top of its online course, so you can prepare before and keep going after.</p>
       <div class="ws-list">${cards}
       </div>
     </section>
 
-${data.workshops.filter((w) => w.course && w.course.enabled).map((w) => `
-    <section class="t-block" aria-labelledby="oc-t">
-      ${kicker(2, 'Online')}
-      <h2 id="oc-t">Can\u2019t be there on the day? Take it online.</h2>
-      <article class="ws-card oc-card">
-        <p class="eyebrow">Online course</p>
-        <h3><a href="${w.path}course/">${esc(w.title)}: the full course</a></h3>
-        <p>${esc(w.course.lead)}</p>
-        <dl class="mini"><div><dt>Format</dt><dd>${w.course.modules.reduce((a, m) => a + m.lessons.length, 0)} short lessons, slides with transcripts, recall questions, a worked example</dd></div><div><dt>Pace</dt><dd>Your own, on any device</dd></div><div><dt>Free</dt><dd>The first two lessons need no code</dd></div></dl>
-        <div class="actions"><a class="btn btn-primary" href="${w.path}course/">Look inside the course</a><a class="btn btn-ghost" href="${w.path}course/#get-t" data-access data-learn="${w.path}course/learn/" data-probe="${w.path}course/data/${probeId(w)}.json" data-probe-id="${probeId(w)}">Get access</a></div>
-      </article>
-    </section>`).join('')}
-
-${catalogSections(catalog, data.workshops[0], 3)}
+${certificateBlock(catalog, 3)}
 
     <section class="t-block" aria-labelledby="how-t">
-      ${kicker(6, 'How we teach')}
-      <h2 id="how-t">Every workshop follows the same loop</h2>
+      ${kicker(4, 'How we teach')}
+      <h2 id="how-t">Every course follows the same loop</h2>
       ${cols(ix.principles, 'c3')}
       <p class="pull">${esc(ix.honesty)}</p>
+    </section>
+
+    <section class="t-block" aria-labelledby="team-t">
+      ${kicker(5, 'For teams')}
+      <h2 id="team-t">Training a whole team?</h2>
+      <p class="sub">We can run a workshop on your own system, or build a learning path across several courses for your staff. <a href="/consulting/">See how we work with teams</a>, or message us on WhatsApp from the button on this page.</p>
     </section>`;
   return page({
     title: 'Training | Intellica',

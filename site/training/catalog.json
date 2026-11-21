@@ -437,95 +437,100 @@
           "intro": "One project, built in steps after each lesson. Each step has instructions, a finished example, a health check, and saves on your device."
         },
         "path": "/training/ai-agents-business/",
-        "status": "soon"
+        "track": "run"
       },
       {
         "id": "cybersecurity",
-        "title": "Cybersecurity and Information Security in the Agentic Era",
+        "title": "Cybersecurity for the Agentic Era",
         "short": "Cybersecurity",
-        "lead": "Protect systems, people and data when attackers and defenders both use AI: fundamentals, cloud, risk and compliance, and ethical hacking in authorised environments.",
-        "why": "AI agents change both sides of security. They give attackers speed, and they add a new thing to defend: software that reads untrusted text and takes actions. This course covers the fundamentals first, then how to defend, test and govern in that world.",
-        "needs": "Comfort with a computer and a browser. Technical background helps but is not required.",
+        "lead": "A professional course for securing AI systems that plan, remember, delegate, call tools and run code: threat modelling, tool and MCP security, agent identity, sandboxing, runtime enforcement, red teaming and incident response.",
+        "why": "Agents read untrusted text and then act: they send, spend, change records and run code. That makes the model the wrong place to rely on for safety. This course is built on one rule: the model may propose an action, but independently enforced policy decides whether that action is allowed to affect the world.",
+        "needs": "Working knowledge of software or IT systems. Written for engineers, security practitioners and technical leads.",
         "outcomes": [
           {
-            "title": "Understand the risks",
-            "text": "Explain how attacks work and where your own exposure is."
+            "title": "Threat-model an agent",
+            "text": "Map what an agent can read, remember, call and change, and where each attack can enter."
           },
           {
-            "title": "Secure the basics",
-            "text": "Harden accounts, devices, networks and cloud services."
+            "title": "Enforce policy outside the model",
+            "text": "Design identity, tool access, sandboxing and approvals so a manipulated model still cannot do harm."
           },
           {
-            "title": "Test safely",
-            "text": "Practise ethical hacking only in environments you own or are authorised to test."
+            "title": "Test it like an attacker",
+            "text": "Plan and run authorised red-team tests against agents, and judge the results."
           },
           {
-            "title": "Manage risk",
-            "text": "Build a risk register and map controls to compliance needs, including for small businesses."
+            "title": "Detect, respond and govern",
+            "text": "Monitor agents, contain an incident, recover, and keep the evidence an auditor or insurer will ask for."
           }
         ],
         "modules": [
           {
-            "title": "Fundamentals",
-            "note": "How security works.",
+            "title": "Foundations and threats",
             "lessons": [
-              "Threats, assets and risk",
-              "Identity, passwords and multi-factor sign-in",
-              "Networks and devices",
-              "Cryptography in practice"
+              "Security foundations for the agentic era",
+              "Anatomy of agentic systems",
+              "Threat modelling autonomous systems",
+              "The agentic threat landscape and attack patterns"
             ]
           },
           {
-            "title": "Cloud and applications",
-            "note": "Where most systems live now.",
+            "title": "Attack surfaces",
             "lessons": [
-              "Cloud security basics",
-              "Securing applications and APIs",
-              "Logging and detection",
-              "Responding to an incident"
+              "Prompt injection and cognitive exploitation",
+              "Tool, API and MCP security",
+              "Agentic identity and access management",
+              "Memory, RAG and data security",
+              "Multi-agent security and trust propagation"
             ]
           },
           {
-            "title": "Agents and AI",
-            "note": "The new attack surface.",
+            "title": "Containment and supply chain",
             "lessons": [
-              "Prompt injection and untrusted input",
-              "Limiting what an agent can do",
-              "Using AI to defend",
-              "Data leaving through AI tools"
+              "Code execution, sandboxing and isolation",
+              "AI supply chain and model security",
+              "Cloud, network and infrastructure security"
             ]
           },
           {
-            "title": "Testing and governance",
-            "note": "Test, measure and prove.",
+            "title": "Secure design and operations",
             "lessons": [
-              "Ethical hacking in authorised environments",
-              "Security compliance and risk management",
-              "Cybersecurity for small businesses",
-              "Your security plan"
+              "Secure agentic architecture and zero trust",
+              "Runtime enforcement and formal assurance",
+              "Monitoring, detection and digital forensics",
+              "Agentic red teaming and security evaluation",
+              "Incident response, containment and recovery"
+            ]
+          },
+          {
+            "title": "Governance and capstone",
+            "lessons": [
+              "Governance, regulation and enterprise risk",
+              "Securing agentic AI in critical industries",
+              "Capstone: design and assure a secure agentic enterprise"
             ]
           }
         ],
         "lab": {
-          "title": "A security review of a small business",
-          "text": "Review a small business setup, practise attacks only in a lab you own, and write the plan.",
+          "title": "Design and assure a secure agentic system",
+          "text": "Take one agent from a threat model to an assurance report: policy outside the model, contained execution, monitoring, and an authorised attack test.",
           "steps": [
-            "List assets and what matters most",
-            "Build a risk register",
-            "Harden accounts and devices from a checklist",
-            "Run an authorised exercise in your own practice lab",
-            "Review one AI tool for data and injection risk",
-            "Write the plan for the owner"
+            "Map the agent’s tools, data and authority",
+            "Threat-model it and rank the risks",
+            "Write the policy that decides which actions may run",
+            "Contain code execution and credentials",
+            "Add monitoring, alerts and a kill switch",
+            "Run an authorised attack test and write the assurance report"
           ],
           "checks": [
-            "Every risk has an owner and a control",
-            "The exercise was run only in a lab you own",
-            "The plan can be read by a non-technical owner"
+            "Every tool has an owner and least privilege",
+            "The model cannot approve its own actions",
+            "Evidence shows each control is tested, monitored and recoverable"
           ],
           "intro": "One project, built in steps after each lesson. Each step has instructions, a finished example, a health check, and saves on your device."
         },
         "path": "/training/cybersecurity/",
-        "status": "soon"
+        "track": "build"
       },
       {
         "id": "data-analytics",
@@ -613,7 +618,7 @@
           "intro": "One project, built in steps after each lesson. Each step has instructions, a finished example, a health check, and saves on your device."
         },
         "path": "/training/data-analytics/",
-        "status": "soon"
+        "track": "build"
       },
       {
         "id": "software-development",
@@ -701,7 +706,7 @@
           "intro": "One project, built in steps after each lesson. Each step has instructions, a finished example, a health check, and saves on your device."
         },
         "path": "/training/software-development/",
-        "status": "soon"
+        "track": "build"
       },
       {
         "id": "digital-marketing",
@@ -789,7 +794,7 @@
           "intro": "One project, built in steps after each lesson. Each step has instructions, a finished example, a health check, and saves on your device."
         },
         "path": "/training/digital-marketing/",
-        "status": "soon"
+        "track": "run"
       },
       {
         "id": "project-operations",
@@ -877,7 +882,7 @@
           "intro": "One project, built in steps after each lesson. Each step has instructions, a finished example, a health check, and saves on your device."
         },
         "path": "/training/project-operations/",
-        "status": "soon"
+        "track": "run"
       },
       {
         "id": "entrepreneurship",
@@ -965,7 +970,7 @@
           "intro": "One project, built in steps after each lesson. Each step has instructions, a finished example, a health check, and saves on your device."
         },
         "path": "/training/entrepreneurship/",
-        "status": "soon"
+        "track": "run"
       }
     ]
   },
@@ -985,5 +990,28 @@
     "project-operations": 199,
     "entrepreneurship": 149
   },
-  "statusNote": "status: 'soon' until the course's lessons, lab and certificate rules are built; then 'open' (and add it to ISSUABLE in worker/cert-api.js and OFFERS in worker/pay-api.js)."
+  "tracks": [
+    {
+      "id": "build",
+      "title": "Build and secure agentic systems",
+      "lead": "For people who ship the software, data and automation that agents act on, and who answer for what those agents are allowed to do."
+    },
+    {
+      "id": "run",
+      "title": "Run and grow a business with agents",
+      "lead": "For owners, managers and consultants who want agents doing real work in sales, projects and operations, with the controls to trust them."
+    }
+  ],
+  "coursesLead": "Every course is a permanent online course: short lessons, a lab where you build the real thing, and a certificate you can verify. We amend each one as the research and the tools change, and you keep every update. Live workshops, below, are where we teach in person.",
+  "featured": {
+    "id": "cybersecurity",
+    "kicker": "Featured course",
+    "title": "Cybersecurity for the Agentic Era",
+    "line": "The model may propose an action. Independently enforced policy decides whether it happens.",
+    "points": [
+      "20 lessons, from threat modelling to incident response, ending in a capstone",
+      "Tools and MCP, identity, memory, multi-agent trust, sandboxing, runtime enforcement",
+      "A lab where you build and attack your own agent setup, and a certificate you can verify"
+    ]
+  }
 }
