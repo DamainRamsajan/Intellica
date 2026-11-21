@@ -42,7 +42,7 @@ assert.equal(judge(good({ looks_edited: true }), ord, NOW).pass, false);
 assert.equal(judge(null, ord, NOW).pass, false);
 
 assert.equal((await call('POST', '/api/pay/order', { body: {}, e: {} })).status, 503, 'not configured: says so');
-assert.equal((await call('POST', '/api/pay/order', { body: { course: 'cybersecurity', name: 'Ada L', email: 'a@b.co' } })).status, 404);
+assert.equal((await call('POST', '/api/pay/order', { body: { course: 'nonexistent', name: 'Ada L', email: 'a@b.co' } })).status, 404);
 assert.equal((await call('POST', '/api/pay/order', { body: { course: 'arc42', name: '<b>', email: 'a@b.co' } })).status, 400);
 const order = async (name = 'Ada Lovelace') => (await call('POST', '/api/pay/order', { body: { course: 'arc42', name, email: 'ada@example.com' } })).body;
 
@@ -89,4 +89,19 @@ assert.equal((await call('GET', '/api/pay/claim?o=' + o7.id)).status, 200, 'appr
 await call('POST', '/api/pay/admin/decide', { body: { id: o4.id, approve: false }, headers: { 'x-admin-key': SECRETS.adminKey } });
 assert.equal((await call('GET', '/api/pay/claim?o=' + o4.id)).status, 403);
 assert.equal((await call('GET', '/api/pay/region')).body.tt, false);
+// the cybersecurity course: priced in TT$, and its code carries the derived key, not the arc42 one
+{
+  const cyc = (await call('POST', '/api/pay/order', { body: { course: 'cybersecurity', name: 'Cy Buyer', email: 'cy@example.com' } })).body;
+  assert.equal(cyc.amount, 2799);
+  reading = good({ amount: 2799, reference: cyc.ref });
+  assert.equal((await call('POST', '/api/pay/receipt?o=' + cyc.id, { raw: img(77) })).body.status, 'paid');
+  const cl = await call('GET', '/api/pay/claim?o=' + cyc.id);
+  const want = crypto.createHmac('sha256', Buffer.from(KEY, 'base64url')).update('course:cybersecurity').digest('base64url');
+  assert.deepEqual(JSON.parse(Buffer.from(cl.body.code, 'base64url').toString()), { v: 1, b: 'Cy Buyer', k: want });
+  assert.notEqual(JSON.parse(Buffer.from(cl.body.code, 'base64url').toString()).k, KEY, 'an arc42 key never opens cybersecurity');
+  assert.match(cl.body.learn, /cybersecurity/);
+  const cat = JSON.parse((await import('node:fs')).readFileSync('site/training/catalog.json', 'utf8')).series.courses.find((x) => x.id === 'cybersecurity').course.price;
+  const { OFFERS } = await import('../worker/pay-api.js');
+  assert.equal(cat.ttd, OFFERS.cybersecurity.ttd, 'catalog TT$ price matches the payment API'); assert.equal(cat.label, 'US$' + OFFERS.cybersecurity.usd);
+}
 console.log('payment api: all checks passed');

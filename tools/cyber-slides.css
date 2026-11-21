@@ -11,3 +11,5 @@ h2{font-family:var(--display);font-size:46px;font-weight:800;line-height:1.1;mar
 .challenge{margin-top:auto;border-left:4px solid var(--sun);padding:12px 20px;background:rgba(242,177,49,.08);border-radius:0 6px 6px 0}
 .challenge-label{font-size:16px;font-weight:800;letter-spacing:.14em;color:var(--sun);margin-bottom:6px}
 .challenge p{font-size:25px;margin:0;line-height:1.4}
+.teaching-grid.ev{grid-template-columns:.8fr 1.9fr 1fr}.teaching-grid.ev .panel p{font-size:19px}
+.teaching-grid.ev2{grid-template-columns:.7fr 2.3fr .9fr}.teaching-grid.ev2 .panel p{font-size:18px;line-height:1.38}

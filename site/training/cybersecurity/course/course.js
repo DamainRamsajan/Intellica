@@ -228,7 +228,7 @@ function showLabCta() {
   const st = (doc.steps || {})[box.dataset.step];
   const meta = $('[data-lab-meta]', box);
   if (st && st.done) meta.textContent = 'You finished this step. Open it again to refine your work.';
-  else if (started) meta.textContent = `Your assurance pack so far: ${started} of 20 sections started. This step opens where you left off.`;
+  else if (started) meta.textContent = `Your assurance pack so far: ${started} of 25 sections started. This step opens where you left off.`;
   box.hidden = false;
 }
 

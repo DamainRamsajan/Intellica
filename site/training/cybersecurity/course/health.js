@@ -1,13 +1,13 @@
 // The assurance pack's health check, as a pure function (copied into the course by tools/cyber-course.mjs).
 // It checks structure and effort, never "correctness": a security design needs a human reviewer, and the rubric is there for that.
-export const MAIN = Array.from({ length: 20 }, (_, i) => 's' + (i + 1));
+export const MAIN = Array.from({ length: 25 }, (_, i) => 's' + (i + 1));
 const words = (t) => (t.match(/\S+/g) || []).length;
 
 export function healthChecks({ text, started, arc42 }) {
   const out = [];
   const t = arc42();
   const miss = MAIN.filter((k) => !new RegExp(`^## ${k.slice(1)}\\. `, 'm').test(text(k)));
-  out.push({ ok: !miss.length, label: 'All 20 section headings are present', detail: miss.length ? `Missing: ${miss.map((k) => '§' + k.slice(1)).join(', ')}` : '' });
+  out.push({ ok: !miss.length, label: 'All 25 section headings are present', detail: miss.length ? `Missing: ${miss.map((k) => '§' + k.slice(1)).join(', ')}` : '' });
   const todo = MAIN.filter((k) => !started(k));
   out.push({ ok: !todo.length, label: 'Every section has been started', detail: todo.length ? `Still the template: ${todo.map((k) => '§' + k.slice(1)).join(', ')}` : '' });
   const open = [];

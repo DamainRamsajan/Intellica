@@ -38,13 +38,13 @@ New: `/training/arc42/course/lab/`. 16 lab steps, one per lesson, from the works
 
 # Checkpoints
 
-## cp28: Cybersecurity for the Agentic Era, stage 1 (your 20 lessons)
-- Course built from your uploaded file via `tools/import-cyber.mjs` → `training-private/cybersecurity-source.json`, then `tools/cyber-course.mjs`.
-- 20 lessons x 12 slides, field guide, worked case, rubric, 3 recall questions (60), lessons 1 and 5 free, 18 encrypted with a per-course key (`deriveKey`).
-- Lab: one growing assurance pack, 20 sections, task list and model solution per lesson, health check in `tools/cyber-health.js`.
-- Same player as arc42 (copied at build with its own `iwc-` storage). arc42 unchanged apart from the shared reading panel.
-- Codes: `npm run course:code -- --cybersecurity "Buyer name"`.
-- Not yet: price and payment, leaderboard/certificate, frontier lessons (stage 2).
+## cp28: Cybersecurity for the Agentic Era (complete)
+- 25 lessons: your 20 (slides, field guide, worked case, rubric, 3 questions, lab) plus 5 frontier lessons (21 adaptive evaluation, 22 out-of-band enforcement, 23 containing your own agents, 24 measuring poisoning, 25 runtime monitors) from `training-private/frontier.mjs`. Every figure there was read on its source page on 2026-11-21 and is cited in the lesson.
+- "2026 update" notes added to lessons 6, 9, 10, 15, 16, 17, 18.
+- Lab: one assurance pack, 25 sections. Certificate: lessons 25, sections 25, health checks 5, 70% of 75 questions. Cert API derives each course's proof from the master key.
+- Price US$399 / TT$2,799 (catalog.json and `OFFERS` in worker/pay-api.js; a test keeps them equal). Bank-deposit buying works for both courses; the claim returns that course's own key.
+- Owner code command (no chat needed): `npm run code -- list`, `npm run code -- cybersecurity "Buyer name"`. Logged in `.codes.log` (git-ignored). Needs `.course-key` in the folder.
+- Not yet: leaderboard for cyber (hidden), Stripe, templates/glossary pages, key rotation.
 
 ## Checkpoint 16 (current): after a code is entered the buyer lands on a new "My course" page (welcome, next lesson, progress ring, curriculum with status, review, resources); lessons numbered in study order. Earlier: cp15 header fix.
 

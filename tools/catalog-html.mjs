@@ -87,8 +87,8 @@ export function coursePage(c, { catalog, levels, kindLabel, series }) {
         <p class="cat-tag"><span>${esc(kindLabel)}</span></p>
         <h1 id="c-title">${esc(c.title)}</h1>
         <p class="lead">${esc(c.lead)}</p>
-        ${c.course && c.course.enabled ? `<div class="actions"><a class="btn btn-primary" href="${c.path}course/">Start the free lessons</a><a class="btn btn-ghost" href="${esc(wa(`Hello, I would like access to "${c.title}".`))}" rel="noopener">Contact sales</a><a class="btn btn-ghost" href="#syllabus">See the syllabus</a></div>
-        <p class="fine">Lessons 1 and 5 are free to open now. Message sales for access to the rest, and you keep every update.</p>` : `<div class="actions"><a class="btn btn-primary" href="${esc(interest)}" rel="noopener">Contact sales</a><a class="btn btn-ghost" href="#syllabus">See the syllabus</a></div>
+        ${c.course && c.course.enabled ? `<div class="actions"><a class="btn btn-primary" href="${c.path}course/">Start the free lessons</a><a class="btn btn-ghost" href="${c.path}course/#get-t">Buy the course, ${esc(c.course.price.label)}</a><a class="btn btn-ghost" href="#syllabus">See the syllabus</a></div>
+        <p class="fine">Lessons 1 and 5 are free to open now. ${esc(c.course.price.note)} Questions? <a href="${esc(wa(`Hello, I would like to ask about "${c.title}".`))}" rel="noopener">Contact sales</a>.</p>` : `<div class="actions"><a class="btn btn-primary" href="${esc(interest)}" rel="noopener">Contact sales</a><a class="btn btn-ghost" href="#syllabus">See the syllabus</a></div>
         <p class="fine">Enrol by message. We confirm what is ready today, send every module as it is released, and you keep every update to this edition.</p>`}
       </div>
     </section>

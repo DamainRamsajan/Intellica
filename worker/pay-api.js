@@ -4,7 +4,17 @@
 // Also honest: an access code is the course key, so it cannot be taken back once given.
 
 export const BANK = { name: 'Royal Bank (Trinidad and Tobago) Limited', branch: 'St Augustine Shopping Centre, St Augustine', account: '110000005001825' };
-export const OFFERS = { arc42: { ttd: 899, usd: 129, title: 'arc42 in a Day, online course', welcome: '/training/arc42/course/welcome/', learn: '/training/arc42/course/learn/' } };
+export const OFFERS = { arc42: { ttd: 899, usd: 129, title: 'arc42 in a Day, online course', welcome: '/training/arc42/course/welcome/', learn: '/training/arc42/course/learn/' },
+  cybersecurity: { ttd: 2799, usd: 399, title: 'Cybersecurity for the Agentic Era, online course', welcome: '/training/cybersecurity/course/welcome/', learn: '/training/cybersecurity/course/learn/' } };
+
+// arc42 uses the master key itself; every other course has its own key derived from it, so one course's codes never open another.
+export async function courseKeyFor(masterB64u, course) {
+  if (course === 'arc42') return masterB64u;
+  const raw = Uint8Array.from(atob(masterB64u.replace(/-/g, '+').replace(/_/g, '/')), (c) => c.charCodeAt(0));
+  const k = await crypto.subtle.importKey('raw', raw, { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']);
+  const sig = new Uint8Array(await crypto.subtle.sign('HMAC', k, new TextEncoder().encode('course:' + course)));
+  return btoa(String.fromCharCode(...sig)).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+}
 const MAX_IMAGE = 1_200_000, MAX_TRIES = 5, MAX_AGE_DAYS = 7;
 const SCHEMA = [
   `CREATE TABLE IF NOT EXISTS orders (id TEXT PRIMARY KEY, ref TEXT NOT NULL, course TEXT NOT NULL, name TEXT NOT NULL, email TEXT NOT NULL,
@@ -105,7 +115,7 @@ async function claim(db, S, id) {
   if (!o) return bad('We could not find that order.', 404);
   if (o.status === 'rejected') return bad('We could not confirm this payment. Please message us on WhatsApp.', 403);
   if (o.status !== 'paid') return json({ status: o.status, ref: o.ref }, 202);
-  return json({ status: 'paid', code: utf8b64u(JSON.stringify({ v: 1, b: o.name, k: S.courseKey })), name: o.name, course: o.course, learn: OFFERS[o.course].learn });
+  return json({ status: 'paid', code: utf8b64u(JSON.stringify({ v: 1, b: o.name, k: await courseKeyFor(S.courseKey, o.course) })), name: o.name, course: o.course, learn: OFFERS[o.course].learn });
 }
 
 const same = (a, b) => a.length === b.length && [...a].reduce((x, c, i) => x | (c.charCodeAt(0) ^ b.charCodeAt(i)), 0) === 0;

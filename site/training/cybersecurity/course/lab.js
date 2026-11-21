@@ -157,7 +157,7 @@ export async function labPage() {
     if (title) { doc.system = title.replace(/^#\s+/, '').replace(/:?\s*agent security assurance pack.*$/i, '').replace(/\s*[(—-].*assurance pack.*$/i, '').trim(); sys.value = doc.system; }
     const head = first.filter((l) => !/^# /.test(l)).join('\n').trim();
     if (head) doc.sections.head = head;
-    for (const p of found) { const n = Number(p.match(/^## (\d+)\./)[1]); if (n >= 1 && n <= 20) doc.sections['s' + n] = p.trim(); }
+    for (const p of found) { const n = Number(p.match(/^## (\d+)\./)[1]); if (n >= 1 && n <= 25) doc.sections['s' + n] = p.trim(); }
     save(); drawAll();
   });
 

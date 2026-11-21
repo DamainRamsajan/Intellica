@@ -521,7 +521,7 @@ function learnPage(w, c, lessons) {
             <div class="cbar" aria-hidden="true"><i data-lab-fill></i></div>
             <a class="btn btn-primary" data-lab-link href="${w.path}course/lab/">Open your lab</a>
           </section>` : ''}
-          ${c.noBoard ? '' : `<section class="l-card l-cert" data-cert-card data-course="${w.id}" data-title="${esc(w.title)}" aria-label="Your certificate"></section>`}
+          ${`<section class="l-card l-cert" data-cert-card data-course="${w.id}" data-title="${esc(w.title)}" aria-label="Your certificate"></section>`}
           <section class="l-card" data-due hidden>
             <h2>Review today</h2>
             <p class="muted small">Questions you missed or are due again. A few minutes now saves hours later.</p>

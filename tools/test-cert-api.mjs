@@ -21,7 +21,7 @@ const good = { course: 'arc42', name: 'Ada Lovelace', proof: 'p1', record: { les
 assert.equal((await call('POST', '/api/cert/issue', good, {})).status, 503, 'no database: says so');
 assert.equal((await call('POST', '/api/cert/issue', { ...good, proof: 'no' })).status, 403, 'wrong proof');
 assert.equal((await call('POST', '/api/cert/issue', good, { DB })).status, 403, 'no proof configured: nobody can claim');
-assert.equal((await call('POST', '/api/cert/issue', { ...good, course: 'cybersecurity' })).status, 404, 'courses that are not open issue nothing');
+assert.equal((await call('POST', '/api/cert/issue', { ...good, course: 'data-analytics' })).status, 404, 'courses that are not open issue nothing');
 assert.equal((await call('POST', '/api/cert/issue', { ...good, name: '<script>' })).status, 400, 'markup in a name is refused');
 assert.equal((await call('POST', '/api/cert/issue', { ...good, name: 'A' })).status, 400);
 for (const bad of [{ lessons: 18 }, { sections: 11 }, { checks: 5 }, { mastered: 23 }]) {
@@ -37,3 +37,21 @@ assert.equal((await call('GET', '/api/cert/not-an-id')).status, 404);
 const two = await call('POST', '/api/cert/issue', good);
 assert.notEqual(two.body.id, r.body.id, 'every certificate has its own ID');
 console.log('certificate api: all checks passed');
+
+// cybersecurity: its proof comes from its own derived key, and the arc42 proof does not open it
+{
+  const crypto = await import('node:crypto');
+  const master = crypto.randomBytes(32);
+  const derived = crypto.createHmac('sha256', master).update('course:cybersecurity').digest('base64url');
+  const proof = (k) => crypto.createHash('sha256').update('board-v1:' + k).digest('base64url');
+  const e2 = { DB, BOARD_PROOF: proof(master.toString('base64url')), SECRETS: { courseKey: master.toString('base64url') } };
+  const cy = { course: 'cybersecurity', name: 'Cy Buyer', proof: proof(derived), record: { lessons: 25, sections: 25, checks: 5, mastered: 53 } };
+  const ok = await call('POST', '/api/cert/issue', cy, e2);
+  assert.equal(ok.status, 200, JSON.stringify(ok.body));
+  assert.equal((await call('POST', '/api/cert/issue', { ...cy, proof: proof(master.toString('base64url')) }, e2)).status, 403, 'the arc42 key does not claim a cybersecurity certificate');
+  assert.equal((await call('POST', '/api/cert/issue', { ...cy, record: { ...cy.record, lessons: 24 } }, e2)).status, 422);
+  assert.equal((await call('POST', '/api/cert/issue', { ...good, proof: e2.BOARD_PROOF }, e2)).status, 200, 'arc42 still works with secrets present');
+  const total = JSON.parse((await import('node:fs')).readFileSync('site/training/cybersecurity/course/data/board-index.json', 'utf8')).total;
+  assert.equal(total, 75, 'quiz total in the course matches the certificate rule');
+}
+console.log('certificate api (cybersecurity): ok');

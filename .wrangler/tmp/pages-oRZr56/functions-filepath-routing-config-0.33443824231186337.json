@@ -1,0 +1,29 @@
+{
+  "routes": [
+    {
+      "routePath": "/api/board/:route*",
+      "mountPath": "/api/board",
+      "method": "",
+      "module": [
+        "api/board/[[route]].js:onRequest"
+      ]
+    },
+    {
+      "routePath": "/api/cert/:route*",
+      "mountPath": "/api/cert",
+      "method": "",
+      "module": [
+        "api/cert/[[route]].js:onRequest"
+      ]
+    },
+    {
+      "routePath": "/api/pay/:route*",
+      "mountPath": "/api/pay",
+      "method": "",
+      "module": [
+        "api/pay/[[route]].js:onRequest"
+      ]
+    }
+  ],
+  "baseURL": "/"
+}
