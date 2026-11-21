@@ -70,3 +70,5 @@ if (form) {
     });
   }
 }
+
+if (document.querySelector('[data-mycourses]')) import('/training/my-courses.js');

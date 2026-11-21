@@ -13,7 +13,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { researchHtml, boardHtml } from './lab-html.mjs';
 import { page, esc, kicker, cols, base } from './training-shell.mjs';
-import { featuredBlock, catalogSections, certificateBlock, allLevels, levelPath } from './catalog-html.mjs';
+import { courseTiles, featuredBlock, catalogSections, certificateBlock, allLevels, levelPath } from './catalog-html.mjs';
 
 const SITE = path.resolve('site');
 const catalog = JSON.parse(fs.readFileSync(path.join(SITE, 'training', 'catalog.json'), 'utf8'));
@@ -48,9 +48,10 @@ function subnav(w, active) {
   const items = [['', 'Workshop'], ...(w.course && w.course.enabled ? [['course/', 'Online course']] : []), ['example/', 'Worked example'], ['guide/', 'Student guide'], ['register/', 'Register']];
   return `    <nav class="subnav" aria-label="${esc(w.title)}">
       <p class="crumb"><a href="/training/">Training</a><span aria-hidden="true"> / </span>${esc(w.title)}</p>
-      <ul>${items.map(([p, l]) => `<li><a href="${w.path}${p}"${p === active ? ' aria-current="page"' : ''}>${l}</a></li>`).join('')}</ul>
+      <ul>${items.map(([p, l]) => `<li><a href="${w.path}${p}"${p === active ? ' aria-current="page"' : ''}>${l}</a></li>`).join('')}<li><a class="sn-code" href="/training/my-courses/">Enter access code</a></li></ul>
     </nav>`;
 }
+
 
 function heroTitle(w) {
   const h = w.hero;
@@ -467,15 +468,15 @@ function indexPage() {
           <div class="actions"><a class="btn btn-primary" href="${w.path}">See the day</a><a class="btn btn-ghost" href="${w.path}register/">Reserve a seat</a></div>
         </article>`).join('');
   const body = `
-    <section class="t-hero t-hero-single" aria-labelledby="ti-t">
+    <section class="t-hero t-hero-index" aria-labelledby="ti-t">
       <div class="t-hero-copy">
         <p class="eyebrow">Intellica Training</p>
         <h1 id="ti-t">${esc(ix.headline)}</h1>
         <p class="lead">${esc(ix.lead)}</p>
+        <div class="actions"><a class="btn btn-primary" href="#courses">Browse the courses</a><a class="btn btn-ghost" href="#live">Next live workshop</a><a class="btn btn-link" href="/training/my-courses/">I have an access code</a></div>
       </div>
+      ${courseTiles(catalog, data.workshops[0])}
     </section>
-
-    <section class="t-hero-actions" aria-label="Where to start"><div class="actions"><a class="btn btn-primary" href="#courses">Browse the courses</a><a class="btn btn-ghost" href="#live">Next live workshop</a></div></section>
 
     <section class="t-strip" aria-label="What every course includes"><dl>
       <div><dt>Hands-on lab</dt><dd>in every course</dd></div>

@@ -209,10 +209,11 @@ ${body}
 }
 
 function subnav(w, active) {
+  const codeLink = '<li><a class="sn-code" href="/training/my-courses/">Enter access code</a></li>';
   const items = w.facilitator === null ? [['', 'Course overview'], ['course/', 'Online course']] : [['', 'Workshop'], ['course/', 'Online course'], ['guide/', 'Student guide'], ['register/', 'Register']];
   return `    <nav class="subnav" aria-label="${esc(w.title)}">
       <p class="crumb"><a href="/training/">Training</a><span aria-hidden="true"> / </span>${esc(w.title)}</p>
-      <ul>${items.map(([p, l]) => `<li><a href="${w.path}${p}"${p === active ? ' aria-current="page"' : ''}>${l}</a></li>`).join('')}</ul>
+      <ul>${items.map(([p, l]) => `<li><a href="${w.path}${p}"${p === active ? ' aria-current="page"' : ''}>${l}</a></li>`).join('')}${codeLink}</ul>
     </nav>`;
 }
 
@@ -349,6 +350,7 @@ ${subnav(w, 'course/')}
         <div class="actions">
           <a class="btn btn-primary" href="${w.path}course/${firstFree.id}/">Start the free lessons</a>
           <a class="btn btn-ghost" href="#get-t">Get the full course</a>
+          <a class="btn btn-link" href="/training/my-courses/">I already have a code</a>
         </div>
         <p class="fine">${esc(c.honesty)}</p>
       </div>
@@ -370,11 +372,11 @@ ${subnav(w, 'course/')}
 
     <div class="strip c-strip">
       <div><b>${lessons.length}</b><span>lessons</span></div>
-      <div><b>${hours} hours</b><span>of study</span></div>
+      ${w.facilitator === null ? '' : `<div><b>${hours} hours</b><span>of study</span></div>`}
       <div><b>${slideCount}</b><span>slides with transcripts</span></div>
-      <div><b>${exercises}</b><span>timed exercises</span></div>
+      ${w.facilitator === null ? `<div><b>${Object.values(QUIZ).reduce((n, q) => n + q.length, 0)}</b><span>recall questions with reasons</span></div>` : `<div><b>${exercises}</b><span>timed exercises</span></div>`}
       ${LAB ? `<div><b>${LAB.steps.length}</b><span>lab steps on ${COPY.own}</span></div>` : ''}
-      <div><b>1</b><span>worked example you can run</span></div>
+      ${w.facilitator === null ? '<div><b>1</b><span>verifiable certificate</span></div>' : '<div><b>1</b><span>worked example you can run</span></div>'}
     </div>
 
     ${LAB && c.lab ? `<section class="t-block c-lab" id="lab" aria-labelledby="lab-t">
@@ -796,11 +798,13 @@ function buildOne({ w, c, deck, quiz, lab, key, engine = null, reading = null })
     fs.writeFileSync(path.join(out, l.id, 'index.html'), lessonPage(w, c, l, lessons, key));
     fs.writeFileSync(path.join(out, 'data', `${l.id}.json`), JSON.stringify(l.free ? l.payload : encrypt(key, l.id, l.payload)));
   }
+  { const paid = lessons.find((l) => !l.free); BUILT.push({ id: w.id, title: w.title, store: engine ? 'iwc-course-code' : 'iw-course-code', probe: `${w.path}course/data/${paid.id}.json`, probeId: paid.id, learn: `${w.path}course/learn/` }); }
   console.log(`built course ${w.id}: ${lessons.length} lessons (${lessons.filter((l) => l.free).length} free, ${lessons.filter((l) => !l.free).length} encrypted)`);
   return lessons.length;
 }
 
 let EXAMPLES = {};
+const BUILT = [];
 
 if (import.meta.url === `file://${process.argv[1]}`) {
   const data = JSON.parse(fs.readFileSync(path.join(SITE, 'training', 'training.json'), 'utf8'));
@@ -825,6 +829,12 @@ if (import.meta.url === `file://${process.argv[1]}`) {
     COPY = cy.COPY;
     buildOne({ w: built.w, c: built.c, deck: built.deck, quiz: built.quiz, lab: built.lab, key: deriveKey(master, 'cybersecurity'), engine: (out) => cy.writeEngine(out, built.w, SITE), reading: built.reading });
   }
+}
+
+if (import.meta.url === `file://${process.argv[1]}` && BUILT.length) {
+  const { myCoursesPage } = await import('./my-courses-html.mjs');
+  fs.mkdirSync(path.join(SITE, 'training', 'my-courses'), { recursive: true });
+  fs.writeFileSync(path.join(SITE, 'training', 'my-courses', 'index.html'), myCoursesPage(BUILT));
 }
 
 export { loadDeck, buildLessons, scopedCss, plain, encrypt, slug };

@@ -7,7 +7,7 @@ export const lessonCount = (c) => c.modules.reduce((n, m) => n + m.lessons.lengt
 
 /* Level 1 is the arc42 workshop from training.json; levels 2 to 5 come from catalog.json. */
 export function allLevels(catalog, arc) {
-  const l1 = { n: 1, id: 'arc42', path: arc.path, title: arc.title, short: 'arc42 in a Day', lead: arc.lead, live: true };
+  const l1 = { n: 1, id: 'arc42', path: arc.path, title: arc.title, short: 'arc42 in a Day', lead: arc.lead, live: true, price: arc.course && arc.course.price ? arc.course.price.label : '' };
   return [l1, ...catalog.ladder.levels];
 }
 
@@ -17,7 +17,7 @@ export function levelPath(levels, current) {
 
 const card = (c, tag) => `
         <article class="cat-card">
-          <p class="cat-tag">${esc(tag)}${c.live ? '<span class="cat-status is-live">Live workshop too</span>' : ''}</p>
+          <p class="cat-tag">${esc(tag)}${(c.price || (c.course && c.course.enabled && c.course.price && c.course.price.label)) ? `<span class="cat-price">${esc(c.price || c.course.price.label)}</span>` : ''}${c.live ? '<span class="cat-status is-live">Live workshop too</span>' : ''}</p>
           <h3><a href="${c.path}">${esc(c.title)}</a></h3>
           <p>${esc(c.lead)}</p>
           <a class="cat-go" href="${c.path}">See the course <span aria-hidden="true">\u2192</span></a>${c.live ? `
@@ -80,6 +80,7 @@ export function coursePage(c, { catalog, levels, kindLabel, series }) {
   return `
     <nav class="subnav" aria-label="${esc(c.title)}">
       ${nav}
+      <a class="sn-code" href="/training/my-courses/">Enter access code</a>
     </nav>
 
     <section class="t-hero t-hero-single" aria-labelledby="c-title">
@@ -150,4 +151,15 @@ ${levels ? `
       <p class="sub">${esc(c.needs)}</p>
       <div class="actions"><a class="btn btn-primary" href="${esc(interest)}" rel="noopener">Contact sales</a><a class="btn btn-ghost" href="/training/">All training</a></div>
     </section>`;
+}
+
+/* Small boxes for the training header: every course one click away. */
+export function courseTiles(catalog, arc) {
+  const levels = allLevels(catalog, arc);
+  const tile = (href, top, name, open) => `<a class="tile${open ? ' is-open' : ''}" href="${href}"><span class="tile-top">${esc(top)}</span><span class="tile-name">${esc(name)}</span></a>`;
+  const group = (label, tiles) => `<div class="tile-group"><p class="tile-label">${esc(label)}</p><div class="tiles">${tiles.join('')}</div></div>`;
+  return `<nav class="hero-tiles" aria-label="Jump to a course">
+        ${group(catalog.ladder.title, levels.map((l) => tile(l.path, `Level ${l.n}`, l.short, false)))}
+        ${catalog.tracks.map((t) => group(t.title, catalog.series.courses.filter((c) => c.track === t.id).map((c) => tile(c.path, 'Course', c.short, false)))).join('')}
+      </nav>`;
 }

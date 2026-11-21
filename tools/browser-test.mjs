@@ -1029,6 +1029,40 @@ await step('cybersecurity: the lab is one assurance pack with 25 sections, a mod
   await ctx.close();
 });
 
+/* ---------- one place to enter a code ---------- */
+await step('training: header tiles link to every course, and "I have an access code" is one click from the first screen', async () => {
+  const p = await open(`${HOME}/training/`);
+  assert.equal(await p.locator('.hero-tiles .tile').count(), 12, 'five levels and seven courses');
+  assert.equal(await p.locator('.hero-tiles a[href="/training/cybersecurity/"]').count(), 1);
+  await p.click('a:has-text("I have an access code")');
+  await p.waitForURL('**/training/my-courses/');
+  await p.context().close();
+  for (const path of ['/training/cybersecurity/', '/training/cybersecurity/course/', '/training/arc42/course/']) {
+    const q = await open(HOME + path);
+    assert.equal(await q.locator('a.sn-code[href="/training/my-courses/"]').count(), 1, path + ' links to the code page');
+    await q.context().close();
+  }
+});
+await step('my-courses: a cybersecurity code opens the cybersecurity course, an arc42 code opens arc42, a bad code says so', async () => {
+  for (const [code, want] of [[cyCode('Cy Buyer'), '/training/cybersecurity/course/learn/'], [mkCode('Arc Buyer', courseKey), '/training/arc42/course/learn/']]) {
+    const p = await open(`${HOME}/training/my-courses/`);
+    await p.fill('#mc-code', code); await p.click('button[type=submit]');
+    await p.waitForURL('**' + want, { timeout: 8000 });
+    await p.context().close();
+  }
+  const b = await open(`${HOME}/training/my-courses/`);
+  await b.fill('#mc-code', mkCode('Nobody', deriveKey(courseKey, 'other')));
+  await b.click('button[type=submit]');
+  await b.waitForFunction(() => /does not open any course/.test(document.querySelector('[data-msg]').textContent));
+  await b.context().close();
+  // a returning visitor sees a Continue button
+  const ctx = await browser.newContext(); await ctx.addInitScript((c) => localStorage.setItem('iwc-course-code', c), cyCode('Cy Buyer'));
+  const r = await ctx.newPage(); await r.goto(`${HOME}/training/my-courses/`);
+  await r.waitForSelector('[data-mine]:not([hidden]) a.btn');
+  assert.match(await r.locator('[data-mine]').innerText(), /Cybersecurity/);
+  await ctx.close();
+});
+
 await browser.close();
 stop();
 console.log(failed ? `\n${failed} failed` : '\nall browser checks passed');
