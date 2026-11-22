@@ -210,7 +210,7 @@ ${body}
 
 function subnav(w, active) {
   const codeLink = '<li><a class="sn-code" href="/training/my-courses/">Enter access code</a></li>';
-  const items = w.facilitator === null ? [['', 'Course overview'], ['course/', 'Online course'], ['course/lab/policy/', 'Policy tester'], ['course/lab/trace/', 'Trace spotter']] : [['', 'Workshop'], ['course/', 'Online course'], ['guide/', 'Student guide'], ['register/', 'Register']];
+  const items = w.facilitator === null ? [['', 'Course overview'], ['course/', 'Online course'], ...(COPY.tools || [['course/lab/policy/', 'Policy tester'], ['course/lab/trace/', 'Trace spotter']])] : [['', 'Workshop'], ['course/', 'Online course'], ['guide/', 'Student guide'], ['register/', 'Register']];
   return `    <nav class="subnav" aria-label="${esc(w.title)}">
       <p class="crumb"><a href="/training/">Training</a><span aria-hidden="true"> / </span>${esc(w.title)}</p>
       <ul>${items.map(([p, l]) => `<li><a href="${w.path}${p}"${p === active ? ' aria-current="page"' : ''}>${l}</a></li>`).join('')}${codeLink}</ul>
@@ -532,7 +532,7 @@ function learnPage(w, c, lessons) {
           <section class="l-card">
             <h2>Resources</h2>
             <ul class="l-links">
-              ${w.facilitator === null ? `<li><a href="${w.path}">Course overview</a></li><li><a href="${w.path}course/lab/">Your assurance pack</a></li>` : `<li><a href="${w.path}example/">Worked example: Doubles-to-Go</a></li>
+              ${w.facilitator === null ? `<li><a href="${w.path}">Course overview</a></li><li><a href="${w.path}course/lab/">${COPY.doc}</a></li>` : `<li><a href="${w.path}example/">Worked example: Doubles-to-Go</a></li>
               <li><a href="${w.path}guide/">Student guide</a></li>
               <li><a href="${w.path}example/doubles-to-go.zip" download>Download the example (zip)</a></li>`}
             </ul>
@@ -681,7 +681,7 @@ ${subnav(w, 'course/')}
           <p class="eyebrow">Hands-on lab</p>
           <h1>${COPY.doc}</h1>
         </div>
-        <label class="lab-sys">System name<input data-sys type="text" autocomplete="off" spellcheck="false" maxlength="80" placeholder="${w.facilitator === null ? 'e.g. Claims-Assistant agent' : 'e.g. Doubles-to-Go'}"></label>
+        <label class="lab-sys">System name<input data-sys type="text" autocomplete="off" spellcheck="false" maxlength="80" placeholder="${w.facilitator === null ? (COPY.sysEx || 'e.g. Claims-Assistant agent') : 'e.g. Doubles-to-Go'}"></label>
         <div class="lab-tools" role="group" aria-label="Document actions">
           <span class="lab-status muted small" role="status" data-status>Saved on this device</span>
           <button class="btn btn-ghost" type="button" data-download>Download ${COPY.file}</button>
@@ -799,7 +799,7 @@ function buildOne({ w, c, deck, quiz, lab, key, engine = null, reading = null })
     fs.writeFileSync(path.join(out, l.id, 'index.html'), lessonPage(w, c, l, lessons, key));
     fs.writeFileSync(path.join(out, 'data', `${l.id}.json`), JSON.stringify(l.free ? l.payload : encrypt(key, l.id, l.payload)));
   }
-  { const paid = lessons.find((l) => !l.free); BUILT.push({ id: w.id, title: w.title, store: engine ? 'iwc-course-code' : 'iw-course-code', probe: `${w.path}course/data/${paid.id}.json`, probeId: paid.id, learn: `${w.path}course/learn/` }); }
+  { const paid = lessons.find((l) => !l.free); BUILT.push({ id: w.id, title: w.title, store: COPY.store || (engine ? 'iwc-course-code' : 'iw-course-code'), probe: `${w.path}course/data/${paid.id}.json`, probeId: paid.id, learn: `${w.path}course/learn/` }); }
   console.log(`built course ${w.id}: ${lessons.length} lessons (${lessons.filter((l) => l.free).length} free, ${lessons.filter((l) => !l.free).length} encrypted)`);
   return lessons.length;
 }
@@ -829,6 +829,14 @@ if (import.meta.url === `file://${process.argv[1]}`) {
     EXAMPLES = {};
     COPY = cy.COPY;
     buildOne({ w: built.w, c: built.c, deck: built.deck, quiz: built.quiz, lab: built.lab, key: deriveKey(master, 'cybersecurity'), engine: (out) => cy.writeEngine(out, built.w, SITE), reading: built.reading });
+  }
+  // Level 2, Architecture for Quality and Decisions: built from training-private/quality-decisions (see tools/level-course.mjs)
+  const q2 = await import('./level-course.mjs');
+  const lv = q2.load(SITE);
+  if (lv) {
+    EXAMPLES = {};
+    COPY = q2.COPY;
+    buildOne({ w: lv.w, c: lv.c, deck: lv.deck, quiz: lv.quiz, lab: lv.lab, key: deriveKey(master, q2.ID), engine: (out) => q2.writeEngine(out, lv.w, SITE), reading: lv.reading });
   }
 }
 

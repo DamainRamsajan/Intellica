@@ -38,7 +38,7 @@
         "id": "quality-decisions",
         "title": "Architecture for Quality and Decisions",
         "short": "Quality and Decisions",
-        "lead": "Turn vague goals into numbers, weigh options honestly, and record the decisions your team will have to live with.",
+        "lead": "Turn vague goals into numbers, weigh options honestly, and record the decisions your team will have to live with. Twenty lessons and a lab for each, building one record on top of your arc42.",
         "why": "Most architecture problems are decisions nobody wrote down, made against goals nobody measured. At this level you learn to state quality in numbers, compare options against them, and leave a record that people and AI coding tools can both follow.",
         "needs": "Level 1, arc42 in a Day, or equivalent experience writing architecture documentation.",
         "outcomes": [
@@ -62,54 +62,168 @@
         "modules": [
           {
             "title": "Quality in numbers",
-            "note": "Turn adjectives into scenarios you can test.",
+            "note": "Turn adjectives into scenarios, budgets and conflicts you can test.",
             "lessons": [
-              "Quality models and the quality tree",
-              "Writing quality scenarios",
-              "Budgets for latency, availability and cost",
-              "When qualities conflict"
+              "Quality Models and the Quality Tree",
+              "Writing Quality Scenarios",
+              "Latency and Capacity Budgets",
+              "Availability and Error Budgets",
+              "Cost and Security as Measurable Qualities",
+              "When Qualities Conflict"
             ]
           },
           {
             "title": "Deciding well",
-            "note": "Options, evidence and a record that lasts.",
+            "note": "Drivers, options, evidence and a record that lasts.",
             "lessons": [
-              "Decision drivers and options",
-              "Architecture decision records in practice",
-              "Trade-off analysis",
-              "Spikes: getting evidence cheaply"
+              "Decision Drivers and Constraints",
+              "Options, Criteria and Trade-off Analysis",
+              "Architecture Decision Records in Practice",
+              "Spikes and Cheap Evidence",
+              "Reversible and Irreversible Decisions"
             ]
           },
           {
             "title": "Structure for change",
-            "note": "Boundaries that let the system change safely.",
+            "note": "Boundaries, contracts and data that let the system change safely.",
             "lessons": [
-              "Modularity and boundaries",
-              "Interfaces and contracts",
-              "Data ownership and consistency",
-              "Reviewing a design against its scenarios"
+              "Modularity and Boundaries",
+              "Interfaces and Contracts",
+              "Data Ownership and Consistency",
+              "Fitness Functions and Architecture Drift"
+            ]
+          },
+          {
+            "title": "Review and risk",
+            "note": "Find the weak spots before they ship.",
+            "lessons": [
+              "Risk Storming",
+              "Scenario-Based Design Review",
+              "Risks and Technical Debt"
+            ]
+          },
+          {
+            "title": "Decisions in the AI era",
+            "note": "Use AI to draft, and make decisions agents can follow.",
+            "lessons": [
+              "Using LLMs to Draft Options and Records",
+              "Decisions Your Coding Agents Can Follow"
             ]
           }
         ],
         "lab": {
           "title": "Your quality and decisions record",
-          "text": "Take the system you documented at Level 1 and add what it was missing: measured quality goals and the decisions behind it.",
+          "text": "Take the system you documented at Level 1 and add what it was missing: measured quality goals, the decisions behind the design, and a review of the risks.",
           "steps": [
             "Build a quality tree with numbers",
             "Write six quality scenarios",
-            "Choose three decisions and list the options for each",
-            "Write the decision records",
-            "Run a trade-off review against your scenarios",
-            "Write the risks you found and what you will do"
+            "Write latency and capacity budgets",
+            "Set an availability target and an error budget",
+            "Add cost and security with numbers",
+            "Find and resolve quality conflicts",
+            "Write constraints and drivers",
+            "Compare options for a decision",
+            "Write three decision records",
+            "Plan and record a spike",
+            "Sort decisions by reversal cost",
+            "Test boundaries with change scenarios",
+            "Write interface contracts",
+            "Write the data ownership table",
+            "Write fitness functions",
+            "Run a risk storm",
+            "Run a scenario-based review",
+            "Write risks and debt for section 11",
+            "Draft and review a record with an assistant",
+            "Write agent rules and run the final review"
           ],
           "checks": [
             "Every quality goal has a number",
             "Every decision lists at least two options and why one lost",
-            "Every scenario can be tested"
+            "Every scenario can be tested",
+            "Every risk has an owner and a response"
           ],
           "intro": "One project, built in steps after each lesson. Each step has instructions, a finished example, a health check, and saves on your device."
         },
-        "path": "/training/quality-decisions/"
+        "path": "/training/quality-decisions/",
+        "course": {
+          "enabled": true,
+          "headline": "Decide well, and leave a record your team and its AI tools can follow.",
+          "lead": "Twenty lessons on stating quality in numbers, comparing options honestly, recording decisions and reviewing a design before it ships. Each lesson has four slides you control, a field guide, a worked case, three recall questions and a lab. Across the twenty labs you build one quality and decisions record for the system you documented at Level 1.",
+          "honesty": "This is self-study: slides, a field guide, a worked case and a lab for every lesson, marked against a rubric you apply yourself. It follows the topics of arc42 (goals, constraints, strategy, decisions, quality and risks) but it is not arc42 training, and it is not an accredited qualification.",
+          "free": [
+            1,
+            9
+          ],
+          "method": [
+            {
+              "title": "Short lessons you control",
+              "text": "Four focused slides a lesson, each with a transcript. Move at your own pace and go back whenever you like."
+            },
+            {
+              "title": "One growing record",
+              "text": "After every lesson a lab asks you to produce real work for your own system: quality tree, scenarios, budgets, decision records, contracts, a risk review. The twenty answers join into one record you download at the end."
+            },
+            {
+              "title": "Built on arc42 and its sources",
+              "text": "The lessons follow arc42 sections 1, 2, 4, 9, 10 and 11 and the Q42 quality model, with ADRs, ATAM-style review and fitness functions. Each lesson cites the page it draws on."
+            },
+            {
+              "title": "Decisions in the AI era",
+              "text": "Two lessons use 2026 research on LLM-drafted decision records and show how to write decisions that coding agents can read and checks that stop them breaking the rules."
+            },
+            {
+              "title": "Practice tools you can run",
+              "text": "A scenario checker tells you if a quality scenario is testable, and a budget calculator handles downtime, error budgets, dependencies, latency, capacity and debt payback, in your browser."
+            },
+            {
+              "title": "Mark your own work",
+              "text": "Each lab has a model solution and a four-criterion rubric. Score yourself 0, 1 or 2 on each, then close the gaps."
+            },
+            {
+              "title": "Pause and recall",
+              "text": "Three questions at the end of each lesson, with the reason for each answer. Your progress is stored in this browser only."
+            }
+          ],
+          "evidence": [
+            "Retrieval practice and spacing are among the best-studied learning techniques, so each lesson ends by asking what you remember before it shows you."
+          ],
+          "faq": [
+            {
+              "q": "Who is this for?",
+              "a": "Developers and architects who have written or read an arc42 or similar documentation and now need to set quality goals, decide between options and defend the result."
+            },
+            {
+              "q": "Do I need Level 1?",
+              "a": "No, but you should be comfortable reading architecture documentation. The lab builds on a system you have already described."
+            },
+            {
+              "q": "How do I get access?",
+              "a": "Message sales on WhatsApp. We reply with how to pay and send your access code when payment is confirmed."
+            },
+            {
+              "q": "Can I share my code?",
+              "a": "Please do not. The code is personal and your name appears on every lesson."
+            },
+            {
+              "q": "Is this arc42 certification?",
+              "a": "No. It is Intellica self-study that follows the arc42 topics. It does not give iSAQB or arc42 credentials."
+            },
+            {
+              "q": "What about refunds?",
+              "a": "Refund terms are confirmed in writing when you enquire, before you pay."
+            }
+          ],
+          "preview": {
+            "lesson": 1,
+            "slide": 3
+          },
+          "price": {
+            "label": "US$199",
+            "ttd": 1399,
+            "note": "One payment. Visitors in Trinidad and Tobago pay TT$1,399 by bank deposit."
+          },
+          "priceNote": "Lifetime access to this edition and every update to it. Includes all lessons, all labs and the model solutions."
+        }
       },
       {
         "n": 3,

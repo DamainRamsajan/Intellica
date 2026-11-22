@@ -1049,6 +1049,92 @@ await step('cybersecurity practice tools: the policy tester scores eight predict
   assert.equal((await fetch(CY + 'lab/files/policy-cases.json')).status, 200);
 });
 
+/* ---------- Level 2: Architecture for Quality and Decisions ---------- */
+const Q2 = HOME + '/training/quality-decisions/course/';
+const q2Code = (name) => mkCode(name, deriveKey(courseKey, 'quality-decisions'));
+await step('level 2: course page lists 20 lessons in five modules with its own wording, and the level page offers the free lessons', async () => {
+  const p = await open(Q2);
+  assert.equal(await p.locator('a[href*="/training/quality-decisions/course/"][href$="/"]').count() > 19, true);
+  assert.deepEqual(p.problems, []);
+  const cat = await open(`${HOME}/training/quality-decisions/`);
+  assert.equal(await cat.locator('a', { hasText: 'Start the free lessons' }).count(), 1);
+  assert.match(await cat.locator('main').innerText(), /Lessons 1 and 9 are free/);
+  await p.context().close(); await cat.context().close();
+});
+await step('level 2: a free lesson plays four slides with field guide, worked case and rubric', async () => {
+  const p = await open(Q2 + 'quality-models-and-the-quality-tree/');
+  await p.waitForSelector('[data-stage] .s');
+  assert.match(await p.locator('[data-pos]').innerText(), /^1 \/ 4$/);
+  await p.click('[data-next]');
+  await p.waitForSelector('[data-reading]:not([hidden]) h2');
+  const t = await p.locator('[data-reading]').innerText();
+  assert.match(t, /Field guide/); assert.match(t, /Worked case/); assert.match(t, /Competent/); assert.match(t, /Sources/);
+  assert.deepEqual(p.problems, []);
+  await p.context().close();
+});
+await step('level 2: a paid lesson is locked; only its own code opens it, and no slide overflows', async () => {
+  const id = 'availability-and-error-budgets';
+  const p = await open(Q2 + id + '/');
+  await p.waitForSelector('[data-locked]:not([hidden])');
+  await p.context().close();
+  const ctx = await browser.newContext({ viewport: { width: 1280, height: 720 } });
+  await ctx.addInitScript((c) => localStorage.setItem('iwq-course-code', c), q2Code('Q Buyer'));
+  const q = await ctx.newPage(); const errs = []; q.on('pageerror', (e) => errs.push(e.message));
+  const ids = (await (await fetch(Q2 + 'data/lab-index.json')).json()).steps.map((x) => x.id);
+  assert.equal(ids.length, 20);
+  const bad = [];
+  for (const lid of ids) {
+    await q.goto(Q2 + lid + '/'); await q.waitForSelector('[data-stage] .s', { timeout: 8000 });
+    for (let k = 0; k < 4; k++) {
+      const over = await q.evaluate(() => { const st = document.querySelector('[data-stage]'); const r = st.getBoundingClientRect(); return [...st.querySelectorAll('.s *')].some((e) => { const b = e.getBoundingClientRect(); return b.height > 0 && (b.bottom > r.bottom + 2 || b.right > r.right + 2); }); });
+      if (over) bad.push(lid + ' slide ' + (k + 1));
+      if (k < 3) await q.click('[data-next]');
+    }
+  }
+  assert.deepEqual(bad, [], 'slides overflow their stage');
+  assert.deepEqual(errs, []);
+  const ctx2 = await browser.newContext(); await ctx2.addInitScript((c) => localStorage.setItem('iwq-course-code', c), cyCode('Wrong course'));
+  const w = await ctx2.newPage(); await w.goto(Q2 + id + '/'); await w.waitForSelector('[data-locked]:not([hidden])');
+  await ctx.close(); await ctx2.close();
+});
+await step('level 2: the lab is one record with 20 sections and a download', async () => {
+  const ctx = await browser.newContext({ viewport: { width: 1280, height: 900 } });
+  await ctx.addInitScript((c) => localStorage.setItem('iwq-course-code', c), q2Code('Q Buyer'));
+  const page = await ctx.newPage(); const errs = []; page.on('pageerror', (e) => errs.push(e.message));
+  await page.goto(Q2 + 'lab/');
+  await page.waitForSelector('[data-lab-page]:not([hidden]) [data-step-panel] h2');
+  await page.fill('[data-sys]', 'Vendor App');
+  await page.locator('[data-sec="s1"]').click();
+  assert.match(await page.inputValue('[data-text]'), /## 1\. Quality Models and the Quality Tree/);
+  const [dl] = await Promise.all([page.waitForEvent('download'), page.click('[data-download]')]);
+  assert.equal(dl.suggestedFilename(), 'vendor-app-decisions-record.md');
+  const md = (await import('node:fs')).readFileSync(await dl.path(), 'utf8');
+  for (let n = 1; n <= 20; n++) assert.ok(new RegExp(`^## ${n}\\. `, 'm').test(md), `section ${n} is in the export`);
+  assert.deepEqual(errs, []);
+  await ctx.close();
+});
+await step('level 2 practice tools: the scenario checker grades text and six cases, and the budget calculator computes', async () => {
+  const raw = async (u) => { const c = await browser.newContext({ viewport: { width: 1280, height: 900 } }); const g = await c.newPage(); g.problems = []; g.on('console', (m) => { if (m.type() === 'error') g.problems.push(m.text()); }); g.on('pageerror', (e) => g.problems.push(e.message)); await g.goto(u); return g; };
+  const p = await raw(Q2 + 'lab/scenario/');
+  await p.waitForSelector('[data-cases] li.case');
+  await p.fill('[data-text]', 'The system should be fast and scalable.');
+  assert.match(await p.locator('[data-out]').innerText(), /not yet testable/);
+  await p.fill('[data-text]', 'During lunchtime peak, 500 orders a minute are submitted; 95% are confirmed within 2 seconds.');
+  assert.match(await p.locator('[data-out]').innerText(), /: testable/);
+  for (const li of await p.locator('[data-cases] li.case').all()) await li.locator('button').first().click();
+  assert.match(await p.locator('[data-score]').innerText(), /^\d of 6 right/);
+  assert.deepEqual(p.problems, []);
+  await p.context().close();
+  const b = await raw(Q2 + 'lab/budget/');
+  await b.waitForSelector('[data-avail]');
+  await b.fill('[data-avail] [name=target]', '99.99');
+  assert.match(await b.locator('[data-avail] + [data-res]').innerText(), /52\.6 minutes|52\.56|0\.9 hours/);
+  assert.match(await b.locator('[data-serial] + [data-res]').innerText(), /3 dependencies/);
+  assert.match(await b.locator('[data-debt] + [data-res]').innerText(), /12 months/);
+  assert.deepEqual(b.problems, []);
+  await b.context().close();
+});
+
 /* ---------- one place to enter a code ---------- */
 await step('training: header tiles link to every course, and "I have an access code" is one click from the first screen', async () => {
   const p = await open(`${HOME}/training/`);
@@ -1064,7 +1150,7 @@ await step('training: header tiles link to every course, and "I have an access c
   }
 });
 await step('my-courses: a cybersecurity code opens the cybersecurity course, an arc42 code opens arc42, a bad code says so', async () => {
-  for (const [code, want] of [[cyCode('Cy Buyer'), '/training/cybersecurity/course/learn/'], [mkCode('Arc Buyer', courseKey), '/training/arc42/course/learn/']]) {
+  for (const [code, want] of [[cyCode('Cy Buyer'), '/training/cybersecurity/course/learn/'], [mkCode('Arc Buyer', courseKey), '/training/arc42/course/learn/'], [q2Code('Q Buyer'), '/training/quality-decisions/course/learn/']]) {
     const p = await open(`${HOME}/training/my-courses/`);
     await p.fill('#mc-code', code); await p.click('button[type=submit]');
     await p.waitForURL('**' + want, { timeout: 8000 });

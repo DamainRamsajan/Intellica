@@ -12,6 +12,7 @@ import { loadKey, deriveKey } from './build-course.mjs';
 export const COURSES = {
   arc42: { title: 'arc42 in a Day, online course', path: '/training/arc42/course/', master: true },
   cybersecurity: { title: 'Cybersecurity for the Agentic Era, online course', path: '/training/cybersecurity/course/' },
+  'quality-decisions': { title: 'Architecture for Quality and Decisions, online course', path: '/training/quality-decisions/course/' },
 };
 
 export function makeCode(course, name, master) {

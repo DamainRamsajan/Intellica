@@ -5,7 +5,8 @@
 
 export const BANK = { name: 'Royal Bank (Trinidad and Tobago) Limited', branch: 'St Augustine Shopping Centre, St Augustine', account: '110000005001825' };
 export const OFFERS = { arc42: { ttd: 899, usd: 129, title: 'arc42 in a Day, online course', welcome: '/training/arc42/course/welcome/', learn: '/training/arc42/course/learn/' },
-  cybersecurity: { ttd: 2799, usd: 399, title: 'Cybersecurity for the Agentic Era, online course', welcome: '/training/cybersecurity/course/welcome/', learn: '/training/cybersecurity/course/learn/' } };
+  cybersecurity: { ttd: 2799, usd: 399, title: 'Cybersecurity for the Agentic Era, online course', welcome: '/training/cybersecurity/course/welcome/', learn: '/training/cybersecurity/course/learn/' },
+  'quality-decisions': { ttd: 1399, usd: 199, title: 'Architecture for Quality and Decisions, online course', welcome: '/training/quality-decisions/course/welcome/', learn: '/training/quality-decisions/course/learn/' } };
 
 // arc42 uses the master key itself; every other course has its own key derived from it, so one course's codes never open another.
 export async function courseKeyFor(masterB64u, course) {

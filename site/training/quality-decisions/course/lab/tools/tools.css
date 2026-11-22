@@ -1,0 +1,28 @@
+.xt { max-width: 980px; }
+.xt h2 { margin-top: var(--s6); }
+.xt .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: var(--s3); }
+.xt label { display: grid; gap: var(--s1); font-size: var(--text-sm); color: var(--muted); }
+.xt select, .xt input[type=text] { min-height: 44px; background: transparent; color: var(--text-hi); border: 1px solid var(--line-hi); border-radius: 4px; padding: 0 var(--s2); font: inherit; }
+.xt select option { background: #0b1220; }
+.xt .chk { display: flex; align-items: center; gap: var(--s2); min-height: 44px; color: var(--text); }
+.verdict { font-family: var(--mono); font-size: 1.6rem; margin: var(--s3) 0 var(--s2); }
+.is-allow { color: #6ee7b7; } .is-deny { color: #f87171; }
+.rules { list-style: none; padding: 0; margin: 0; display: grid; gap: var(--s1); }
+.rules .ok { color: var(--muted); } .rules .bad { color: var(--text-hi); }
+.cases { list-style: none; padding: 0; margin: 0; display: grid; gap: var(--s3); }
+.case { border: 1px solid var(--line-hi); border-radius: 4px; padding: var(--s3) var(--s4); background: var(--card); }
+.case h3 { margin: 0 0 var(--s1); font-size: 1.05rem; }
+.fb { margin: var(--s2) 0 0; min-height: 1.4em; }
+.xt table { width: 100%; border-collapse: collapse; font-size: var(--text-sm); }
+.xt th, .xt td { border-bottom: 1px solid var(--line); padding: var(--s2); text-align: left; vertical-align: top; }
+.xt code { font-family: var(--mono); font-size: .8rem; word-break: break-word; }
+.xt tr.is-bad { background: rgba(248,113,113,.08); }
+.xt .mark { color: var(--text-hi); min-width: 9rem; }
+.xt pre { background: #070c16; border: 1px solid var(--line); border-radius: 4px; padding: var(--s3); overflow-x: auto; font-size: .8rem; }
+.dl { display: flex; flex-wrap: wrap; gap: var(--s2); margin: var(--s3) 0; }
+@media (max-width: 720px) { .xt thead { display: none; } .xt tr { display: grid; gap: var(--s1); padding: var(--s2) 0; border-bottom: 1px solid var(--line); } .xt td { border: 0; padding: 0; } }
+
+.xt textarea { min-height: 120px; background: transparent; color: var(--text-hi); border: 1px solid var(--line-hi); border-radius: 4px; padding: var(--s2); font: inherit; }
+.xt .res { margin: var(--s2) 0 var(--s4); color: var(--text-hi); min-height: 1.4em; }
+.xt input[type=number] { min-height: 44px; background: transparent; color: var(--text-hi); border: 1px solid var(--line-hi); border-radius: 4px; padding: 0 var(--s2); font: inherit; }
+.xt form.calc { border: 1px solid var(--line-hi); border-radius: 4px; padding: var(--s3) var(--s4); background: var(--card); margin-bottom: 0; }

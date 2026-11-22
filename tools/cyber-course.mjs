@@ -10,7 +10,7 @@ export const ID = 'cybersecurity';
 // Frontier lessons 21+ and "2026 update" notes live in training-private/frontier.mjs (compact format, see that file).
 const FRONTIER_FILE = path.resolve('training-private/frontier.mjs');
 const FRONTIER = fs.existsSync(FRONTIER_FILE) ? await import(FRONTIER_FILE) : null;
-function fromCompact(l) {
+export function fromCompact(l) {
   const e = (x) => esc(x);
   return { n: l.n, title: l.title, lead: l.lead,
     slides: l.slides.map(([t, obj, core, ev, resp, chk]) => ({ title: t, refs: [], html: `<h2>${e(t)}</h2>\n<p class="objective"><strong>Learning objective</strong> \u2014 ${e(obj)}</p>\n<div class="teaching-grid${ev.split(/\s+/).length > 60 ? ' ev2' : ev.split(/\s+/).length > 28 ? ' ev' : ''}">\n<section class="panel"><h3>Core principle</h3><p>${e(core)}</p></section>\n<section class="panel"><h3>Evidence from the field</h3><p>${e(ev)}</p></section>\n<section class="panel"><h3>Engineering response</h3><p>${e(resp)}</p></section>\n</div>\n<section class="challenge"><div class="challenge-label">RETRIEVAL &amp; DESIGN CHECK</div><p>${e(chk)}</p></section>` })),
@@ -19,8 +19,8 @@ function fromCompact(l) {
     quiz: l.quiz.map(([q, o, a, why]) => ({ q, o, a, why })), sources: l.sources || [] };
 }
 export const COPY = { noun: 'assurance pack', own: 'your own assurance pack', doc: 'Your assurance pack', file: 'assurance-pack.md', extra: 'A model solution for every lab, and a rubric to mark your own work', labFor: 'Build your own agent security assurance pack' };
-const slug = (s) => s.toLowerCase().replace(/[§·]/g, ' ').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
-const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+export const slug = (s) => s.toLowerCase().replace(/[§·]/g, ' ').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+export const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 
 export function load(SITE) {
   const srcFile = path.resolve('training-private/cybersecurity-source.json');
@@ -146,14 +146,28 @@ function writeTools(out, w) {
   put('trace/index.html', page({ title: 'Trace spotter | Cybersecurity for the Agentic Era', description: 'Find taint, approval drift, audience and passthrough violations in an agent execution trace.', canonicalPath: `${base}trace/`, body: trace, css }));
 }
 
-export function writeEngine(out, w, SITE) {
-  writeTools(out, w);
+export function engineFiles(out, w, SITE, cfg) {
   const from = path.join(SITE, 'training', 'arc42', 'course');
   const base = `${w.path}course/`;
   const sub = (src) => src
     .replaceAll('/training/arc42/course/', base)
     .replaceAll("'/training/access.js'", `'${base}access.js'`)
-    .replaceAll("'iw-", "'iwc-").replaceAll('"iw-', '"iwc-')
+    .replaceAll("'iw-", `'${cfg.prefix}`).replaceAll('"iw-', `"${cfg.prefix}`)
+    ;
+  const sub2 = (src) => cfg.text ? cfg.text(sub(src)) : sub(src);
+  for (const f of ['course.js', 'lab.js', 'board.js', 'board-core.js', 'cert.js', 'pay.js', 'board.css']) {
+    fs.writeFileSync(path.join(out, f), sub2(fs.readFileSync(path.join(from, f), 'utf8')));
+  }
+  fs.writeFileSync(path.join(out, 'access.js'), sub2(fs.readFileSync(path.join(SITE, 'training', 'access.js'), 'utf8')));
+  fs.writeFileSync(path.join(out, 'health.js'), fs.readFileSync(path.resolve(cfg.health), 'utf8'));
+}
+
+export function writeEngine(out, w, SITE) {
+  writeTools(out, w);
+  engineFiles(out, w, SITE, { prefix: 'iwc-', health: 'tools/cyber-health.js', text: cyberText });
+}
+
+const cyberText = (src) => src
     .replaceAll('Your arc42 so far: ${started} of 12 sections started.', 'Your assurance pack so far: ${started} of 28 sections started.')
     .replaceAll('Your arc42 is yours to keep', 'Your assurance pack is yours to keep').replaceAll("'Open your arc42'", "'Open your pack'")
     .replaceAll('architecture documentation (arc42)', 'agent security assurance pack').replaceAll('-arc42.md', '-assurance-pack.md').replaceAll("|| 'arc42'", "|| 'assurance-pack'")
@@ -162,9 +176,3 @@ export function writeEngine(out, w, SITE) {
     .replaceAll('sectionsTotal: 12', 'sectionsTotal: 28').replaceAll('checksTotal: 6', 'checksTotal: 5').replaceAll('rec.sections, 12, rec.sections >= 12', 'rec.sections, 28, rec.sections >= 28').replaceAll('rec.checks, 6, rec.checks >= 6', 'rec.checks, 5, rec.checks >= 5')
     .replaceAll('n <= 12', 'n <= 28').replaceAll('arc42.md', 'assurance-pack.md')
     .replaceAll("/:?\\s*architecture documentation.*$/i", "/:?\\s*agent security assurance pack.*$/i").replaceAll('.*arc42.*$', '.*assurance pack.*$');
-  for (const f of ['course.js', 'lab.js', 'board.js', 'board-core.js', 'cert.js', 'pay.js', 'board.css']) {
-    fs.writeFileSync(path.join(out, f), sub(fs.readFileSync(path.join(from, f), 'utf8')));
-  }
-  fs.writeFileSync(path.join(out, 'access.js'), sub(fs.readFileSync(path.join(SITE, 'training', 'access.js'), 'utf8')));
-  fs.writeFileSync(path.join(out, 'health.js'), fs.readFileSync(path.resolve('tools/cyber-health.js'), 'utf8'));
-}

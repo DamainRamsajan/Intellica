@@ -104,4 +104,18 @@ assert.equal((await call('GET', '/api/pay/region')).body.tt, false);
   const { OFFERS } = await import('../worker/pay-api.js');
   assert.equal(cat.ttd, OFFERS.cybersecurity.ttd, 'catalog TT$ price matches the payment API'); assert.equal(cat.label, 'US$' + OFFERS.cybersecurity.usd);
 }
+// Level 2, Quality and Decisions
+{
+  const q = (await call('POST', '/api/pay/order', { body: { course: 'quality-decisions', name: 'Q Buyer', email: 'q@example.com' } })).body;
+  assert.equal(q.amount, 1399);
+  reading = good({ amount: 1399, reference: q.ref });
+  assert.equal((await call('POST', '/api/pay/receipt?o=' + q.id, { raw: img(78) })).body.status, 'paid');
+  const cl = await call('GET', '/api/pay/claim?o=' + q.id);
+  const want = crypto.createHmac('sha256', Buffer.from(KEY, 'base64url')).update('course:quality-decisions').digest('base64url');
+  assert.equal(JSON.parse(Buffer.from(cl.body.code, 'base64url').toString()).k, want);
+  assert.match(cl.body.learn, /quality-decisions/);
+  const cat = JSON.parse((await import('node:fs')).readFileSync('site/training/catalog.json', 'utf8')).ladder.levels.find((x) => x.id === 'quality-decisions').course.price;
+  const { OFFERS } = await import('../worker/pay-api.js');
+  assert.equal(cat.ttd, OFFERS['quality-decisions'].ttd); assert.equal(cat.label, 'US$' + OFFERS['quality-decisions'].usd);
+}
 console.log('payment api: all checks passed');

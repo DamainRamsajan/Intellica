@@ -54,4 +54,17 @@ console.log('certificate api: all checks passed');
   const total = JSON.parse((await import('node:fs')).readFileSync('site/training/cybersecurity/course/data/board-index.json', 'utf8')).total;
   assert.equal(total, 84, 'quiz total in the course matches the certificate rule');
 }
-console.log('certificate api (cybersecurity): ok');
+{
+  const crypto = await import('node:crypto');
+  const master = crypto.randomBytes(32);
+  const derived = crypto.createHmac('sha256', master).update('course:quality-decisions').digest('base64url');
+  const proof = (k) => crypto.createHash('sha256').update('board-v1:' + k).digest('base64url');
+  const e2 = { DB, BOARD_PROOF: proof(master.toString('base64url')), SECRETS: { courseKey: master.toString('base64url') } };
+  const q = { course: 'quality-decisions', name: 'Q Buyer', proof: proof(derived), record: { lessons: 20, sections: 20, checks: 6, mastered: 42 } };
+  assert.equal((await call('POST', '/api/cert/issue', q, e2)).status, 200);
+  assert.equal((await call('POST', '/api/cert/issue', { ...q, record: { ...q.record, checks: 5 } }, e2)).status, 422);
+  assert.equal((await call('POST', '/api/cert/issue', { ...q, proof: proof(master.toString('base64url')) }, e2)).status, 403);
+  const total = JSON.parse((await import('node:fs')).readFileSync('site/training/quality-decisions/course/data/board-index.json', 'utf8')).total;
+  assert.equal(total, 60, 'quiz total in the Level 2 course matches the certificate rule');
+}
+console.log('certificate api (cybersecurity, quality-decisions): ok');

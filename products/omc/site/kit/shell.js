@@ -221,7 +221,7 @@ function hydrateHome(site, family) {
     if (btn) contact.replaceWith(btn);
   }
   drawSystemMap(family);
-  { const h = $('#proof'); if (h && 'IntersectionObserver' in window) { const io = new IntersectionObserver((e) => { if (e.some((x) => x.isIntersecting)) { io.disconnect(); runProof(); } }, { rootMargin: '200px' }); io.observe(h); } else runProof(); }
+  { const h = $('#proof'); if (h && 'IntersectionObserver' in window) { const io = new IntersectionObserver((e) => { if (e.some((x) => x.isIntersecting)) { io.disconnect(); setTimeout(runProof, 2500); } }, { rootMargin: '200px' }); io.observe(h); } else runProof(); }
 }
 
 /* The five systems around one idea: every result comes with a way to check it. Drawn from family.json. */
