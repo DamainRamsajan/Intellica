@@ -40,6 +40,7 @@
   <url><loc>https://meeting-mind.com/training/architecture-governance/</loc></url>
   <url><loc>https://meeting-mind.com/training/certificate/</loc></url>
   <url><loc>https://meeting-mind.com/training/cybersecurity/course/admin/</loc></url>
+  <url><loc>https://meeting-mind.com/training/cybersecurity/course/agent-identity-and-authority-zero-standing-privilege-and-delegation/</loc></url>
   <url><loc>https://meeting-mind.com/training/cybersecurity/course/agentic-identity-and-access-management/</loc></url>
   <url><loc>https://meeting-mind.com/training/cybersecurity/course/agentic-red-teaming-and-security-evaluation/</loc></url>
   <url><loc>https://meeting-mind.com/training/cybersecurity/course/agentic-threat-landscape-and-attack-patterns/</loc></url>
@@ -54,7 +55,10 @@
   <url><loc>https://meeting-mind.com/training/cybersecurity/course/incident-response-containment-and-recovery/</loc></url>
   <url><loc>https://meeting-mind.com/training/cybersecurity/course/</loc></url>
   <url><loc>https://meeting-mind.com/training/cybersecurity/course/lab/</loc></url>
+  <url><loc>https://meeting-mind.com/training/cybersecurity/course/lab/policy/</loc></url>
+  <url><loc>https://meeting-mind.com/training/cybersecurity/course/lab/trace/</loc></url>
   <url><loc>https://meeting-mind.com/training/cybersecurity/course/learn/</loc></url>
+  <url><loc>https://meeting-mind.com/training/cybersecurity/course/mcp-authorization-audience-discovery-and-mix-up-defence/</loc></url>
   <url><loc>https://meeting-mind.com/training/cybersecurity/course/measure-poisoning-memory-tool-descriptions-and-servers/</loc></url>
   <url><loc>https://meeting-mind.com/training/cybersecurity/course/memory-rag-and-data-security/</loc></url>
   <url><loc>https://meeting-mind.com/training/cybersecurity/course/monitoring-detection-and-digital-forensics/</loc></url>
@@ -66,6 +70,7 @@
   <url><loc>https://meeting-mind.com/training/cybersecurity/course/secure-agentic-architecture-and-zero-trust/</loc></url>
   <url><loc>https://meeting-mind.com/training/cybersecurity/course/securing-agentic-ai-in-critical-industries/</loc></url>
   <url><loc>https://meeting-mind.com/training/cybersecurity/course/security-foundations-for-the-agentic-era/</loc></url>
+  <url><loc>https://meeting-mind.com/training/cybersecurity/course/skills-and-tool-trust-the-behavioural-supply-chain/</loc></url>
   <url><loc>https://meeting-mind.com/training/cybersecurity/course/threat-modelling-autonomous-systems/</loc></url>
   <url><loc>https://meeting-mind.com/training/cybersecurity/course/tool-api-and-mcp-security/</loc></url>
   <url><loc>https://meeting-mind.com/training/cybersecurity/course/welcome/</loc></url>

@@ -520,6 +520,15 @@
               "Measure Poisoning: Memory, Tool Descriptions and Servers",
               "Runtime Monitors and Honest Detection"
             ]
+          },
+          {
+            "title": "Protocols, skills and identity",
+            "note": "The MCP authorization flow, skill supply chain and agent identity, with runnable practice tools.",
+            "lessons": [
+              "MCP Authorization: Audience, Discovery and Mix-Up Defence",
+              "Skills and Tool Trust: The Behavioural Supply Chain",
+              "Agent Identity and Authority: Zero Standing Privilege and Delegation"
+            ]
           }
         ],
         "lab": {
@@ -545,7 +554,7 @@
         "course": {
           "enabled": true,
           "headline": "Secure the agents you run, as a course you take at your own pace.",
-          "lead": "Twenty-five short lessons on securing AI systems that plan, remember, delegate, call tools and run code. Each lesson has slides you control, a worked case, three recall questions and a lab. Across the twenty-five labs you build one assurance pack for an agent system of your own.",
+          "lead": "Twenty-eight short lessons on securing AI systems that plan, remember, delegate, call tools and run code. Each lesson has slides you control, a worked case, three recall questions and a lab. Across the twenty-eight labs you build one assurance pack for an agent system of your own.",
           "honesty": "This is self-study: slides, a field guide, a worked case and a lab for every lesson, marked against a rubric you apply yourself. It does not replace a security review of your own systems, and it is not an accredited qualification.",
           "free": [
             1,
@@ -558,11 +567,15 @@
             },
             {
               "title": "One growing assurance pack",
-              "text": "After every lesson a lab asks you to produce real security work for your own agent system: threat model, identity design, containment plan, detection rules, incident runbook. The twenty-five answers join into one pack you download at the end."
+              "text": "After every lesson a lab asks you to produce real security work for your own agent system: threat model, identity design, containment plan, detection rules, incident runbook. The twenty-eight answers join into one pack you download at the end."
             },
             {
               "title": "Frontier research, with sources",
-              "text": "Lessons 21 to 25 teach what 2026 papers and incident reports changed: adaptive attacks, enforcement outside the model, containing your own agents, measuring poisoning, and honest detection. Every figure cites the page it came from."
+              "text": "Lessons 21 to 28 teach what 2026 papers and incident reports changed: adaptive attacks, enforcement outside the model, containing your own agents, measuring poisoning, honest detection, MCP authorization, skills and identity. Every figure cites the page it came from."
+            },
+            {
+              "title": "Practice tools you can run",
+              "text": "A policy tester and a trace spotter let you try deterministic guardrails and find injected flaws in an agent log, in your browser, with fixtures to download."
             },
             {
               "title": "A worked case and a field guide",
@@ -1091,7 +1104,7 @@
     "title": "Cybersecurity for the Agentic Era",
     "line": "The model may propose an action. Independently enforced policy decides whether it happens.",
     "points": [
-      "25 lessons, from threat modelling to incident response, a capstone, and a frontier-research module",
+      "28 lessons, from threat modelling to incident response, a capstone, and a frontier-research module",
       "Tools and MCP, identity, memory, multi-agent trust, sandboxing, runtime enforcement",
       "A lab where you build and attack your own agent setup, and a certificate you can verify"
     ]

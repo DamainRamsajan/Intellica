@@ -133,6 +133,13 @@ export async function labPage() {
   sys.value = doc.system;
   sys.addEventListener('input', () => { doc.system = sys.value; touch(); if (view === 'whole') drawView(); runCheck(); });
   $('[data-download]', root).addEventListener('click', () => { if (dirty) save(); download(`${slug()}-arc42.md`, arc42()); });
+  const dlJson = $('[data-download-json]', root);
+  if (dlJson) dlJson.addEventListener('click', () => {
+    if (dirty) save();
+    const parts = arc42().split(/^## /m), head = parts.shift();
+    const sections = parts.map((t) => { const i = t.indexOf('\n'); return { heading: (i < 0 ? t : t.slice(0, i)).trim(), body: (i < 0 ? '' : t.slice(i + 1)).trim() }; });
+    download(`${slug()}.json`, JSON.stringify({ system: ($('[data-sys]', root).value || '').trim(), exported: new Date().toISOString(), header: head.trim(), sections }, null, 2));
+  });
   const dlAgents = $('[data-download-agents]', root);
   dlAgents.addEventListener('click', () => { if (dirty) save(); download('AGENTS.md', text('agents').trim() + '\n'); });
   const showAgents = () => { dlAgents.hidden = !started('agents'); };

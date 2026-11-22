@@ -4,7 +4,7 @@
 // As with the leaderboard, learners are trusted: the record comes from the learner's own device.
 
 import { courseKeyFor } from './pay-api.js';
-const ISSUABLE = { arc42: { lessons: 19, sections: 12, checks: 6, questions: 34 }, cybersecurity: { lessons: 25, sections: 25, checks: 5, questions: 75 } }; // add a course here when it opens
+const ISSUABLE = { arc42: { lessons: 19, sections: 12, checks: 6, questions: 34 }, cybersecurity: { lessons: 28, sections: 28, checks: 5, questions: 84 } }; // add a course here when it opens
 const SCHEMA = [
   `CREATE TABLE IF NOT EXISTS certs (
     id TEXT PRIMARY KEY, course TEXT NOT NULL, name TEXT NOT NULL, issued INTEGER NOT NULL, record TEXT NOT NULL)`,

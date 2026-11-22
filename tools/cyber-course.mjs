@@ -1,8 +1,10 @@
 // The cybersecurity course: turns training-private/cybersecurity-source.json (see import-cyber.mjs) and the
 // "course" block of the cybersecurity entry in site/training/catalog.json into what build-course.mjs needs:
-// a deck of slides, quiz questions, a lab of 25 steps (one growing assurance pack), and the player files.
+// a deck of slides, quiz questions, a lab of 28 steps (one growing assurance pack), and the player files.
 import fs from 'node:fs';
 import path from 'node:path';
+import { page, esc as xesc } from './training-shell.mjs';
+import * as XT from './cyber-tools/data.mjs';
 
 export const ID = 'cybersecurity';
 // Frontier lessons 21+ and "2026 update" notes live in training-private/frontier.mjs (compact format, see that file).
@@ -93,20 +95,72 @@ function buildLab(src, lessons, idOf) {
 
 /* Player files: the same course engine as arc42, copied with its own paths and its own browser storage names so that
    the two courses never share a code, progress or lab document. The lab health check is the cybersecurity one. */
+/* Two hands-on practice tools, with their fixtures to download: a policy tester and a trace spotter. Free to open. */
+function writeTools(out, w) {
+  const base = `${w.path}course/lab/`, put = (rel, txt) => { const f = path.join(out, 'lab', rel); fs.mkdirSync(path.dirname(f), { recursive: true }); fs.writeFileSync(f, txt); };
+  const src = path.resolve('tools/cyber-tools');
+  for (const f of ['data.mjs', 'policy.js', 'trace.js', 'tools.css']) put(`tools/${f === 'data.mjs' ? 'data.js' : f}`, fs.readFileSync(path.join(src, f), 'utf8'));
+  put('files/agent_guardrail.rego', XT.REGO);
+  put('files/policy-cases.json', JSON.stringify(XT.SCENARIOS.map((s) => ({ title: s.title, input: XT.toRegoInput(s.input), expected: XT.evaluate(s.input).allow ? 'allow' : 'deny' })), null, 2));
+  put('files/trace-benign.jsonl', XT.TRACE_GOOD.map((e) => JSON.stringify(e)).join('\n') + '\n');
+  put('files/trace-compromised.jsonl', XT.TRACE_BAD.map((e) => JSON.stringify(e)).join('\n') + '\n');
+  const nav = (here) => `<nav class="subnav" aria-label="Practice tools"><p class="crumb"><a href="/training/">Training</a><span aria-hidden="true"> / </span><a href="${w.path}">${xesc(w.title)}</a><span aria-hidden="true"> / </span>${here}</p><a class="sn-code" href="/training/my-courses/">Enter access code</a></nav>`;
+  const dl = (names) => `<p class="dl">${names.map((n) => `<a class="btn btn-ghost" href="${base}files/${n}" download>${n}</a>`).join('')}</p>`;
+  const css = [`${base}tools/tools.css`];
+  const policy = `${nav('Policy tester')}
+    <section class="t-hero t-hero-single"><div class="t-hero-copy"><p class="eyebrow">Practice tool</p><h1>Policy tester</h1><p class="lead">A deterministic policy decides whether an agent action may run, whatever the model says. Try it, then predict eight decisions. The policy is the same one you can download as Rego and run with OPA.</p></div></section>
+    <div class="xt" data-policy>
+      <h2>Playground</h2>
+      <form data-play class="grid">
+        <label>Tool<select name="tool" data-tools></select></label>
+        <label>Approval<select name="approval" data-approvals></select></label>
+        <label class="chk"><input type="checkbox" name="tainted"> Untrusted input is in the context</label>
+        <label class="chk"><input type="checkbox" name="egress"> External write or egress</label>
+        <label class="chk"><input type="checkbox" name="aud" checked> Token audience is valid</label>
+        <label class="chk"><input type="checkbox" name="pass"> Server passes a caller\u2019s token through</label>
+      </form>
+      <div data-play-out aria-live="polite"></div>
+      <h2>Predict the decision</h2>
+      <p class="muted">Eight cases. Choose Allow or Deny, then read the reason. <strong data-score role="status">0 of 0 right</strong></p>
+      <ol class="cases" data-cases></ol>
+      <h2>Take it with you</h2>
+      <p class="muted">Run the same cases against the real policy with <code>opa eval</code> or <code>opa test</code>. Then add a rule of your own and a case that proves it.</p>
+      ${dl(['agent_guardrail.rego', 'policy-cases.json'])}
+      <p class="muted small">This page mirrors the Rego rule for rule in plain JavaScript so you can explore it in the browser. It is a teaching tool, not a security control.</p>
+    </div>
+    <script type="module" src="${base}tools/policy.js"></script>`;
+  const trace = `${nav('Trace spotter')}
+    <section class="t-hero t-hero-single"><div class="t-hero-copy"><p class="eyebrow">Practice tool</p><h1>Trace spotter</h1><p class="lead">Read an agent\u2019s execution trace and mark every step that breaks a rule: taint, approval drift, wrong audience, token passthrough, egress, replay, scope. Then compare with a reference checker you can read and port.</p></div></section>
+    <div class="xt" data-trace>
+      <label>Trace<select data-which><option value="bad">Compromised run (find the violations)</option><option value="good">Benign run (find nothing)</option></select></label>
+      <table><thead><tr><th>#</th><th>Event</th><th>Logged fields</th><th>Your call</th><th>Result</th></tr></thead><tbody data-rows></tbody></table>
+      <div class="actions"><button class="btn btn-primary" type="button" data-check>Check my answers</button><button class="btn btn-ghost" type="button" data-run>Run the reference checker</button></div>
+      <p role="status" data-res></p>
+      <h2>The reference checker</h2>
+      <p class="muted">Plain rules over the logged fields. Notice what it needs the log to record: hashes, audiences, scopes, nonces and whether content was isolated. If your logs lack those, no checker can help.</p>
+      <pre><code data-code></code></pre>
+      ${dl(['trace-compromised.jsonl', 'trace-benign.jsonl'])}
+    </div>
+    <script type="module" src="${base}tools/trace.js"></script>`;
+  put('policy/index.html', page({ title: 'Policy tester | Cybersecurity for the Agentic Era', description: 'Explore and test a deterministic agent guardrail policy in the browser.', canonicalPath: `${base}policy/`, body: policy, css }));
+  put('trace/index.html', page({ title: 'Trace spotter | Cybersecurity for the Agentic Era', description: 'Find taint, approval drift, audience and passthrough violations in an agent execution trace.', canonicalPath: `${base}trace/`, body: trace, css }));
+}
+
 export function writeEngine(out, w, SITE) {
+  writeTools(out, w);
   const from = path.join(SITE, 'training', 'arc42', 'course');
   const base = `${w.path}course/`;
   const sub = (src) => src
     .replaceAll('/training/arc42/course/', base)
     .replaceAll("'/training/access.js'", `'${base}access.js'`)
     .replaceAll("'iw-", "'iwc-").replaceAll('"iw-', '"iwc-')
-    .replaceAll('Your arc42 so far: ${started} of 12 sections started.', 'Your assurance pack so far: ${started} of 25 sections started.')
+    .replaceAll('Your arc42 so far: ${started} of 12 sections started.', 'Your assurance pack so far: ${started} of 28 sections started.')
     .replaceAll('Your arc42 is yours to keep', 'Your assurance pack is yours to keep').replaceAll("'Open your arc42'", "'Open your pack'")
     .replaceAll('architecture documentation (arc42)', 'agent security assurance pack').replaceAll('-arc42.md', '-assurance-pack.md').replaceAll("|| 'arc42'", "|| 'assurance-pack'")
     .replaceAll('No arc42 sections found. The file needs headings like "## 1. Introduction and Goals".', 'No sections found. The file needs headings like "## 1. Security Foundations for the Agentic Era".')
     .replaceAll('See the finished version (Doubles-to-Go worked example)', 'See a model solution').replaceAll('write the next arc42 section in the lab', 'write the next section of your pack in the lab')
-    .replaceAll('sectionsTotal: 12', 'sectionsTotal: 25').replaceAll('checksTotal: 6', 'checksTotal: 5').replaceAll('rec.sections, 12, rec.sections >= 12', 'rec.sections, 25, rec.sections >= 25').replaceAll('rec.checks, 6, rec.checks >= 6', 'rec.checks, 5, rec.checks >= 5')
-    .replaceAll('n <= 12', 'n <= 25').replaceAll('arc42.md', 'assurance-pack.md')
+    .replaceAll('sectionsTotal: 12', 'sectionsTotal: 28').replaceAll('checksTotal: 6', 'checksTotal: 5').replaceAll('rec.sections, 12, rec.sections >= 12', 'rec.sections, 28, rec.sections >= 28').replaceAll('rec.checks, 6, rec.checks >= 6', 'rec.checks, 5, rec.checks >= 5')
+    .replaceAll('n <= 12', 'n <= 28').replaceAll('arc42.md', 'assurance-pack.md')
     .replaceAll("/:?\\s*architecture documentation.*$/i", "/:?\\s*agent security assurance pack.*$/i").replaceAll('.*arc42.*$', '.*assurance pack.*$');
   for (const f of ['course.js', 'lab.js', 'board.js', 'board-core.js', 'cert.js', 'pay.js', 'board.css']) {
     fs.writeFileSync(path.join(out, f), sub(fs.readFileSync(path.join(from, f), 'utf8')));

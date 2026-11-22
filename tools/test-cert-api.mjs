@@ -45,13 +45,13 @@ console.log('certificate api: all checks passed');
   const derived = crypto.createHmac('sha256', master).update('course:cybersecurity').digest('base64url');
   const proof = (k) => crypto.createHash('sha256').update('board-v1:' + k).digest('base64url');
   const e2 = { DB, BOARD_PROOF: proof(master.toString('base64url')), SECRETS: { courseKey: master.toString('base64url') } };
-  const cy = { course: 'cybersecurity', name: 'Cy Buyer', proof: proof(derived), record: { lessons: 25, sections: 25, checks: 5, mastered: 53 } };
+  const cy = { course: 'cybersecurity', name: 'Cy Buyer', proof: proof(derived), record: { lessons: 28, sections: 28, checks: 5, mastered: 59 } };
   const ok = await call('POST', '/api/cert/issue', cy, e2);
   assert.equal(ok.status, 200, JSON.stringify(ok.body));
   assert.equal((await call('POST', '/api/cert/issue', { ...cy, proof: proof(master.toString('base64url')) }, e2)).status, 403, 'the arc42 key does not claim a cybersecurity certificate');
-  assert.equal((await call('POST', '/api/cert/issue', { ...cy, record: { ...cy.record, lessons: 24 } }, e2)).status, 422);
+  assert.equal((await call('POST', '/api/cert/issue', { ...cy, record: { ...cy.record, lessons: 27 } }, e2)).status, 422);
   assert.equal((await call('POST', '/api/cert/issue', { ...good, proof: e2.BOARD_PROOF }, e2)).status, 200, 'arc42 still works with secrets present');
   const total = JSON.parse((await import('node:fs')).readFileSync('site/training/cybersecurity/course/data/board-index.json', 'utf8')).total;
-  assert.equal(total, 75, 'quiz total in the course matches the certificate rule');
+  assert.equal(total, 84, 'quiz total in the course matches the certificate rule');
 }
 console.log('certificate api (cybersecurity): ok');

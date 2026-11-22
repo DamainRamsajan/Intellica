@@ -72,7 +72,7 @@ function manifest(dir, exclude = []) {
   const sorted = Object.fromEntries(Object.entries(files).sort(([a], [b]) => (a < b ? -1 : 1)));
   const root = sha(Buffer.from(Object.entries(sorted).map(([f, h]) => `${f}\t${h}\n`).join('')));
   const kit = fs.existsSync(path.join(dir, 'kit', 'VERSION')) ? fs.readFileSync(path.join(dir, 'kit', 'VERSION'), 'utf8').trim() : '';
-  fs.writeFileSync(path.join(dir, 'site-manifest.json'), JSON.stringify({ format: 1, kit, root, files: sorted }, null, 2) + '\n');
+  fs.writeFileSync(path.join(dir, 'site-manifest.json'), JSON.stringify({ format: 1, kit, root, files: sorted }) + '\n');
   return Object.keys(sorted).length;
 }
 

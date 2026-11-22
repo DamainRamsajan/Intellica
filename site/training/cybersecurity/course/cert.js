@@ -8,12 +8,12 @@ const saved = (course) => { try { return JSON.parse(storage.get(KEY(course)) || 
 
 export async function certificateCard(root, { course, title, lessons, lessonsTotal, name, proof }) {
   const inp = await certInputs();
-  const rec = { lessons, lessonsTotal, sections: inp.sections, sectionsTotal: 25, checks: inp.checks, checksTotal: 5, mastered: inp.mastered, questions: inp.questions };
+  const rec = { lessons, lessonsTotal, sections: inp.sections, sectionsTotal: 28, checks: inp.checks, checksTotal: 5, mastered: inp.mastered, questions: inp.questions };
   const p = certProgress(rec);
   const row = (label, now, of, ok) => el('li', {}, el('span', {}, label), el('span', { class: ok ? 'ok' : '' }, `${ok ? '✓ ' : ''}${now} of ${of}`));
   const list = el('ul', { class: 'cc-list' },
     row('Lessons finished', lessons, lessonsTotal, p.met.lessons),
-    row('Lab sections written', rec.sections, 25, rec.sections >= 25),
+    row('Lab sections written', rec.sections, 28, rec.sections >= 28),
     row('Lab health checks passed', rec.checks, 5, rec.checks >= 5),
     row('Check questions mastered', rec.mastered, `${rec.questions} (need ${p.need})`, p.met.questions));
   const box = el('div', { class: 'cc-box' });

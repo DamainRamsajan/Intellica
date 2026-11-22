@@ -973,7 +973,7 @@ await step('worked example: page, zip and arc42 are served and the zip matches t
 const CY = HOME + '/training/cybersecurity/course/';
 const { deriveKey } = await import('./build-course.mjs');
 const cyCode = (name) => mkCode(name, deriveKey(courseKey, 'cybersecurity'));
-await step('cybersecurity: course page lists 25 lessons, two free, and the catalogue page offers the free lessons', async () => {
+await step('cybersecurity: course page lists 28 lessons, two free, and the catalogue page offers the free lessons', async () => {
   const p = await open(CY);
   assert.equal(await p.locator('a[href*="/training/cybersecurity/course/"][href$="/"]').count() > 20, true);
   assert.deepEqual(p.problems, []);
@@ -1011,7 +1011,7 @@ await step('cybersecurity: a paid lesson is locked and encrypted; its own code (
   const w = await ctx2.newPage(); await w.goto(CY + id + '/'); await w.waitForSelector('[data-locked]:not([hidden])');
   await ctx.close(); await ctx2.close();
 });
-await step('cybersecurity: the lab is one assurance pack with 25 sections, a model solution per lesson, and a pack download', async () => {
+await step('cybersecurity: the lab is one assurance pack with 28 sections, a model solution per lesson, and a pack download', async () => {
   const ctx = await browser.newContext({ viewport: { width: 1280, height: 900 } });
   await ctx.addInitScript((c) => localStorage.setItem('iwc-course-code', c), cyCode('Cyber Buyer'));
   const page = await ctx.newPage(); const errs = []; page.on('pageerror', (e) => errs.push(e.message));
@@ -1024,9 +1024,29 @@ await step('cybersecurity: the lab is one assurance pack with 25 sections, a mod
   const [dl] = await Promise.all([page.waitForEvent('download'), page.click('[data-download]')]);
   assert.equal(dl.suggestedFilename(), 'claims-agent-assurance-pack.md');
   const md = (await import('node:fs')).readFileSync(await dl.path(), 'utf8');
-  for (let n = 1; n <= 25; n++) assert.ok(new RegExp(`^## ${n}\\. `, 'm').test(md), `section ${n} is in the export`);
+  for (let n = 1; n <= 28; n++) assert.ok(new RegExp(`^## ${n}\\. `, 'm').test(md), `section ${n} is in the export`);
   assert.deepEqual(errs, []);
   await ctx.close();
+});
+
+await step('cybersecurity practice tools: the policy tester scores eight predictions and the trace spotter finds the planted violations', async () => {
+  const raw = async (u) => { const c = await browser.newContext({ viewport: { width: 1280, height: 900 } }); const g = await c.newPage(); g.problems = []; g.on('console', (m) => { if (m.type() === 'error') g.problems.push(m.text()); }); g.on('pageerror', (e) => g.problems.push(e.message)); await g.goto(u); return g; };
+  const p = await raw(CY + 'lab/policy/');
+  await p.waitForSelector('[data-cases] li.case');
+  assert.equal(await p.locator('[data-cases] li.case').count(), 8);
+  for (const li of await p.locator('[data-cases] li.case').all()) await li.locator('button').first().click();
+  assert.match(await p.locator('[data-score]').innerText(), /^\d of 8 right/);
+  assert.deepEqual(p.problems, []);
+  await p.context().close();
+  const t = await raw(CY + 'lab/trace/');
+  await t.waitForSelector('[data-rows] tr');
+  await t.click('[data-run]');
+  assert.match(await t.locator('[data-res]').innerText(), /Reference checker: step \d+/);
+  await t.click('[data-check]');
+  assert.match(await t.locator('[data-res]').innerText(), /^0 of [1-9]\d* violations found/);
+  assert.deepEqual(t.problems, []);
+  await t.context().close();
+  assert.equal((await fetch(CY + 'lab/files/policy-cases.json')).status, 200);
 });
 
 /* ---------- one place to enter a code ---------- */

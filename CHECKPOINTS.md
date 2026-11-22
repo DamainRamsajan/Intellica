@@ -38,6 +38,13 @@ New: `/training/arc42/course/lab/`. 16 lab steps, one per lesson, from the works
 
 # Checkpoints
 
+## cp31: cybersecurity upgrade (28 lessons, practice tools)
+- Lessons 26 MCP authorization (2026-07-28 spec: RFC 9728, 8707, 8414/OIDC, 9207 iss, client metadata documents, no token passthrough), 27 skills and tool trust (OWASP Agentic Skills Top 10 list as read on the project page, MAESTRO layers, rug pulls, shadowing), 28 agent identity and delegation (NIST CAISI and NCCoE status stated as in progress). Facts checked on the spec, OWASP, NCCoE and CSA pages on 2026-11-22.
+- Practice tools (free to open, with downloadable fixtures): `/training/cybersecurity/course/lab/policy/` (policy tester, Rego reference) and `/lab/trace/` (trace spotter). Source in `tools/cyber-tools/`.
+- Certificate rule: 28 lessons, 28 sections, 5 checks, 70% of 84 questions.
+- Home page: the live proof now loads the manifest only when its panel scrolls into view (keeps the page under the 150 KB budget); manifest written compact.
+- From the handoff, not applicable to our build: truncation at lesson 16, duplicate citation chips, purple --panel (those belong to the source HTML, not this site). Not done: JSON export of the lab dossier.
+
 ## cp30: one place to enter a code, header tiles
 - `/training/my-courses/`: paste a code for any course; it finds the course, saves it, opens it. Returning visitors see a Continue button. Linked from the training header ("I have an access code"), every course subnav ("Enter access code") and the course hero.
 - Training header: the empty right side is now 12 small tiles (five levels, seven courses) that jump to each course page.

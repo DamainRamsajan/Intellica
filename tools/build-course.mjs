@@ -210,7 +210,7 @@ ${body}
 
 function subnav(w, active) {
   const codeLink = '<li><a class="sn-code" href="/training/my-courses/">Enter access code</a></li>';
-  const items = w.facilitator === null ? [['', 'Course overview'], ['course/', 'Online course']] : [['', 'Workshop'], ['course/', 'Online course'], ['guide/', 'Student guide'], ['register/', 'Register']];
+  const items = w.facilitator === null ? [['', 'Course overview'], ['course/', 'Online course'], ['course/lab/policy/', 'Policy tester'], ['course/lab/trace/', 'Trace spotter']] : [['', 'Workshop'], ['course/', 'Online course'], ['guide/', 'Student guide'], ['register/', 'Register']];
   return `    <nav class="subnav" aria-label="${esc(w.title)}">
       <p class="crumb"><a href="/training/">Training</a><span aria-hidden="true"> / </span>${esc(w.title)}</p>
       <ul>${items.map(([p, l]) => `<li><a href="${w.path}${p}"${p === active ? ' aria-current="page"' : ''}>${l}</a></li>`).join('')}${codeLink}</ul>
@@ -685,6 +685,7 @@ ${subnav(w, 'course/')}
         <div class="lab-tools" role="group" aria-label="Document actions">
           <span class="lab-status muted small" role="status" data-status>Saved on this device</span>
           <button class="btn btn-ghost" type="button" data-download>Download ${COPY.file}</button>
+          ${w.facilitator === null ? '<button class="btn btn-ghost" type="button" data-download-json>Download JSON</button>' : ''}
           <button class="btn btn-ghost" type="button" data-download-agents hidden>Download AGENTS.md</button>
           <button class="btn btn-ghost" type="button" data-import>Import .md</button>
           <button class="btn btn-ghost" type="button" data-reset>Start over</button>

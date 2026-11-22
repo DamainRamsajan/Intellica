@@ -30,6 +30,6 @@ for (const dir of dirs) {
   const sorted = Object.fromEntries(Object.entries(files).sort(([a], [b]) => (a < b ? -1 : 1)));
   const rootHash = sha(Buffer.from(Object.entries(sorted).map(([f, h]) => `${f}\t${h}\n`).join('')));
   const kit = fs.existsSync(path.join(root, 'kit', 'VERSION')) ? fs.readFileSync(path.join(root, 'kit', 'VERSION'), 'utf8').trim() : '';
-  fs.writeFileSync(path.join(root, 'site-manifest.json'), JSON.stringify({ format: 1, kit, root: rootHash, files: sorted }, null, 2) + '\n');
+  fs.writeFileSync(path.join(root, 'site-manifest.json'), JSON.stringify({ format: 1, kit, root: rootHash, files: sorted }) + '\n');
   console.log(`manifest ${dir}: ${Object.keys(sorted).length} files, root ${rootHash.slice(0, 16)}…`);
 }

@@ -1,0 +1,8 @@
+{"step":1,"type":"user_message","text":"Summarise ticket 4480 for the customer."}
+{"step":2,"type":"tool_call","tool":"read_ticket","target":"https://tickets.example.com/mcp","token_aud":"https://tickets.example.com/mcp","token_scopes":["tickets:read"],"needed_scope":"tickets:read","nonce":"g-2001"}
+{"step":3,"type":"tool_result","tool":"read_ticket","untrusted_content":true,"isolated":true,"tainted_after":false,"body_ends":"Thanks, please call me back."}
+{"step":4,"type":"approval","action":"send_external_email","to":"alice@customer.example","approved_hash":"h-5b10"}
+{"step":5,"type":"tool_call","tool":"send_external_email","to":"alice@customer.example","canonical_hash":"h-5b10","approved_hash":"h-5b10","target":"https://tickets.example.com/mcp","token_aud":"https://tickets.example.com/mcp"}
+{"step":6,"type":"tool_call","tool":"crm_lookup","target":"https://crm.example.com/mcp","token_aud":"https://crm.example.com/mcp","token_scopes":["crm:read"],"needed_scope":"crm:read","nonce":"g-2002"}
+{"step":7,"type":"tool_call","tool":"write_file","target":"https://files.example.com/mcp","token_aud":"https://files.example.com/mcp","token_scopes":["files:write"],"needed_scope":"files:write","nonce":"g-2003"}
+{"step":8,"type":"tool_result","tool":"write_file","untrusted_content":false,"tainted_after":false}

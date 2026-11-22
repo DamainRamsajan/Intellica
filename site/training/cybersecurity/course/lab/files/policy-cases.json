@@ -1,0 +1,226 @@
+[
+  {
+    "title": "Read a ticket, clean context",
+    "input": {
+      "agent": {
+        "user_id": "user-1"
+      },
+      "action": {
+        "tool_name": "read_ticket",
+        "egress_or_external_write": false,
+        "canonical_hash": "h-action"
+      },
+      "context": {
+        "tainted_by_untrusted_source": false,
+        "now_epoch": 1000
+      },
+      "auth": {
+        "audience_valid": true,
+        "token_passthrough": false
+      },
+      "approval": {
+        "approved": false,
+        "subject": "user-1",
+        "action_hash": "h-action",
+        "expires_at": 2000
+      }
+    },
+    "expected": "allow"
+  },
+  {
+    "title": "Send an external email after reading a poisoned ticket, with a valid approval",
+    "input": {
+      "agent": {
+        "user_id": "user-1"
+      },
+      "action": {
+        "tool_name": "send_external_email",
+        "egress_or_external_write": true,
+        "canonical_hash": "h-action"
+      },
+      "context": {
+        "tainted_by_untrusted_source": true,
+        "now_epoch": 1000
+      },
+      "auth": {
+        "audience_valid": true,
+        "token_passthrough": false
+      },
+      "approval": {
+        "approved": true,
+        "subject": "user-1",
+        "action_hash": "h-action",
+        "expires_at": 2000
+      }
+    },
+    "expected": "deny"
+  },
+  {
+    "title": "Send an external email, clean context, nobody approved",
+    "input": {
+      "agent": {
+        "user_id": "user-1"
+      },
+      "action": {
+        "tool_name": "send_external_email",
+        "egress_or_external_write": true,
+        "canonical_hash": "h-action"
+      },
+      "context": {
+        "tainted_by_untrusted_source": false,
+        "now_epoch": 1000
+      },
+      "auth": {
+        "audience_valid": true,
+        "token_passthrough": false
+      },
+      "approval": {
+        "approved": false,
+        "subject": "user-1",
+        "action_hash": "h-action",
+        "expires_at": 2000
+      }
+    },
+    "expected": "deny"
+  },
+  {
+    "title": "Send an external email, clean context, approved for exactly this email",
+    "input": {
+      "agent": {
+        "user_id": "user-1"
+      },
+      "action": {
+        "tool_name": "send_external_email",
+        "egress_or_external_write": true,
+        "canonical_hash": "h-action"
+      },
+      "context": {
+        "tainted_by_untrusted_source": false,
+        "now_epoch": 1000
+      },
+      "auth": {
+        "audience_valid": true,
+        "token_passthrough": false
+      },
+      "approval": {
+        "approved": true,
+        "subject": "user-1",
+        "action_hash": "h-action",
+        "expires_at": 2000
+      }
+    },
+    "expected": "allow"
+  },
+  {
+    "title": "Transfer funds; the approved amount differs from the amount that runs",
+    "input": {
+      "agent": {
+        "user_id": "user-1"
+      },
+      "action": {
+        "tool_name": "transfer_funds",
+        "egress_or_external_write": true,
+        "canonical_hash": "h-action"
+      },
+      "context": {
+        "tainted_by_untrusted_source": false,
+        "now_epoch": 1000
+      },
+      "auth": {
+        "audience_valid": true,
+        "token_passthrough": false
+      },
+      "approval": {
+        "approved": true,
+        "subject": "user-1",
+        "action_hash": "h-other",
+        "expires_at": 2000
+      }
+    },
+    "expected": "deny"
+  },
+  {
+    "title": "Read a ticket with a token issued for a different server",
+    "input": {
+      "agent": {
+        "user_id": "user-1"
+      },
+      "action": {
+        "tool_name": "read_ticket",
+        "egress_or_external_write": false,
+        "canonical_hash": "h-action"
+      },
+      "context": {
+        "tainted_by_untrusted_source": false,
+        "now_epoch": 1000
+      },
+      "auth": {
+        "audience_valid": false,
+        "token_passthrough": false
+      },
+      "approval": {
+        "approved": false,
+        "subject": "user-1",
+        "action_hash": "h-action",
+        "expires_at": 2000
+      }
+    },
+    "expected": "deny"
+  },
+  {
+    "title": "Change an IAM policy, approved, but the server forwards the caller’s token",
+    "input": {
+      "agent": {
+        "user_id": "user-1"
+      },
+      "action": {
+        "tool_name": "modify_iam_policy",
+        "egress_or_external_write": false,
+        "canonical_hash": "h-action"
+      },
+      "context": {
+        "tainted_by_untrusted_source": false,
+        "now_epoch": 1000
+      },
+      "auth": {
+        "audience_valid": true,
+        "token_passthrough": true
+      },
+      "approval": {
+        "approved": true,
+        "subject": "user-1",
+        "action_hash": "h-action",
+        "expires_at": 2000
+      }
+    },
+    "expected": "deny"
+  },
+  {
+    "title": "Delete a record with an approval that has expired",
+    "input": {
+      "agent": {
+        "user_id": "user-1"
+      },
+      "action": {
+        "tool_name": "delete_record",
+        "egress_or_external_write": false,
+        "canonical_hash": "h-action"
+      },
+      "context": {
+        "tainted_by_untrusted_source": false,
+        "now_epoch": 1000
+      },
+      "auth": {
+        "audience_valid": true,
+        "token_passthrough": false
+      },
+      "approval": {
+        "approved": true,
+        "subject": "user-1",
+        "action_hash": "h-action",
+        "expires_at": 900
+      }
+    },
+    "expected": "deny"
+  }
+]
