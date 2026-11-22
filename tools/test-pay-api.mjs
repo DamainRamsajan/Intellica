@@ -63,7 +63,7 @@ const sameTxn = good({ txn: 'FIXEDTXN1' });
 reading = sameTxn; const o4 = await order('Di Prince');
 assert.equal((await call('POST', '/api/pay/receipt?o=' + o3.id, { raw: img(3) })).body.status, 'paid');
 assert.equal((await call('POST', '/api/pay/receipt?o=' + o4.id, { raw: img(4) })).body.status, 'review', 'same transaction number twice: held');
-assert.equal((await call('GET', '/api/pay/claim?o=' + o4.id)).status, 202);
+{ const c4 = await call('GET', '/api/pay/claim?o=' + o4.id); assert.equal(c4.status, 200, 'held receipt: the buyer gets the course now'); assert.equal(c4.body.provisional, true); assert.ok(c4.body.code); }
 
 // duplicate photo bytes
 const photo = img(9), o5 = await order('Ed Sheeran'), o6 = await order('Fay Wray');
@@ -87,7 +87,8 @@ assert.match(img1.body.image, /^data:image\/jpeg;base64,/);
 assert.equal((await call('POST', '/api/pay/admin/decide', { body: { id: o7.id, approve: true }, headers: { 'x-admin-key': SECRETS.adminKey } })).status, 200);
 assert.equal((await call('GET', '/api/pay/claim?o=' + o7.id)).status, 200, 'approved by owner: unlocked');
 await call('POST', '/api/pay/admin/decide', { body: { id: o4.id, approve: false }, headers: { 'x-admin-key': SECRETS.adminKey } });
-assert.equal((await call('GET', '/api/pay/claim?o=' + o4.id)).status, 403);
+assert.equal((await call('GET', '/api/pay/claim?o=' + o4.id)).status, 403, 'revoked: claim refused');
+assert.equal((await call('POST', '/api/pay/receipt?o=' + o4.id, { raw: img(44) })).status, 403, 'a revoked order cannot reopen itself');
 assert.equal((await call('GET', '/api/pay/region')).body.tt, false);
 // the cybersecurity course: priced in TT$, and its code carries the derived key, not the arc42 one
 {
@@ -117,5 +118,23 @@ assert.equal((await call('GET', '/api/pay/region')).body.tt, false);
   const cat = JSON.parse((await import('node:fs')).readFileSync('site/training/catalog.json', 'utf8')).ladder.levels.find((x) => x.id === 'quality-decisions').course.price;
   const { OFFERS } = await import('../worker/pay-api.js');
   assert.equal(cat.ttd, OFFERS['quality-decisions'].ttd); assert.equal(cat.label, 'US$' + OFFERS['quality-decisions'].usd);
+}
+// owner phone alerts (ntfy): one message when a receipt is held, one when a sale passes, none without a topic
+{
+  const sent = [], real = globalThis.fetch;
+  globalThis.fetch = async (u, i) => { sent.push([String(u), i]); return { ok: true }; };
+  try {
+    const on = await order('Nia Notify'); reading = 'junk';
+    await call('POST', '/api/pay/receipt?o=' + on.id, { raw: img(201), e: { DB, SECRETS: { ...SECRETS, ntfyTopic: 'secret-topic' }, AI } });
+    assert.equal(sent.length, 1); assert.equal(sent[0][0], 'https://ntfy.sh/secret-topic');
+    assert.equal(sent[0][1].headers.Title, 'Check this receipt'); assert.equal(sent[0][1].headers.Priority, '4'); assert.match(sent[0][1].body, /Nia Notify/); assert.match(sent[0][1].body, /OPEN/);
+    assert.equal((await call('GET', '/api/pay/claim?o=' + on.id)).body.provisional, true);
+    const om = await order('Mo Money'); reading = good({ reference: om.ref });
+    await call('POST', '/api/pay/receipt?o=' + om.id, { raw: img(202), e: { DB, SECRETS: { ...SECRETS, ntfyTopic: 'secret-topic' }, AI } });
+    assert.equal(sent.length, 2); assert.equal(sent[1][1].headers.Title, 'New sale');
+    const oq = await order('Quiet Q'); reading = 'junk';
+    await call('POST', '/api/pay/receipt?o=' + oq.id, { raw: img(203) });
+    assert.equal(sent.length, 2, 'no topic set: nothing sent');
+  } finally { globalThis.fetch = real; }
 }
 console.log('payment api: all checks passed');

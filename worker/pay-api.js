@@ -87,13 +87,28 @@ async function createOrder(db, body, now) {
   return json({ id, ref, amount: offer.ttd, bank: BANK });
 }
 
+// Phone notification to the owner through ntfy.sh (free, no account). The topic is a long random name kept in the secrets; if it is not set, nothing is sent.
+export async function notify(S, { title, message, priority = 3, tags = '', click = '' }) {
+  if (!S || !S.ntfyTopic) return false;
+  try {
+    const headers = { Title: title, Priority: String(priority) };
+    if (tags) headers.Tags = tags;
+    if (click) headers.Click = click;
+    const r = await fetch('https://ntfy.sh/' + encodeURIComponent(S.ntfyTopic), { method: 'POST', headers, body: message, signal: AbortSignal.timeout(3000) });
+    return r.ok;
+  } catch { return false; }
+}
+const money = (o) => `TT$${o.amount}`;
+const courseName = (o) => (OFFERS[o.course] && OFFERS[o.course].title) || o.course;
+
 async function receipt(db, env, id, bytes, now) {
   const order = await orderOf(db, id);
   if (!order) return bad('We could not find that order.', 404);
   if (order.status === 'paid') return json({ status: 'paid' });
+  if (order.status === 'rejected') return bad('We could not confirm this payment. Please message us on WhatsApp.', 403);
   if (!bytes.length || bytes.length > MAX_IMAGE) return bad('That photo is too large or empty. Try again.', 413);
   const tries = (await db.prepare('SELECT COUNT(*) AS n FROM receipts WHERE order_id = ?').bind(id).first()).n;
-  if (tries >= MAX_TRIES) return json({ status: 'review', note: 'Too many tries. We will check it by hand.' });
+  if (tries >= MAX_TRIES) { await db.prepare("UPDATE orders SET status = 'review' WHERE id = ? AND status != 'paid'").bind(id).run(); return json({ status: 'review', note: 'Too many tries. We will check it by hand.' }); }
   const hash = await sha256(bytes);
   const dupe = await db.prepare('SELECT order_id FROM receipts WHERE hash = ? AND order_id != ?').bind(hash, id).first();
   if (dupe) return bad('That receipt was already used for another order.', 409);
@@ -106,8 +121,13 @@ async function receipt(db, env, id, bytes, now) {
   }
   await db.prepare('INSERT INTO receipts (order_id, hash, txn, image, read, verdict, reasons, created) VALUES (?, ?, ?, ?, ?, ?, ?, ?)')
     .bind(id, hash, v.txn, btoa(String.fromCharCode(...bytes)), JSON.stringify(read), v.pass ? 'pass' : 'hold', JSON.stringify(reasons), now).run();
-  if (v.pass) { await db.prepare("UPDATE orders SET status = 'paid', decided = ?, note = 'auto' WHERE id = ?").bind(now, id).run(); return json({ status: 'paid' }); }
+  if (v.pass) {
+    await db.prepare("UPDATE orders SET status = 'paid', decided = ?, note = 'auto' WHERE id = ?").bind(now, id).run();
+    await notify(env.SECRETS, { title: 'New sale', message: `${order.name} <${order.email}> paid ${money(order)} for ${courseName(order)}. Ref ${order.ref}. The receipt passed the automatic check and the course is open.`, priority: 3, tags: 'moneybag' });
+    return json({ status: 'paid' });
+  }
   await db.prepare("UPDATE orders SET status = 'review' WHERE id = ? AND status != 'paid'").bind(id).run();
+  await notify(env.SECRETS, { title: 'Check this receipt', message: `${order.name} <${order.email}> sent a receipt for ${money(order)} (${courseName(order)}), ref ${order.ref}. The automatic check could not confirm it (${reasons.join('; ') || 'unreadable'}). The course is OPEN for them now. Confirm the deposit in your bank, or revoke access on the orders page.`, priority: 4, tags: 'warning', click: 'https://meeting-mind.com' + (OFFERS[order.course] ? OFFERS[order.course].learn.replace(/learn\/$/, 'admin/') : '/') });
   return json({ status: 'review' });
 }
 
@@ -115,8 +135,9 @@ async function claim(db, S, id) {
   const o = await orderOf(db, id);
   if (!o) return bad('We could not find that order.', 404);
   if (o.status === 'rejected') return bad('We could not confirm this payment. Please message us on WhatsApp.', 403);
-  if (o.status !== 'paid') return json({ status: o.status, ref: o.ref }, 202);
-  return json({ status: 'paid', code: utf8b64u(JSON.stringify({ v: 1, b: o.name, k: await courseKeyFor(S.courseKey, o.course) })), name: o.name, course: o.course, learn: OFFERS[o.course].learn });
+  // 'review' means the automatic check could not read the receipt. The buyer gets the course now and the owner is told to look at it.
+  if (o.status !== 'paid' && o.status !== 'review') return json({ status: o.status, ref: o.ref }, 202);
+  return json({ status: o.status, provisional: o.status === 'review', code: utf8b64u(JSON.stringify({ v: 1, b: o.name, k: await courseKeyFor(S.courseKey, o.course) })), name: o.name, course: o.course, learn: OFFERS[o.course].learn });
 }
 
 const same = (a, b) => a.length === b.length && [...a].reduce((x, c, i) => x | (c.charCodeAt(0) ^ b.charCodeAt(i)), 0) === 0;

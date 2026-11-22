@@ -1063,84 +1063,37 @@ var PROOF = "QhA6QOxz2tm56hf9ItAOWoioj47w3rjuOpGdVFCnayA";
 // api/board/[[route]].js
 var onRequest = /* @__PURE__ */ __name((ctx) => handle({ request: ctx.request, env: { ...ctx.env, BOARD_PROOF: PROOF } }), "onRequest");
 
-// ../worker/cert-api.js
-var ISSUABLE = { arc42: { lessons: 19, sections: 12, checks: 6, questions: 34 } };
-var SCHEMA2 = [
-  `CREATE TABLE IF NOT EXISTS certs (
-    id TEXT PRIMARY KEY, course TEXT NOT NULL, name TEXT NOT NULL, issued INTEGER NOT NULL, record TEXT NOT NULL)`
-];
-var json2 = /* @__PURE__ */ __name((o, status = 200, cache = "no-store") => new Response(JSON.stringify(o), { status, headers: { "content-type": "application/json; charset=utf-8", "cache-control": cache, "x-content-type-options": "nosniff" } }), "json");
-var bad2 = /* @__PURE__ */ __name((m, s = 400) => json2({ error: m }, s), "bad");
-var ALPHABET = "23456789ABCDEFGHJKLMNPQRSTUVWXYZ";
-var newId = /* @__PURE__ */ __name(() => "IC-" + [...crypto.getRandomValues(new Uint8Array(12))].map((b) => ALPHABET[b % 32]).join(""), "newId");
-var int2 = /* @__PURE__ */ __name((v) => {
-  const n = Math.floor(Number(v));
-  return Number.isFinite(n) && n >= 0 && n <= 1e5 ? n : 0;
-}, "int");
-var NAME = /^[^<>{}\\\u0000-\u001f]{2,60}$/u;
-var ready2 = null;
-var ensure2 = /* @__PURE__ */ __name((db) => ready2 || (ready2 = db.batch(SCHEMA2.map((s) => db.prepare(s))).catch((e) => {
-  ready2 = null;
-  throw e;
-})), "ensure");
-async function issue(db, env2, body, now) {
-  const rule = ISSUABLE[body.course];
-  if (!rule) return bad2("This course does not issue certificates yet.", 404);
-  if (!env2.BOARD_PROOF || body.proof !== env2.BOARD_PROOF) return bad2("This browser does not hold a valid access code.", 403);
-  const name = String(body.name || "").trim().replace(/\s+/g, " ");
-  if (!NAME.test(name)) return bad2("Enter the name to print on the certificate (2 to 60 characters).");
-  const r = body.record || {};
-  const rec = { lessons: int2(r.lessons), lessonsTotal: rule.lessons, sections: int2(r.sections), sectionsTotal: rule.sections, checks: int2(r.checks), checksTotal: rule.checks, mastered: int2(r.mastered), questions: rule.questions };
-  if (rec.lessons < rule.lessons || rec.sections < rule.sections || rec.checks < rule.checks || rec.mastered < Math.ceil(0.7 * rule.questions)) return bad2("The course record does not meet the criteria yet.", 422);
-  const id = newId();
-  await db.prepare("INSERT INTO certs (id, course, name, issued, record) VALUES (?, ?, ?, ?, ?)").bind(id, body.course, name, now, JSON.stringify(rec)).run();
-  return json2({ id, issued: now });
-}
-__name(issue, "issue");
-async function lookup(db, id) {
-  if (!/^IC-[2-9A-HJ-NP-Z]{12}$/.test(id)) return bad2("That is not a credential ID.", 404);
-  const r = await db.prepare("SELECT * FROM certs WHERE id = ?").bind(id).first();
-  if (!r) return bad2("No certificate has this ID.", 404);
-  return json2({ id: r.id, course: r.course, name: r.name, issued: r.issued, record: JSON.parse(r.record) }, 200, "public, max-age=300");
-}
-__name(lookup, "lookup");
-async function handle2({ request, env: env2 }) {
-  const db = env2.DB;
-  const route = new URL(request.url).pathname.replace(/^\/api\/cert\/?/, "").replace(/\/$/, "");
-  if (!db) return bad2("Certificates are not set up yet.", 503);
-  try {
-    await ensure2(db);
-    if (request.method === "POST" && route === "issue") return await issue(db, env2, await request.json(), Date.now());
-    if (request.method === "GET" && route) return await lookup(db, route);
-    return bad2("Not found.", 404);
-  } catch {
-    return bad2("Certificates are busy. Please try again in a moment.", 503);
-  }
-}
-__name(handle2, "handle");
-
-// api/cert/[[route]].js
-var onRequest2 = /* @__PURE__ */ __name((ctx) => handle2({ request: ctx.request, env: { ...ctx.env, BOARD_PROOF: PROOF } }), "onRequest");
-
 // ../worker/pay-api.js
 var BANK = { name: "Royal Bank (Trinidad and Tobago) Limited", branch: "St Augustine Shopping Centre, St Augustine", account: "110000005001825" };
-var OFFERS = { arc42: { ttd: 899, usd: 129, title: "arc42 in a Day, online course", welcome: "/training/arc42/course/welcome/", learn: "/training/arc42/course/learn/" } };
+var OFFERS = {
+  arc42: { ttd: 899, usd: 129, title: "arc42 in a Day, online course", welcome: "/training/arc42/course/welcome/", learn: "/training/arc42/course/learn/" },
+  cybersecurity: { ttd: 2799, usd: 399, title: "Cybersecurity for the Agentic Era, online course", welcome: "/training/cybersecurity/course/welcome/", learn: "/training/cybersecurity/course/learn/" },
+  "quality-decisions": { ttd: 1399, usd: 199, title: "Architecture for Quality and Decisions, online course", welcome: "/training/quality-decisions/course/welcome/", learn: "/training/quality-decisions/course/learn/" }
+};
+async function courseKeyFor(masterB64u, course) {
+  if (course === "arc42") return masterB64u;
+  const raw = Uint8Array.from(atob(masterB64u.replace(/-/g, "+").replace(/_/g, "/")), (c) => c.charCodeAt(0));
+  const k = await crypto.subtle.importKey("raw", raw, { name: "HMAC", hash: "SHA-256" }, false, ["sign"]);
+  const sig = new Uint8Array(await crypto.subtle.sign("HMAC", k, new TextEncoder().encode("course:" + course)));
+  return btoa(String.fromCharCode(...sig)).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+}
+__name(courseKeyFor, "courseKeyFor");
 var MAX_IMAGE = 12e5;
 var MAX_TRIES = 5;
 var MAX_AGE_DAYS = 7;
-var SCHEMA3 = [
+var SCHEMA2 = [
   `CREATE TABLE IF NOT EXISTS orders (id TEXT PRIMARY KEY, ref TEXT NOT NULL, course TEXT NOT NULL, name TEXT NOT NULL, email TEXT NOT NULL,
     amount REAL NOT NULL, status TEXT NOT NULL, created INTEGER NOT NULL, decided INTEGER, note TEXT)`,
   `CREATE TABLE IF NOT EXISTS receipts (id INTEGER PRIMARY KEY AUTOINCREMENT, order_id TEXT NOT NULL, hash TEXT NOT NULL, txn TEXT,
     image TEXT, read TEXT, verdict TEXT, reasons TEXT, created INTEGER NOT NULL)`,
   "CREATE INDEX IF NOT EXISTS receipts_hash ON receipts (hash)"
 ];
-var json3 = /* @__PURE__ */ __name((o, status = 200) => new Response(JSON.stringify(o), { status, headers: { "content-type": "application/json; charset=utf-8", "cache-control": "no-store", "x-content-type-options": "nosniff" } }), "json");
-var bad3 = /* @__PURE__ */ __name((m, s = 400) => json3({ error: m }, s), "bad");
-var NAME2 = /^[^<>{}\\\u0000-\u001f]{2,60}$/u;
+var json2 = /* @__PURE__ */ __name((o, status = 200) => new Response(JSON.stringify(o), { status, headers: { "content-type": "application/json; charset=utf-8", "cache-control": "no-store", "x-content-type-options": "nosniff" } }), "json");
+var bad2 = /* @__PURE__ */ __name((m, s = 400) => json2({ error: m }, s), "bad");
+var NAME = /^[^<>{}\\\u0000-\u001f]{2,60}$/u;
 var EMAIL = /^[^\s@<>]{1,64}@[^\s@<>]{1,190}\.[^\s@<>]{2,}$/;
 var hex2 = /* @__PURE__ */ __name((u8) => [...u8].map((b) => b.toString(16).padStart(2, "0")).join(""), "hex");
-var newId2 = /* @__PURE__ */ __name(() => hex2(crypto.getRandomValues(new Uint8Array(16))), "newId");
+var newId = /* @__PURE__ */ __name(() => hex2(crypto.getRandomValues(new Uint8Array(16))), "newId");
 var newRef = /* @__PURE__ */ __name(() => "IC-" + [...crypto.getRandomValues(new Uint8Array(6))].map((b) => "ABCDEFGHJKMNPQRSTUVWXYZ23456789"[b % 31]).join(""), "newRef");
 var sha256 = /* @__PURE__ */ __name(async (u8) => hex2(new Uint8Array(await crypto.subtle.digest("SHA-256", u8))), "sha256");
 var utf8b64u = /* @__PURE__ */ __name((s) => btoa(String.fromCharCode(...new TextEncoder().encode(s))).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, ""), "utf8b64u");
@@ -1192,33 +1145,52 @@ async function readReceipt(env2, bytes) {
   }
 }
 __name(readReceipt, "readReceipt");
-var ready3 = null;
-var ensure3 = /* @__PURE__ */ __name((db) => ready3 || (ready3 = db.batch(SCHEMA3.map((s) => db.prepare(s))).catch((e) => {
-  ready3 = null;
+var ready2 = null;
+var ensure2 = /* @__PURE__ */ __name((db) => ready2 || (ready2 = db.batch(SCHEMA2.map((s) => db.prepare(s))).catch((e) => {
+  ready2 = null;
   throw e;
 })), "ensure");
 var orderOf = /* @__PURE__ */ __name((db, id) => /^[0-9a-f]{32}$/.test(id || "") ? db.prepare("SELECT * FROM orders WHERE id = ?").bind(id).first() : null, "orderOf");
 async function createOrder(db, body, now) {
   const offer = OFFERS[body.course];
-  if (!offer) return bad3("This course is not on sale online yet.", 404);
+  if (!offer) return bad2("This course is not on sale online yet.", 404);
   const name = String(body.name || "").trim().replace(/\s+/g, " "), email = String(body.email || "").trim();
-  if (!NAME2.test(name)) return bad3("Enter your name (2 to 60 characters). It is printed on your lessons and certificate.");
-  if (!EMAIL.test(email)) return bad3("Enter a valid email address.");
-  const id = newId2(), ref2 = newRef();
+  if (!NAME.test(name)) return bad2("Enter your name (2 to 60 characters). It is printed on your lessons and certificate.");
+  if (!EMAIL.test(email)) return bad2("Enter a valid email address.");
+  const id = newId(), ref2 = newRef();
   await db.prepare("INSERT INTO orders (id, ref, course, name, email, amount, status, created) VALUES (?, ?, ?, ?, ?, ?, ?, ?)").bind(id, ref2, body.course, name, email, offer.ttd, "awaiting", now).run();
-  return json3({ id, ref: ref2, amount: offer.ttd, bank: BANK });
+  return json2({ id, ref: ref2, amount: offer.ttd, bank: BANK });
 }
 __name(createOrder, "createOrder");
+async function notify(S, { title: title2, message, priority = 3, tags = "", click = "" }) {
+  if (!S || !S.ntfyTopic) return false;
+  try {
+    const headers = { Title: title2, Priority: String(priority) };
+    if (tags) headers.Tags = tags;
+    if (click) headers.Click = click;
+    const r = await fetch("https://ntfy.sh/" + encodeURIComponent(S.ntfyTopic), { method: "POST", headers, body: message, signal: AbortSignal.timeout(3e3) });
+    return r.ok;
+  } catch {
+    return false;
+  }
+}
+__name(notify, "notify");
+var money = /* @__PURE__ */ __name((o) => `TT$${o.amount}`, "money");
+var courseName = /* @__PURE__ */ __name((o) => OFFERS[o.course] && OFFERS[o.course].title || o.course, "courseName");
 async function receipt(db, env2, id, bytes, now) {
   const order = await orderOf(db, id);
-  if (!order) return bad3("We could not find that order.", 404);
-  if (order.status === "paid") return json3({ status: "paid" });
-  if (!bytes.length || bytes.length > MAX_IMAGE) return bad3("That photo is too large or empty. Try again.", 413);
+  if (!order) return bad2("We could not find that order.", 404);
+  if (order.status === "paid") return json2({ status: "paid" });
+  if (order.status === "rejected") return bad2("We could not confirm this payment. Please message us on WhatsApp.", 403);
+  if (!bytes.length || bytes.length > MAX_IMAGE) return bad2("That photo is too large or empty. Try again.", 413);
   const tries = (await db.prepare("SELECT COUNT(*) AS n FROM receipts WHERE order_id = ?").bind(id).first()).n;
-  if (tries >= MAX_TRIES) return json3({ status: "review", note: "Too many tries. We will check it by hand." });
+  if (tries >= MAX_TRIES) {
+    await db.prepare("UPDATE orders SET status = 'review' WHERE id = ? AND status != 'paid'").bind(id).run();
+    return json2({ status: "review", note: "Too many tries. We will check it by hand." });
+  }
   const hash = await sha256(bytes);
   const dupe = await db.prepare("SELECT order_id FROM receipts WHERE hash = ? AND order_id != ?").bind(hash, id).first();
-  if (dupe) return bad3("That receipt was already used for another order.", 409);
+  if (dupe) return bad2("That receipt was already used for another order.", 409);
   const read = await readReceipt(env2, bytes);
   const v = judge(read, order, now);
   let reasons = v.reasons;
@@ -1232,66 +1204,135 @@ async function receipt(db, env2, id, bytes, now) {
   await db.prepare("INSERT INTO receipts (order_id, hash, txn, image, read, verdict, reasons, created) VALUES (?, ?, ?, ?, ?, ?, ?, ?)").bind(id, hash, v.txn, btoa(String.fromCharCode(...bytes)), JSON.stringify(read), v.pass ? "pass" : "hold", JSON.stringify(reasons), now).run();
   if (v.pass) {
     await db.prepare("UPDATE orders SET status = 'paid', decided = ?, note = 'auto' WHERE id = ?").bind(now, id).run();
-    return json3({ status: "paid" });
+    await notify(env2.SECRETS, { title: "New sale", message: `${order.name} <${order.email}> paid ${money(order)} for ${courseName(order)}. Ref ${order.ref}. The receipt passed the automatic check and the course is open.`, priority: 3, tags: "moneybag" });
+    return json2({ status: "paid" });
   }
   await db.prepare("UPDATE orders SET status = 'review' WHERE id = ? AND status != 'paid'").bind(id).run();
-  return json3({ status: "review" });
+  await notify(env2.SECRETS, { title: "Check this receipt", message: `${order.name} <${order.email}> sent a receipt for ${money(order)} (${courseName(order)}), ref ${order.ref}. The automatic check could not confirm it (${reasons.join("; ") || "unreadable"}). The course is OPEN for them now. Confirm the deposit in your bank, or revoke access on the orders page.`, priority: 4, tags: "warning", click: "https://meeting-mind.com" + (OFFERS[order.course] ? OFFERS[order.course].learn.replace(/learn\/$/, "admin/") : "/") });
+  return json2({ status: "review" });
 }
 __name(receipt, "receipt");
 async function claim(db, S, id) {
   const o = await orderOf(db, id);
-  if (!o) return bad3("We could not find that order.", 404);
-  if (o.status === "rejected") return bad3("We could not confirm this payment. Please message us on WhatsApp.", 403);
-  if (o.status !== "paid") return json3({ status: o.status, ref: o.ref }, 202);
-  return json3({ status: "paid", code: utf8b64u(JSON.stringify({ v: 1, b: o.name, k: S.courseKey })), name: o.name, course: o.course, learn: OFFERS[o.course].learn });
+  if (!o) return bad2("We could not find that order.", 404);
+  if (o.status === "rejected") return bad2("We could not confirm this payment. Please message us on WhatsApp.", 403);
+  if (o.status !== "paid" && o.status !== "review") return json2({ status: o.status, ref: o.ref }, 202);
+  return json2({ status: o.status, provisional: o.status === "review", code: utf8b64u(JSON.stringify({ v: 1, b: o.name, k: await courseKeyFor(S.courseKey, o.course) })), name: o.name, course: o.course, learn: OFFERS[o.course].learn });
 }
 __name(claim, "claim");
 var same = /* @__PURE__ */ __name((a, b) => a.length === b.length && [...a].reduce((x, c, i) => x | c.charCodeAt(0) ^ b.charCodeAt(i), 0) === 0, "same");
 async function admin(db, S, request, route, now) {
   const key = request.headers.get("x-admin-key") || "";
-  if (!S.adminKey || !same(key, S.adminKey)) return bad3("Not allowed.", 401);
+  if (!S.adminKey || !same(key, S.adminKey)) return bad2("Not allowed.", 401);
   if (request.method === "GET" && route === "admin/list") {
     const rows = (await db.prepare("SELECT o.id, o.ref, o.name, o.email, o.amount, o.status, o.created, o.note, (SELECT reasons FROM receipts r WHERE r.order_id = o.id ORDER BY r.id DESC LIMIT 1) AS reasons, (SELECT read FROM receipts r WHERE r.order_id = o.id ORDER BY r.id DESC LIMIT 1) AS read, (SELECT id FROM receipts r WHERE r.order_id = o.id ORDER BY r.id DESC LIMIT 1) AS receipt FROM orders o WHERE o.status != 'awaiting' ORDER BY (o.status = 'review') DESC, o.created DESC LIMIT 100").all()).results;
-    return json3({ orders: rows });
+    return json2({ orders: rows });
   }
   if (request.method === "GET" && route === "admin/image") {
     const r = await db.prepare("SELECT image FROM receipts WHERE id = ?").bind(Number(new URL(request.url).searchParams.get("id"))).first();
-    return r ? json3({ image: "data:image/jpeg;base64," + r.image }) : bad3("No image.", 404);
+    return r ? json2({ image: "data:image/jpeg;base64," + r.image }) : bad2("No image.", 404);
   }
   if (request.method === "POST" && route === "admin/decide") {
     const b = await request.json(), o = await orderOf(db, b.id);
-    if (!o) return bad3("No such order.", 404);
+    if (!o) return bad2("No such order.", 404);
     await db.prepare("UPDATE orders SET status = ?, decided = ?, note = ? WHERE id = ?").bind(b.approve ? "paid" : "rejected", now, "owner", o.id).run();
-    return json3({ ok: true });
+    return json2({ ok: true });
   }
-  return bad3("Not found.", 404);
+  return bad2("Not found.", 404);
 }
 __name(admin, "admin");
-async function handle3({ request, env: env2, now = Date.now() }) {
+async function handle2({ request, env: env2, now = Date.now() }) {
   const url = new URL(request.url), route = url.pathname.replace(/^\/api\/pay\/?/, "").replace(/\/$/, "");
-  if (request.method === "GET" && route === "region") return json3({ tt: (request.cf && request.cf.country) === "TT" || request.headers.get("cf-ipcountry") === "TT" });
+  if (request.method === "GET" && route === "region") return json2({ tt: (request.cf && request.cf.country) === "TT" || request.headers.get("cf-ipcountry") === "TT" });
   const db = env2.DB, S = env2.SECRETS;
-  if (!db || !S || !S.courseKey) return bad3("Online buying is not switched on yet. Please message us on WhatsApp.", 503);
+  if (!db || !S || !S.courseKey) return bad2("Online buying is not switched on yet. Please message us on WhatsApp.", 503);
   try {
-    await ensure3(db);
+    await ensure2(db);
     if (route.startsWith("admin/")) return await admin(db, S, request, route, now);
     if (request.method === "POST" && route === "order") return await createOrder(db, await request.json(), now);
     if (request.method === "POST" && route === "receipt") return await receipt(db, env2, url.searchParams.get("o"), new Uint8Array(await request.arrayBuffer()), now);
     if (request.method === "GET" && route === "claim") return await claim(db, S, url.searchParams.get("o") || "");
+    return bad2("Not found.", 404);
+  } catch {
+    return bad2("Something went wrong. Please try again in a moment, or message us on WhatsApp.", 503);
+  }
+}
+__name(handle2, "handle");
+
+// ../worker/cert-api.js
+var ISSUABLE = { arc42: { lessons: 19, sections: 12, checks: 6, questions: 34 }, cybersecurity: { lessons: 28, sections: 28, checks: 5, questions: 84 }, "quality-decisions": { lessons: 20, sections: 20, checks: 6, questions: 60 } };
+var SCHEMA3 = [
+  `CREATE TABLE IF NOT EXISTS certs (
+    id TEXT PRIMARY KEY, course TEXT NOT NULL, name TEXT NOT NULL, issued INTEGER NOT NULL, record TEXT NOT NULL)`
+];
+var json3 = /* @__PURE__ */ __name((o, status = 200, cache = "no-store") => new Response(JSON.stringify(o), { status, headers: { "content-type": "application/json; charset=utf-8", "cache-control": cache, "x-content-type-options": "nosniff" } }), "json");
+var bad3 = /* @__PURE__ */ __name((m, s = 400) => json3({ error: m }, s), "bad");
+var ALPHABET = "23456789ABCDEFGHJKLMNPQRSTUVWXYZ";
+var newId2 = /* @__PURE__ */ __name(() => "IC-" + [...crypto.getRandomValues(new Uint8Array(12))].map((b) => ALPHABET[b % 32]).join(""), "newId");
+var int2 = /* @__PURE__ */ __name((v) => {
+  const n = Math.floor(Number(v));
+  return Number.isFinite(n) && n >= 0 && n <= 1e5 ? n : 0;
+}, "int");
+var NAME2 = /^[^<>{}\\\u0000-\u001f]{2,60}$/u;
+async function proofFor(env2, course) {
+  if (course === "arc42" || !env2.SECRETS || !env2.SECRETS.courseKey) return course === "arc42" ? env2.BOARD_PROOF : null;
+  const key = await courseKeyFor(env2.SECRETS.courseKey, course);
+  const h = new Uint8Array(await crypto.subtle.digest("SHA-256", new TextEncoder().encode("board-v1:" + key)));
+  return btoa(String.fromCharCode(...h)).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+}
+__name(proofFor, "proofFor");
+var ready3 = null;
+var ensure3 = /* @__PURE__ */ __name((db) => ready3 || (ready3 = db.batch(SCHEMA3.map((s) => db.prepare(s))).catch((e) => {
+  ready3 = null;
+  throw e;
+})), "ensure");
+async function issue(db, env2, body, now) {
+  const rule = ISSUABLE[body.course];
+  if (!rule) return bad3("This course does not issue certificates yet.", 404);
+  const want = await proofFor(env2, body.course);
+  if (!want || body.proof !== want) return bad3("This browser does not hold a valid access code.", 403);
+  const name = String(body.name || "").trim().replace(/\s+/g, " ");
+  if (!NAME2.test(name)) return bad3("Enter the name to print on the certificate (2 to 60 characters).");
+  const r = body.record || {};
+  const rec = { lessons: int2(r.lessons), lessonsTotal: rule.lessons, sections: int2(r.sections), sectionsTotal: rule.sections, checks: int2(r.checks), checksTotal: rule.checks, mastered: int2(r.mastered), questions: rule.questions };
+  if (rec.lessons < rule.lessons || rec.sections < rule.sections || rec.checks < rule.checks || rec.mastered < Math.ceil(0.7 * rule.questions)) return bad3("The course record does not meet the criteria yet.", 422);
+  const id = newId2();
+  await db.prepare("INSERT INTO certs (id, course, name, issued, record) VALUES (?, ?, ?, ?, ?)").bind(id, body.course, name, now, JSON.stringify(rec)).run();
+  return json3({ id, issued: now });
+}
+__name(issue, "issue");
+async function lookup(db, id) {
+  if (!/^IC-[2-9A-HJ-NP-Z]{12}$/.test(id)) return bad3("That is not a credential ID.", 404);
+  const r = await db.prepare("SELECT * FROM certs WHERE id = ?").bind(id).first();
+  if (!r) return bad3("No certificate has this ID.", 404);
+  return json3({ id: r.id, course: r.course, name: r.name, issued: r.issued, record: JSON.parse(r.record) }, 200, "public, max-age=300");
+}
+__name(lookup, "lookup");
+async function handle3({ request, env: env2 }) {
+  const db = env2.DB;
+  const route = new URL(request.url).pathname.replace(/^\/api\/cert\/?/, "").replace(/\/$/, "");
+  if (!db) return bad3("Certificates are not set up yet.", 503);
+  try {
+    await ensure3(db);
+    if (request.method === "POST" && route === "issue") return await issue(db, env2, await request.json(), Date.now());
+    if (request.method === "GET" && route) return await lookup(db, route);
     return bad3("Not found.", 404);
   } catch {
-    return bad3("Something went wrong. Please try again in a moment, or message us on WhatsApp.", 503);
+    return bad3("Certificates are busy. Please try again in a moment.", 503);
   }
 }
 __name(handle3, "handle");
 
 // ../worker/secrets.js
-var SECRETS = { "courseKey": "Ry-1dhA-qWvVPsJQyFKVpaERSf0SylUR0hfRztXI_GU", "adminKey": "MdEGCfTHddm06iqMHSS3s0mN" };
+var SECRETS = { "courseKey": "Ry-1dhA-qWvVPsJQyFKVpaERSf0SylUR0hfRztXI_GU", "adminKey": "MdEGCfTHddm06iqMHSS3s0mN", "ntfyTopic": "intellica-xDbUDmxfh4OgTmbV9CTSO6Z" };
+
+// api/cert/[[route]].js
+var onRequest2 = /* @__PURE__ */ __name((ctx) => handle3({ request: ctx.request, env: { ...ctx.env, BOARD_PROOF: PROOF, SECRETS } }), "onRequest");
 
 // api/pay/[[route]].js
-var onRequest3 = /* @__PURE__ */ __name((ctx) => handle3({ request: ctx.request, env: { ...ctx.env, SECRETS } }), "onRequest");
+var onRequest3 = /* @__PURE__ */ __name((ctx) => handle2({ request: ctx.request, env: { ...ctx.env, SECRETS } }), "onRequest");
 
-// ../.wrangler/tmp/pages-pMKqMr/functionsRoutes-0.30918277417326556.mjs
+// ../.wrangler/tmp/pages-WNQxGt/functionsRoutes-0.3367306060673484.mjs
 var routes = [
   {
     routePath: "/api/board/:route*",

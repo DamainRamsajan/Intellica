@@ -234,7 +234,7 @@ function payDialog() {
     <form method="dialog" class="pay-x"><button class="btn btn-ghost" aria-label="Close">Close</button></form>
     <section data-step="1">
       <h2 id="pay-title">Buy by bank deposit</h2>
-      <p class="muted">Three steps: your details, pay at the bank or online banking, then send us your receipt. Your course unlocks as soon as the receipt checks out.</p>
+      <p class="muted">Three steps: your details, pay at the bank or online banking, then send us your receipt. Your course opens the moment you send the receipt.</p>
       <form data-pay-form novalidate>
         <label for="buy-name">Your name<input id="buy-name" name="name" autocomplete="name" required maxlength="60" placeholder="As it should appear on your certificate"></label>
         <label for="buy-email">Email<input id="buy-email" name="email" type="email" autocomplete="email" required placeholder="you@example.com"></label>
@@ -242,7 +242,7 @@ function payDialog() {
       </form>
     </section>
     <section data-step="2" hidden>
-      <h2>Step 2: pay</h2>
+      <h2>Step 2 of 3: pay</h2>
       <p>Deposit <strong data-amount></strong> to:</p>
       <dl class="bank">
         <div><dt>Bank</dt><dd data-bank></dd></div>
@@ -254,7 +254,7 @@ function payDialog() {
       <div class="actions"><button class="btn btn-primary" type="button" data-to-3>I have paid</button></div>
     </section>
     <section data-step="3" hidden>
-      <h2>Step 3: send your receipt</h2>
+      <h2>Step 3 of 3: send your receipt</h2>
       <p>Take a clear photo of the receipt or the confirmation screen. Make sure the amount, account number, date and transaction number are readable.</p>
       <div class="actions">
         <label class="btn btn-primary file">Scan with camera<input type="file" accept="image/*" capture="environment" data-file></label>

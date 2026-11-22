@@ -429,6 +429,7 @@ async function learnPage() {
 }
 
 const kind = document.body.dataset.course;
+if (['index', 'learn', 'lesson', 'lab'].includes(kind) && storage.get('iwc-order')) import('/training/cybersecurity/course/pay.js').then((m) => m.recheck());
 if (kind === 'lesson') lessonPage(); else if (kind === 'index') { indexPage(); labDemo(); if (document.querySelector('[data-price]')) import('/training/cybersecurity/course/pay.js').then((m) => m.buy()); } else if (kind === 'learn') learnPage();
 else if (kind === 'welcome') import('/training/cybersecurity/course/pay.js').then((m) => m.welcome());
 else if (kind === 'admin') import('/training/cybersecurity/course/pay.js').then((m) => m.admin());

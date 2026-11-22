@@ -400,7 +400,7 @@ await step('course: buying by bank deposit (Trinidad visitor): price, popup, rec
   await ctx.route('**/api/pay/region', (r) => r.fulfill({ contentType: 'application/json', body: '{"tt":true}' }));
   await ctx.route('**/api/pay/order', (r) => r.fulfill({ contentType: 'application/json', body: JSON.stringify({ id: 'a'.repeat(32), ref: 'IC-TEST23', amount: 899, bank: { name: 'Royal Bank (Trinidad and Tobago) Limited', branch: 'St Augustine Shopping Centre, St Augustine', account: '110000005001825' } }) }));
   await ctx.route('**/api/pay/receipt**', (r) => { got = r.request().postDataBuffer(); r.fulfill({ contentType: 'application/json', body: '{"status":"paid"}' }); });
-  await ctx.route('**/api/pay/claim**', (r) => r.fulfill({ contentType: 'application/json', body: JSON.stringify({ status: 'paid', code: 'CODE123', name: 'Ada Lovelace', course: 'arc42' }) }));
+  await ctx.route('**/api/pay/claim**', (r) => r.fulfill({ contentType: 'application/json', body: JSON.stringify({ status: 'paid', code: 'CODE123', name: 'Ada Lovelace', course: 'arc42', learn: '/training/arc42/course/welcome/?o=' + 'a'.repeat(32) }) }));
   await page.goto(CRS); await page.waitForSelector('html[data-ready="true"]');
   await page.waitForSelector('[data-pay-open]:visible');
   assert.match(await page.locator('[data-price]').innerText(), /^TT\$899$/);
@@ -415,7 +415,8 @@ await step('course: buying by bank deposit (Trinidad visitor): price, popup, rec
   await page.locator('input[data-file]').nth(1).setInputFiles({ name: 'r.png', mimeType: 'image/png', buffer: png });
   await page.waitForSelector('[data-done-link]:visible');
   assert.ok(got && got.length > 100 && got[0] === 0xff && got[1] === 0xd8, 'a JPEG was uploaded');
-  assert.match(await page.locator('[data-done-title]').innerText(), /confirmed/i);
+  await page.waitForURL(/welcome\/\?o=/);
+  assert.equal(await page.evaluate(() => localStorage.getItem('iw-course-code')), 'CODE123', 'the code is saved with no copy and paste');
   await page.goto(CRS + 'welcome/?o=' + 'a'.repeat(32));
   await page.waitForSelector('[data-welcome-done]:not([hidden])');
   assert.equal(await page.locator('#w-code').inputValue(), 'CODE123');
@@ -427,6 +428,36 @@ await step('course: buying by bank deposit (Trinidad visitor): price, popup, rec
   assert.equal(await f.locator('[data-tt]').isVisible(), false);
   assert.match(await f.locator('[data-price-note]').innerText(), /WhatsApp/);
   await f.context().close();
+});
+await step('course: a receipt the bank check could not confirm still opens the course at once (owner is told); a revoked order closes it again', async () => {
+  const png = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==', 'base64');
+  const id = 'b'.repeat(32);
+  const ctx = await browser.newContext({ viewport: { width: 390, height: 800 } });
+  const page = await ctx.newPage(); page.problems = [];
+  page.on('pageerror', (e) => page.problems.push(e.message));
+  await ctx.route('**/api/pay/region', (r) => r.fulfill({ contentType: 'application/json', body: '{"tt":true}' }));
+  await ctx.route('**/api/pay/order', (r) => r.fulfill({ contentType: 'application/json', body: JSON.stringify({ id, ref: 'IC-HOLD99', amount: 899, bank: { name: 'Royal Bank', branch: 'x', account: '1' } }) }));
+  await ctx.route('**/api/pay/receipt**', (r) => r.fulfill({ contentType: 'application/json', body: '{"status":"review"}' }));
+  await ctx.route('**/api/pay/claim**', (r) => r.fulfill({ contentType: 'application/json', body: JSON.stringify({ status: 'review', provisional: true, code: 'PROV1', name: 'Bo', course: 'arc42', learn: '/training/arc42/course/welcome/?o=' + id }) }));
+  await page.goto(CRS); await page.waitForSelector('[data-pay-open]:visible');
+  await page.click('[data-pay-open]');
+  await page.fill('#buy-name', 'Bo Peep'); await page.fill('#buy-email', 'bo@example.com');
+  await page.click('[data-pay-form] button[type=submit]'); await page.waitForSelector('[data-step="2"]:not([hidden])');
+  await page.click('[data-to-3]');
+  await page.locator('input[data-file]').nth(1).setInputFiles({ name: 'r.png', mimeType: 'image/png', buffer: png });
+  await page.waitForSelector('[data-done-text]:visible');
+  assert.match(await page.locator('[data-done-text]').innerText(), /open now|Opening/i);
+  await page.waitForURL(/welcome\/\?o=/, { timeout: 6000 });
+  assert.equal(await page.evaluate(() => localStorage.getItem('iw-course-code')), 'PROV1');
+  // the owner revokes: the next visit removes that code and says why
+  await ctx.unroute('**/api/pay/claim**');
+  await ctx.route('**/api/pay/claim**', (r) => r.fulfill({ status: 403, contentType: 'application/json', body: '{"error":"We could not confirm this payment."}' }));
+  let said = ''; page.on('dialog', (d) => { said = d.message(); d.accept(); });
+  await page.goto(CRS + 'learn/');
+  await page.waitForFunction(() => !localStorage.getItem('iw-course-code'), null, { timeout: 6000 });
+  assert.match(said, /paused/);
+  assert.deepEqual(page.problems, []);
+  await ctx.close();
 });
 await step('course: a free lesson plays without a code (next, back, slide changes)', async () => {
   const p = await open(CRS + 'part-1-foundations/');

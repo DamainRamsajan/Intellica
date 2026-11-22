@@ -1,7 +1,7 @@
 // Buying by bank deposit, sending the receipt, receiving the code, and the owner's review page.
 import { $, $$, storage, copyText } from '/kit/dom.js';
 
-const CODE_KEY = 'iw-course-code', ORDER_KEY = 'iw-order';
+const CODE_KEY = 'iw-course-code', ORDER_KEY = 'iw-order', ORDER_CODE_KEY = 'iw-order-code';
 const api = async (path, init) => {
   const res = await fetch('/api/pay/' + path, init);
   let body = {}; try { body = await res.json(); } catch { /* ignore */ }
@@ -28,7 +28,7 @@ export async function buy() {
   const { body } = await api('region').catch(() => ({ body: {} }));
   if (body.tt && openBtn) {
     priceEl.textContent = 'TT$' + priceEl.dataset.ttd;
-    note.textContent = 'One payment by bank deposit. Lifetime access to this edition.';
+    note.textContent = 'One payment by bank deposit. Lifetime access to this edition. Your course opens the moment you send your receipt.';
     $('[data-tt]').hidden = false;
   } else if (openBtn) {
     note.textContent = 'Card payment for visitors outside Trinidad and Tobago is opening soon. Message us on WhatsApp to buy now. Lifetime access to this edition.';
@@ -43,12 +43,19 @@ export async function buy() {
     $('[data-bank]', dlg).textContent = o.bank.name; $('[data-branch]', dlg).textContent = o.bank.branch;
     $('[data-account]', dlg).textContent = o.bank.account; $('[data-ref]', dlg).textContent = o.ref;
   };
-  const finish = (data, o) => {
+  const finish = async (data, o) => {
     show(4);
     const link = $('[data-done-link]', dlg), t = $('[data-done-title]', dlg), x = $('[data-done-text]', dlg);
     link.href = '/training/arc42/course/welcome/?o=' + o.id;
-    if (data.status === 'paid') { t.textContent = 'Payment confirmed'; x.textContent = 'Your receipt checks out. Your course is ready.'; link.textContent = 'Open my course'; }
-    else { t.textContent = 'Receipt received'; x.textContent = 'We could not confirm it automatically, so we will check it against the bank. This is usually a few hours. Bookmark the next page: your code appears there as soon as we confirm.'; link.textContent = 'See my order'; }
+    t.textContent = data.status === 'paid' ? 'Payment confirmed' : 'Receipt received';
+    x.textContent = 'Opening your course…'; link.textContent = 'Open my course';
+    // Open the course at once. If the bank check could not confirm the receipt, the course still opens and we double-check by hand.
+    const { res, body: c } = await api('claim?o=' + encodeURIComponent(o.id)).catch(() => ({ res: null, body: {} }));
+    if (res && res.ok && c.code) {
+      storage.set(CODE_KEY, c.code); storage.set(ORDER_CODE_KEY, c.code);
+      if (c.provisional) x.textContent = 'Your course is open now. We are double-checking the deposit with the bank, which usually takes a few hours.';
+      link.href = c.learn; setTimeout(() => location.assign(c.learn), c.provisional ? 2500 : 900);
+    } else x.textContent = 'We received your receipt. Open the next page to get your course.';
   };
   openBtn.addEventListener('click', () => { dlg.showModal(); if (order) { fill(order); show(2); } else show(1); });
   $('[data-pay-form]', dlg).addEventListener('submit', async (e) => {
@@ -75,16 +82,31 @@ export async function buy() {
   });
 }
 
+// Runs quietly on course pages for a buyer: opens the course if it was approved meanwhile, and closes it if the owner revoked it.
+export async function recheck() {
+  let o = null; try { o = JSON.parse(storage.get(ORDER_KEY) || 'null'); } catch { o = null; }
+  if (!o || !o.id) return;
+  const { res, body } = await api('claim?o=' + encodeURIComponent(o.id)).catch(() => ({ res: null, body: {} }));
+  if (!res) return;
+  if (res.status === 403) {
+    if (storage.get(CODE_KEY) && storage.get(CODE_KEY) === storage.get(ORDER_CODE_KEY)) {
+      try { localStorage.removeItem(CODE_KEY); localStorage.removeItem(ORDER_CODE_KEY); } catch { /* ignore */ }
+      alert('Your access has been paused because we could not confirm your payment. Please message us on WhatsApp and we will sort it out.');
+      location.reload();
+    }
+  } else if (res.ok && body.code && !storage.get(CODE_KEY)) { storage.set(CODE_KEY, body.code); storage.set(ORDER_CODE_KEY, body.code); location.reload(); }
+}
+
 export async function welcome() {
   const root = $('[data-welcome]'), title = $('[data-welcome-title]'), msg = $('[data-welcome-msg]');
   const id = new URLSearchParams(location.search).get('o') || '';
   try {
     const { res, body: data } = await api('claim?o=' + encodeURIComponent(id));
-    if (res.status === 202) { title.textContent = 'Your order is being checked.'; msg.textContent = 'Reference ' + (data.ref || ''); $('[data-welcome-wait]', root).hidden = false; return; }
+    if (res.status === 202) { title.textContent = 'We are waiting for your receipt.'; msg.textContent = 'Reference ' + (data.ref || ''); $('[data-welcome-wait]', root).hidden = false; return; }
     if (!res.ok) throw new Error(data.error);
-    storage.set(CODE_KEY, data.code);
+    storage.set(CODE_KEY, data.code); storage.set(ORDER_CODE_KEY, data.code);
     title.textContent = 'Welcome, ' + data.name + '.';
-    msg.textContent = 'Payment confirmed. Thank you.';
+    msg.textContent = data.provisional ? 'Your course is open. We are still double-checking the deposit with the bank.' : 'Payment confirmed. Thank you.';
     $('textarea', root).value = data.code;
     $('[data-welcome-done]', root).hidden = false;
     $('[data-copy]', root).addEventListener('click', async (e) => { e.target.textContent = (await copyText(data.code)) ? 'Copied' : 'Select the code and copy it'; });
@@ -117,8 +139,8 @@ export function admin() {
     }
     if (o.status === 'review' || o.status === 'paid') {
       const mk = (label, approve) => { const b = document.createElement('button'); b.type = 'button'; b.className = 'btn ' + (approve ? 'btn-primary' : 'btn-ghost'); b.textContent = label; b.addEventListener('click', async () => { await api('admin/decide', { method: 'POST', headers: { ...hdr(), 'content-type': 'application/json' }, body: JSON.stringify({ id: o.id, approve }) }); load(); }); return b; };
-      if (o.status === 'review') d.append(mk('Money is in: approve', true));
-      d.append(mk('Not received: reject', false));
+      if (o.status === 'review') d.append(mk('Money is in: confirm', true));
+      d.append(mk(o.status === 'review' ? 'Not received: revoke access' : 'Revoke access', false));
     }
     return d;
   };

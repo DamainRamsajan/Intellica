@@ -73,7 +73,12 @@ for (const t of targets) {
     if (key) {
       let cfg = fs.existsSync('.pay.json') ? JSON.parse(fs.readFileSync('.pay.json', 'utf8')) : {};
       if (!cfg.adminKey) { cfg.adminKey = crypto.randomBytes(18).toString('base64url'); fs.writeFileSync('.pay.json', JSON.stringify(cfg, null, 2) + '\n'); console.log(`Owner key for the review page (saved in .pay.json): ${cfg.adminKey}`); }
-      fs.writeFileSync(SEC_FILE, `export const SECRETS = ${JSON.stringify({ courseKey: key.toString('base64url'), adminKey: cfg.adminKey })};\n`);
+      if (!cfg.ntfyTopic) {
+        cfg.ntfyTopic = 'intellica-' + crypto.randomBytes(18).toString('base64url').replace(/[^A-Za-z0-9]/g, '');
+        fs.writeFileSync('.pay.json', JSON.stringify(cfg, null, 2) + '\n');
+        console.log(`\nPhone alerts for every order: install the free "ntfy" app (iPhone or Android), tap +, choose "Subscribe to topic", and enter exactly:\n  ${cfg.ntfyTopic}\n(The topic name is your password. It is saved in .pay.json.)\n`);
+      }
+      fs.writeFileSync(SEC_FILE, `export const SECRETS = ${JSON.stringify({ courseKey: key.toString('base64url'), adminKey: cfg.adminKey, ntfyTopic: cfg.ntfyTopic })};\n`);
       console.log('Online buying: ON (bank deposit + receipt check).');
     } else console.log('Online buying: off (no course key found). The course page will say "buy on WhatsApp".');
   }
